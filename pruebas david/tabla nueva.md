@@ -23,7 +23,7 @@ select * from usuars
 CREATE or ALTER VIEW v_listado_Transacciones_Saldo_Mins
 AS
 SELECT 
-    tsm.nId_Colaborador,
+tsm.nId_Colaborador,
     p.sPersona_Nombre AS SNombreColaborador,
     COUNT(tsm.nId_Transaccion) AS Total_Solicitudes, -- Total de solicitudes
     SUM(CASE WHEN tsm.nTipo_Transaccion = 1 THEN tsm.dCantidad_Minutos ELSE 0 END) AS CantidadTotalSuma, -- Sumar permisos tipo 1
