@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "aa3a11b540e644cd",
+        "id": "ce1e63376d29c59f",
         "type": "tabs",
         "children": [
           {
-            "id": "d97faeeef30f9ea4",
+            "id": "510d556692326942",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "triggers/tr_prueba.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "tr_prueba"
+              "title": "Nueva pestaña"
             }
           }
         ]
@@ -173,10 +169,15 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d97faeeef30f9ea4",
+  "active": "fa17d6db9bc7bedf",
   "lastOpenFiles": [
-    "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
+    "conflict-files-obsidian-git.md",
     "triggers/tr_prueba.md",
+    "triggers/tr_after_update_insert_hours_balance_Task.md",
+    "Descuentos de permisos/Untitled.md",
+    "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
+    "Descuentos de permisos",
+    "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
     "backend/personas.md",
     "triggers",
     "script 1.md",
