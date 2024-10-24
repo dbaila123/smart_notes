@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "ce1e63376d29c59f",
+        "id": "f37b99a986676367",
         "type": "tabs",
         "children": [
           {
-            "id": "510d556692326942",
+            "id": "5644d10790f7fe9d",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -169,13 +169,14 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "fa17d6db9bc7bedf",
+  "active": "9a5197627b2ae87a",
   "lastOpenFiles": [
+    "Nuevo Documento de texto.txt",
+    "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
     "conflict-files-obsidian-git.md",
     "triggers/tr_prueba.md",
     "triggers/tr_after_update_insert_hours_balance_Task.md",
     "Descuentos de permisos/Untitled.md",
-    "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
     "Descuentos de permisos",
     "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
     "backend/personas.md",
