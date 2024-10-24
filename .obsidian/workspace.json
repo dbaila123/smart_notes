@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "86c147596a641c70",
+        "id": "5fedd4c60252980a",
         "type": "tabs",
         "children": [
           {
-            "id": "32edacbb2b5dbc56",
+            "id": "02ab7f1615df29da",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "nuevas tablas/nueva tabla.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nueva pestaña"
+              "title": "nueva tabla"
             }
           }
         ]
@@ -169,16 +173,16 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "32edacbb2b5dbc56",
+  "active": "02ab7f1615df29da",
   "lastOpenFiles": [
-<<<<<<< HEAD
-    "Descuentos de permisos/v_listado_Transacciones_Saldo_Mins.md",
-    "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
-=======
+    "Sin título.md",
+    "nuevas tablas/nueva tabla.md",
+    "nuevas tablas",
     "2024-10-24.md",
->>>>>>> 0ceac2ea7a153e6547ec6a1a5d61760fe2326716
     "conflict-files-obsidian-git.md",
     "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
+    "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
+    "Descuentos de permisos/v_listado_Transacciones_Saldo_Mins.md",
     "Vistas de stores",
     "triggers/tr_after_Transacciones_Saldo_Mins.md",
     "Descuentos de permisos",
