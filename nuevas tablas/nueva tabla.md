@@ -1,1 +1,0 @@
-tabla creada por David
