@@ -4,53 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "c81a60c2a17a4bd8",
+        "id": "c3e4b73952e792f8",
         "type": "tabs",
         "children": [
           {
-            "id": "afe3b35ba4c1051e",
+            "id": "29b34c829a6f146f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "triggers/tr_after_Transacciones_Saldo_Mins.md",
+                "file": "conflict-files-obsidian-git.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tr_after_Transacciones_Saldo_Mins"
-            }
-          },
-          {
-            "id": "f94e423efd743591",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "sp_smart_get_Permit_Closure"
-            }
-          },
-          {
-            "id": "627da2b9eb0cf3ad",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Descuentos de permisos/v_listado_Transacciones_Saldo_Mins.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "v_listado_Transacciones_Saldo_Mins"
+              "title": "conflict-files-obsidian-git"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -202,11 +173,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "627da2b9eb0cf3ad",
+  "active": "29b34c829a6f146f",
   "lastOpenFiles": [
-    "Vistas de stores",
+    "conflict-files-obsidian-git.md",
+    "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
     "Descuentos de permisos/sp_smart_get_Permit_Closure.md",
     "Descuentos de permisos/v_listado_Transacciones_Saldo_Mins.md",
+    "Vistas de stores",
     "triggers/tr_after_Transacciones_Saldo_Mins.md",
     "Descuentos de permisos",
     "triggers/tr_after_update_insert_hours_balance_Task.md",
