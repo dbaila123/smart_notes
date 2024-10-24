@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "c3e4b73952e792f8",
+        "id": "5fedd4c60252980a",
         "type": "tabs",
         "children": [
           {
-            "id": "29b34c829a6f146f",
+            "id": "02ab7f1615df29da",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "conflict-files-obsidian-git.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "conflict-files-obsidian-git"
+              "title": "New tab"
             }
           }
         ]
@@ -173,7 +169,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "29b34c829a6f146f",
+  "active": "fa17d6db9bc7bedf",
   "lastOpenFiles": [
     "conflict-files-obsidian-git.md",
     "triggers/tr_after_Transacciones_Saldo_Mins.sql.md",
