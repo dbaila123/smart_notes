@@ -1,3 +1,4 @@
+```sql
 ALTER PROCEDURE sp_smart_get_Permit_Closure
 
 (    
@@ -98,3 +99,5 @@ BEGIN
     PRINT @script;    
     EXECUTE sp_executesql @script;    
 END
+
+```
