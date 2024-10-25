@@ -1,3 +1,4 @@
+```sql
 CREATE TRIGGER tr_after_Transacciones_Saldo_Mins
 ON Solicitudes
 AFTER UPDATE
@@ -55,3 +56,5 @@ BEGIN
                           JOIN inserted i ON d.nId_Solictud = i.nId_Solictud
                           WHERE i.nEstado_Solicitud = 0);
 END;
+
+```

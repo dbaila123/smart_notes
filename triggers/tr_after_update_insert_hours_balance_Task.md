@@ -1,3 +1,4 @@
+```sql
 CREATE TRIGGER tr_after_update_insert_hours_balance_Task
 ON Tareas
 AFTER UPDATE
@@ -55,3 +56,5 @@ BEGIN
                           JOIN inserted i ON d.nId_Tarea = i.nId_Tarea
                           WHERE i.nEstado_Tarea = 6);
 END;
+
+```

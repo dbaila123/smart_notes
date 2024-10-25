@@ -1,3 +1,4 @@
+```sql
 CREATE or ALTER VIEW v_listado_Transacciones_Saldo_Mins
 AS
 SELECT 
@@ -19,3 +20,4 @@ GROUP BY
     tsm.nId_Colaborador,
     p.sPersona_Nombre,
     c.sUrl_Foto;
+```
