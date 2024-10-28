@@ -26,7 +26,7 @@ BEGIN
     nUsuario_Update   
     )
     SELECT 
-        d.nId_Colaborador,  -- Valor fijo o cambia según tu lógica
+        d.nId_Colaborador,
         d.nEstado,
         i.nEstado_Tarea,
         @nId_Tipo_Entidad,
@@ -35,7 +35,7 @@ BEGIN
          CASE 
             --WHEN d.nId_Tipo_Solicitud IN (1, 2) THEN 2
             WHEN d.sTipo_Hora IN (2,3,5) THEN 1
-            ELSE NULL -- o un valor por defecto si es necesario
+            ELSE NULL
         END AS nTipo_Transaccion,
         d.sDetalle,
         d.nMinutos,
@@ -45,8 +45,8 @@ BEGIN
         d.dDatetime_Update,
         d.nUsuario_Update
     FROM inserted i
-    JOIN deleted d ON i.nId_Tarea  = d.nId_Tarea   -- Cambia por la clave correcta
-     WHERE i.nEstado_Tarea = 3  -- Solo si el nuevo estado es 3
+    JOIN deleted d ON i.nId_Tarea  = d.nId_Tarea
+     WHERE i.nEstado_Tarea = 3
       AND (d.nEstado_Tarea IS NULL OR d.nEstado_Tarea <> 3);
      
          -- Eliminación de transacciones cuando nEstado_Solicitud cambia a 0
@@ -56,5 +56,6 @@ BEGIN
                           JOIN inserted i ON d.nId_Tarea = i.nId_Tarea
                           WHERE i.nEstado_Tarea = 6);
 END;
+
 
 ```

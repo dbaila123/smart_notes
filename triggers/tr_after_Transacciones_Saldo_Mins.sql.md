@@ -5,7 +5,7 @@ AFTER UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @nId_Tipo_Entidad INT = 1;
+    DECLARE @nId_Tipo_Entidad INT = 1; ----permisos
     DECLARE @nId_Sub_Tipo_Entidad INT = 7;
 
     INSERT INTO Transacciones_Saldo_Mins 
@@ -33,23 +33,17 @@ BEGIN
         @nId_Sub_Tipo_Entidad,
         d.nId_solictud,
         CASE 
-            WHEN d.nId_Tipo_Solicitud = 1 THEN d.nCantidad
-            WHEN d.nId_Tipo_Solicitud = 2 THEN d.nCantidad  -- Puedes ajustar esto si deseas usar una lógica diferente
+            WHEN d.nId_Tipo_Solicitud = 1 THEN d.nId_Tipo_Solicitud
+            WHEN d.nId_Tipo_Solicitud = 2 THEN d.nId_Tipo_Solicitud  -- Puedes ajustar esto si deseas usar una lógica diferente
             ELSE NULL
         END AS nTipo_Transaccion,
         d.sMotivo,
         CASE 
-            WHEN d.nId_Tipo_Solicitud = 1 THEN 
-                d.nCantidad  -- Mantiene la cantidad normal para tipo de solicitud 1
+            WHEN d.nId_Tipo_Solicitud = 1 THEN d.nCantidad  -- Usar el valor de dCantidad_Minutos
             WHEN d.nId_Tipo_Solicitud = 2 THEN 
                 CASE 
-                    WHEN d.nCantidad = 1 THEN 
-                        CASE 
-                            WHEN CAST(d.dFecha_Inicio AS DATE) = CAST(d.dFecha_Fin AS DATE) THEN 480
-                            ELSE 960
-                        END
-                    WHEN d.nCantidad = 2 THEN 960
-                    ELSE NULL
+                    WHEN d.nCantidad = 1 THEN 480  -- Para cantidad 1
+                    ELSE 480 * d.nCantidad  -- Multiplicar por 480 para más de 1
                 END
             ELSE NULL
         END AS dCantidad_Minutos,
