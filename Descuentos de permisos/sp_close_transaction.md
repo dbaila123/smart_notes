@@ -3,7 +3,8 @@ ALTER PROCEDURE sp_close_transaction
     @nId_Transaccion INT,
     @nId_Colaborador INT,
     @dFecha_Cierre DATETIME,
-    @nUsuario_Creador INT
+    @nUsuario_Creador INT,
+    @dDatetime_Creador DATETIME
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -52,7 +53,7 @@ BEGIN
 
     -- Insertar en la tabla de cierre
     INSERT INTO closure_Request (nEstado_Cierre, nEstado, dFecha_Cierre, dDatetime_Create, nUsuario_Creador)
-    VALUES (1, 1, @dFecha_Cierre, @dFecha_Cierre, @nUsuario_Creador);
+    VALUES (1, 1, @dFecha_Cierre, @dDatetime_Creador, @nUsuario_Creador);
 
     -- Obtener el nuevo ID de cierre
     SET @nId_Cierre = SCOPE_IDENTITY();
@@ -62,7 +63,7 @@ BEGIN
     SET 
         nId_Cierre = @nId_Cierre,
         dCantidad_Minutos = 0,
-        dDatetime_Update = @dFecha_Cierre,
+        dDatetime_Update = @dDatetime_Creador,
         nUsuario_Update = @nUsuario_Creador
     WHERE 
         nId_Colaborador = @nId_Colaborador
@@ -81,7 +82,7 @@ BEGIN
     WHERE nId_Colaborador = @nId_Colaborador AND nId_Transaccion = @nId_Transaccion;
 
     -- Insertar en la tabla de historial de cierre
-    INSERT INTO Historico_Cierre_Transacciones 
+    INSERT INTO History_Closing_Transactions 
     (
         nId_Cierre, 
         dDatetime_Creacion, 
@@ -92,11 +93,12 @@ BEGIN
     VALUES 
     (
         @nId_Cierre,
-        @dFecha_Cierre,
+        @dDatetime_Creador,
         @nUsuario_Creador,
         @dCantidad_Minutos,
         @jsonTransacciones
     );
 END;
+
 
 ```
