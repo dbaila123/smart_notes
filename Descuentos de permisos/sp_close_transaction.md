@@ -46,7 +46,7 @@ BEGIN
         JOIN Tipos_Solicitudes ts ON ts.nId_Tipo_Solicitud = s.nId_Tipo_Solicitud 
         WHERE tsm.nId_Colaborador = @nId_Colaborador
           AND ts.b_recuperable = 1
-          AND tsm.nId_Cierre IS NULL
+          AND tsm.nId_Transaccion = @nId_Transaccion
         FOR JSON PATH
     );
 
