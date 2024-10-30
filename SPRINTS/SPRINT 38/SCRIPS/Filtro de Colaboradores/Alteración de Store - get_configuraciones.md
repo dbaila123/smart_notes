@@ -8,6 +8,6 @@ IF (select count(sConfiguration) from @configurations_request where sConfigurati
                    'SEDES_SUGGEST'      as sTipo_Configuracion                
             from Sedes         
    where sEntity = 'Empresa'  
-   AND nEstado = 1 AND isSede_Usuarias = 1  
+   AND nEstado = 1
         END
 ```
