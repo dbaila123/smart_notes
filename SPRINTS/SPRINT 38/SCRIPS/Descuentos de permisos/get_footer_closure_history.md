@@ -12,10 +12,11 @@ BEGIN
         CONCAT_WS(' ', p.sPrimer_Nombre, p.sApe_Paterno) AS sUsuarioCierre,
         COUNT(*) OVER() AS nTotal
     FROM History_Closing_Transactions hct
+	--FROM david_prueba hct
     INNER JOIN Usuarios u ON hct.nUsuario_Creador = u.nId_Usuario
     INNER JOIN Personas p ON p.nId_Persona = u.nId_Persona
     ORDER BY hct.nId_Cierre DESC
-    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    OFFSET (@PageNumber) * @PageSize ROWS
     FETCH NEXT @PageSize ROWS ONLY;
 END;
 GO
