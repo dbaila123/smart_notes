@@ -19,6 +19,15 @@ INSERT INTO Configs (sTabla, sCodigo, sDescripcion, sComentario, sCodigo_Externo
 VALUES  
 ('VENCIMIENTO-SOLICITUDES', 30, 'TIEMPO DE VENCIMIENTO SOLICITUDES','TIEMPO PARA DESCUENTO DE LA SOLICITUD', 'T-V-S', 1, 172, 1, GETDATE())
 
+ALTER TABLE Transacciones_Saldo_Mins  
+DROP CONSTRAINT DF__Transacci__sObse__68DD7AB4;  
+  
+ALTER TABLE Transacciones_Saldo_Mins  
+ALTER COLUMN sObservacion NVARCHAR(MAX);  
+  
+ALTER TABLE Transacciones_Saldo_Mins  
+ADD CONSTRAINT DF__Transacci__sObse__68DD7AB4 DEFAULT null FOR sObservacion;
+
 
 update Tipos_Solicitudes 
 set b_recuperable = 1 
