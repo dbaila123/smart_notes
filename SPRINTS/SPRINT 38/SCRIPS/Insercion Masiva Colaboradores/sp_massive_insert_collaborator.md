@@ -1,5 +1,5 @@
 ```sql
-CREATE     PROCEDURE sp_massive_insert_collaborator           
+CREATE  OR ALTER  PROCEDURE sp_massive_insert_collaborator           
   @PrimerNombre NVARCHAR(MAX),          
   @SegundoNombre NVARCHAR(MAX),          
   @ApellidoPaterno NVARCHAR(MAX),          
@@ -36,7 +36,10 @@ AS
         FROM Paises          
    WHERE sGentilicio LIKE '%' + @Nacionalidad + '%';          
 BEGIN          
- -------------------------INSERCION DE PERSONAS--------------------------------          
+
+begin try
+	begin transaction
+-------------------------INSERCION DE PERSONAS--------------------------------          
      INSERT INTO Personas (          
   nId_Especialidad,          
   nId_Giro_Negocio,          
@@ -220,7 +223,15 @@ Where sDescripcion LIKE '%' + @Rol + '%';
  DECLARE @nId_Sede INT;          
  SELECT TOP 1 @nId_Sede = nId_Sede          
  FROM Sedes          
- where sDescripcion LIKE '%' + @Sede + '%';        
+ where sDescripcion LIKE '%' + @Sede + '%';
+ 
+ DECLARE @nId_Ubigeo INT;
+SELECT @nId_Ubigeo = U.nId_Ubigeo
+FROM Sedes S  
+LEFT JOIN Direcciones D ON S.nId_Sede = D.nId_Sede 
+LEFT JOIN Ubigeos U ON U.nId_Ubigeo = D.nId_Ubigeo 
+WHERE S.sEntity = 'Empresa'
+AND S.sDescripcion LIKE '%' + @Sede + '%';
           
  IF @nId_Colaborador IS NOT NULL          
     BEGIN          
@@ -418,7 +429,46 @@ null,
     null,          
     null,          
     null          
-  );          
+  );     
+  
+  ---------------------INSERCION A DIRECCIONES--------------
+  INSERT INTO Direcciones (
+	nId_Persona,
+	nId_Ubigeo,
+	nTipo_Propietario,
+	nTipo_Direccion,
+	nPrincipal,
+	sCalle,
+	sCalle2,
+	nLatitud,
+	nLongitud,
+	nEstado,
+	nUsuario_Creador,
+	dDatetime_Creador,
+	nUsuario_Update,
+	dDatetime_Update,
+	nUsuario_Delete,
+	dDatetime_Delete,
+	nId_Sede
+  ) VALUES (
+	@nId_Persona,
+	@nId_Ubigeo,
+	0,
+	2,
+	1,
+	null,
+	null,
+	null,
+	null,
+	1,
+	172,
+	GETDATE(),
+	null,
+	null,
+	null,
+	null,
+	null
+  );
   -----------------HABILITAR EL DASHBOARD DEL SMART---------------          
   INSERT INTO PreferenciasColaborador(          
     nTheme,          
@@ -607,6 +657,14 @@ null,
     END;          
   END;          
    END;          
-  END;        
+  END;        		
+	commit transaction
+end try
+
+begin catch
+	ROLLBACK TRANSACTION;
+end catch
+ 
 END; 
+go
 ```
