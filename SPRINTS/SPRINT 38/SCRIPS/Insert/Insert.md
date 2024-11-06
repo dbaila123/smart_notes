@@ -6,7 +6,10 @@ VALUES(1,2,1,'HORAS A FAVOR',
 
 
 
-
+  
+update Entidades_Transacciones  
+set sDescripcion =  'DESCUENTOS'  
+where sDescripcion =  'TARDANZAS A DESCUENTO'
 
 
 alter table Tipos_Solicitudes 
