@@ -15,6 +15,9 @@ where sDescripcion =  'TARDANZAS A DESCUENTO'
 alter table Tipos_Solicitudes 
 add b_recuperable bit
 
+INSERT INTO Configs (sTabla, sCodigo, sDescripcion, sComentario, sCodigo_Externo, nEstado, nUsuario_Creador, nOrdenamiento, dDatetime_Creador)  
+VALUES  
+('VENCIMIENTO-SOLICITUDES', 30, 'TIEMPO DE VENCIMIENTO SOLICITUDES','TIEMPO PARA DESCUENTO DE LA SOLICITUD', 'T-V-S', 1, 172, 1, GETDATE())
 
 
 update Tipos_Solicitudes 
