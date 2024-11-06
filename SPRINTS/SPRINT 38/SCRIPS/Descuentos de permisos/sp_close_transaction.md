@@ -33,6 +33,7 @@ BEGIN
             s.nId_Solictud,
             s.dDatetime_Creador,
             s.nUsuario_Creador,
+            
             tsm.dCantidad_Minutos,
             CONVERT(VARCHAR(8), s.dHora_Inicio, 108) AS dHora_Inicio,
             CONVERT(VARCHAR(8), s.dHora_Fin, 108) AS dHora_Fin,
