@@ -6,6 +6,7 @@ BEGIN
 
     DECLARE @dFecha_actual DATE = GETDATE();
 
+
     UPDATE t
     SET t.nId_Sub_Tipo_Entidad = 6
     FROM Transacciones_Saldo_Mins t
