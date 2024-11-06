@@ -6,6 +6,7 @@ BEGIN
 
     DECLARE @dFecha_actual DATE = GETDATE();
 
+
     UPDATE t
     SET t.nId_Sub_Tipo_Entidad = 6
     FROM Transacciones_Saldo_Mins t
@@ -13,7 +14,8 @@ BEGIN
     WHERE t.nId_Sub_Tipo_Entidad = 7
     	AND nId_Cierre IS NULL
     	 AND DATEDIFF(DAY, s.dFecha_Inicio, @dFecha_actual) > 30;
-
+    	 
+--TODO: QUE EL 30 JALE DE UN CONFIG PARA QUE SEA DINAMICO AAAAAAAAAAAAAAAAAAAAA
 
     SELECT @@ROWCOUNT AS RowsAffected;
 END
