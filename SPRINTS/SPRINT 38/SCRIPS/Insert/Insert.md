@@ -59,3 +59,16 @@ create table closure_Request
 	Json_Detalles_Transacciones NVARCHAR(MAX)
 	);
 ```
+
+```sql
+update pc
+	set pc.sCards_Orden = REPLACE(pc.sCards_Orden, ']]', ',12]]')
+from PreferenciasColaborador pc
+inner join Colaboradores col on col.nid_colaborador = pc.nid_colaborador
+inner join Personas p on p.nId_Persona = col.nId_Colaborador
+inner join Usuarios u on u.nId_Persona = p.nId_Persona
+inner join Roles_Usuarios ru on ru.nId_Usuario = u.nId_Usuario
+inner join Permisos_Opciones pos on pos.nId_Rol = ru.nId_Rol
+inner join opciones op on op.nId_Opcion = pos.nId_Opcion
+where op.sSlug = 'POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'
+```
