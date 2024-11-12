@@ -16,22 +16,22 @@ CREATE TABLE Version (
 
 INSERT INTO Version (sVersion, sNombre_Version, nEstado, dFecha_Inicio, dFecha_Fin, dDatetime_Creador, nUsuario_Creador)
 VALUES 
-    ('3.10.0', 'FRONTEND_VERSION', 1, '2024-09-11', '2024-09-11', '2024-09-11 16:38:09.347', 172),
-    ('3.12.1', 'FRONTEND_VERSION', 1, '2024-10-14', '2024-10-14', '2024-10-14 00:00:00.000', 172);
-
+    ('3.10.0', 'FRONTEND_VERSION', 1, '2024-09-11', null, '2024-09-11', 172),
+    ('3.12.1', 'FRONTEND_VERSION', 1, '2024-10-14', null, '2024-10-14', 172);
+    ('3.13.0', 'FRONTEND_VERSION', 1, '2024-11-12', null, '2024-11-12', 172);
 
 
 CREATE TABLE Titulo_Version (
-    nId_ts INT IDENTITY(1,1) PRIMARY KEY,          -- Autoincremental primary key
-    sTitle NVARCHAR(255) NOT NULL,                 -- Title
-    sDescription NVARCHAR(MAX) NOT NULL,           -- Description
-    dFecha_Inicio DATE NOT NULL,                   -- Start date
-    dDatetime_Create DATETIME NOT NULL DEFAULT GETDATE(), -- Creation datetime
-    dDatetime_Update DATETIME,                     -- Update datetime (nullable)
-    nUsuario_Creador INT NOT NULL,                 -- ID of the creator user
-    nUsuario_Update INT,                           -- ID of the last update user (nullable)
-    nId_v INT NOT NULL,                            -- Foreign key to `version` table
-    nId_File INT NOT NULL,                         -- Foreign key to `Files` table
+    nId_ts INT IDENTITY(1,1) PRIMARY KEY,
+    sTitle NVARCHAR(255) NOT NULL,
+    sDescription NVARCHAR(MAX) NOT NULL,
+    dFecha_Inicio DATE NOT NULL,
+    dDatetime_Create DATETIME NOT NULL DEFAULT GETDATE(),
+    dDatetime_Update DATETIME,
+    nUsuario_Creador INT NOT NULL,
+    nUsuario_Update INT,
+    nId_v INT NOT NULL,
+    nId_File INT NOT NULL,
     CONSTRAINT FK_ts_version FOREIGN KEY (nId_v) REFERENCES version(nId_v),
     CONSTRAINT FK_ts_files FOREIGN KEY (nId_File) REFERENCES Files(nId_File)
 );
