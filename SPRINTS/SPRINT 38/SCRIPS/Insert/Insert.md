@@ -95,4 +95,35 @@ inner join Roles_Usuarios ru on ru.nId_Usuario = u.nId_Usuario
 inner join Permisos_Opciones pos on pos.nId_Rol = ru.nId_Rol
 inner join opciones op on op.nId_Opcion = pos.nId_Opcion
 where op.sSlug = 'POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'
+
+
+
+
+------nueva insercion-------------
+exec sp_update_attendance_massive_or_individual null, '2024-01-01', '2024-01-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-02-01', '2024-02-29', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-03-01', '2024-03-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-04-01', '2024-04-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-05-01', '2024-05-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-06-01', '2024-06-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-07-01', '2024-07-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-08-01', '2024-08-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-09-01', '2024-09-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-10-01', '2024-10-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-11-01', '2024-11-06', 215
+
+
+---------------------------------
+
+
 ```
