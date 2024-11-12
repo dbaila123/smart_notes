@@ -1,5 +1,5 @@
 ```sql
-CREATE     PROCEDURE sp_massive_insert_collaborator                       
+CREATE OR ALTER   PROCEDURE sp_massive_insert_collaborator                       
   @PrimerNombre NVARCHAR(MAX),                      
   @SegundoNombre NVARCHAR(MAX),                      
   @ApellidoPaterno NVARCHAR(MAX),                      
@@ -85,9 +85,7 @@ begin try
   
  DECLARE @EmailAlternativoApellidoMaterno NVARCHAR(255); SET @EmailAlternativoApellidoMaterno = LOWER(REPLACE(CONCAT(@PrimerNombre, '.', @ApellidoPaterno, LEFT(@ApellidoMaterno, 1), '@materiagris.pe'),'ñ','n'));  
   
- DECLARE @Contador INT = 1;  DECLARE @EmailAlternativoApellidoMaternoContador NVARCHAR(255);    SET @EmailAlternativoApellidoMaternoContador = LOWER(REPLACE(CONCAT(@PrimerNombre, '.', @ApellidoPaterno, LEFT(@ApellidoMaterno, 1), @Contador, '@materiagris.p
-e'),'ñ','n'));  WHILE EXISTS (SELECT 1 FROM Usuarios WHERE sEmail = @EmailAlternativoApellidoMaternoContador)  BEGIN      SET @Contador = @Contador + 1;      SET @EmailAlternativoApellidoMaternoContador = LOWER(REPLACE(CONCAT(@PrimerNombre, '.', @Apellido
-Paterno, LEFT(@ApellidoMaterno, 1), @Contador, '@materiagris.pe'),'ñ','n'));  END  
+ DECLARE @Contador INT = 1;  DECLARE @EmailAlternativoApellidoMaternoContador NVARCHAR(255);    SET @EmailAlternativoApellidoMaternoContador = LOWER(REPLACE(CONCAT(@PrimerNombre, '.', @ApellidoPaterno, LEFT(@ApellidoMaterno, 1), @Contador, '@materiagris.pe'),'ñ','n'));  WHILE EXISTS (SELECT 1 FROM Usuarios WHERE sEmail = @EmailAlternativoApellidoMaternoContador)  BEGIN      SET @Contador = @Contador + 1;      SET @EmailAlternativoApellidoMaternoContador = LOWER(REPLACE(CONCAT(@PrimerNombre, '.', @ApellidoPaterno, LEFT(@ApellidoMaterno, 1), @Contador, '@materiagris.pe'),'ñ','n'));  END  
         ---------------------------INSERCION DE USUARIOS--------------------------------                      
         INSERT INTO Usuarios (                      
             nId_Persona,                      
