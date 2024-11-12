@@ -97,14 +97,69 @@ VALUES(5, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-
 ```
 
 ```sql
+INSERT INTO Opciones
+(nId_Modulo, nFuncionalidad_Tipo, sDescripcion, sComentario, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete, sSlug)
+VALUES((SELECT nId_Modulo from Modulos where sDescripcion='Colaboradores' AND sUrl_Link_Modulo = '/colaboradores/lista'), 1, 'CARD DE HORAS A FAVOR Y EN CONTRA', 'Card de horas a favor y en contra', 1, 172, '2024-04-10 12:18:00.000', NULL, NULL, NULL, NULL, 'POSITIVE-NEGATIVE-HOURS-INDIVIDUAL');
+
+INSERT INTO Permisos_Opciones
+(nId_Rol, nId_Opcion, sUrl_Link_Formulario, sIcono, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+VALUES(6, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'), NULL, NULL, 1, 172, getdate(), NULL, NULL, NULL, NULL);
+
+INSERT INTO Permisos_Opciones
+(nId_Rol, nId_Opcion, sUrl_Link_Formulario, sIcono, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+VALUES(4, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'), NULL, NULL, 1, 172, getdate(), NULL, NULL, NULL, NULL);
+
+INSERT INTO Permisos_Opciones
+(nId_Rol, nId_Opcion, sUrl_Link_Formulario, sIcono, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+VALUES(9, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'), NULL, NULL, 1, 172, getdate(), NULL, NULL, NULL, NULL);
+
+INSERT INTO Permisos_Opciones
+(nId_Rol, nId_Opcion, sUrl_Link_Formulario, sIcono, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+VALUES(3, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'), NULL, NULL, 1, 172, getdate(), NULL, NULL, NULL, NULL);
+
+INSERT INTO Permisos_Opciones
+(nId_Rol, nId_Opcion, sUrl_Link_Formulario, sIcono, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+VALUES(5, (SELECT nId_Opcion from Opciones where sSlug='POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'), NULL, NULL, 1, 172, getdate(), NULL, NULL, NULL, NULL);
+
 update pc
 	set pc.sCards_Orden = REPLACE(pc.sCards_Orden, ']]', ',12]]')
 from PreferenciasColaborador pc
 inner join Colaboradores col on col.nid_colaborador = pc.nid_colaborador
-inner join Personas p on p.nId_Persona = col.nId_Colaborador
+inner join Personas p on p.nId_Persona = col.nId_Persona
 inner join Usuarios u on u.nId_Persona = p.nId_Persona
 inner join Roles_Usuarios ru on ru.nId_Usuario = u.nId_Usuario
 inner join Permisos_Opciones pos on pos.nId_Rol = ru.nId_Rol
 inner join opciones op on op.nId_Opcion = pos.nId_Opcion
 where op.sSlug = 'POSITIVE-NEGATIVE-HOURS-INDIVIDUAL'
+
+
+
+
+------nueva insercion-------------
+exec sp_update_attendance_massive_or_individual null, '2024-01-01', '2024-01-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-02-01', '2024-02-29', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-03-01', '2024-03-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-04-01', '2024-04-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-05-01', '2024-05-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-06-01', '2024-06-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-07-01', '2024-07-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-08-01', '2024-08-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-09-01', '2024-09-30', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-10-01', '2024-10-31', 215  
+  
+exec sp_update_attendance_massive_or_individual null, '2024-11-01', '2024-11-06', 215
+
+
+---------------------------------
+
+
 ```

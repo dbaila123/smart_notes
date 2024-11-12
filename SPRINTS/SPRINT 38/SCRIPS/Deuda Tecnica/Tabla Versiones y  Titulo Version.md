@@ -1,5 +1,7 @@
 ```sql
-CREATE TABLE version (
+DROP TABLE Titulo_Version
+DROP TABLE Version
+CREATE TABLE Version (
     nId_v INT IDENTITY(1,1) PRIMARY KEY,
     sVersion NVARCHAR(50) NOT NULL,
     sNombre_Version NVARCHAR(100) NOT NULL,
