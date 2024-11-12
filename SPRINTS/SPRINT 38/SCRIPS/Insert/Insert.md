@@ -1,4 +1,48 @@
 ```sql
+-- inserción de slug para cierre de permisos:
+-- David
+if not exists (
+select * from opciones where sSlug = 'REQUEST-CLOSING-LIST'
+)
+begin
+declare
+@nId_Opcion int,
+@nId_Usuario int,
+@nid_modulo int,
+@nidLA int,
+@nidADM int,
+@nidRH int
+
+select @nId_Usuario = nId_Usuario from Usuarios where sEmail = 'smart@materiagris.pe'
+
+select @nid_modulo = nid_modulo from modulos where sDescripcion = 'SOLICITUDES'
+select @nidLA = nId_Rol from Roles where sDescripcion = 'LÍDER ADMINISTRATIVO'
+select @nidADM = nId_Rol from Roles where sDescripcion = 'ADMINISTRACIÓN'
+select @nidRH = nId_Rol from Roles where sDescripcion = 'RRHH'
+
+begin try
+begin transaction
+insert into opciones (nFuncionalidad_Tipo, sDescripcion, sComentario, nEstado, nUsuario_Creador, dDatetime_Creador, sSlug, nId_Modulo)
+
+values (2, 'LISTADO DE CIERRES', 'Ver el listado de cierre de permisos', 1, @nId_Usuario, GETDATE(), 'REQUEST-CLOSING-LIST', @nid_modulo)
+set @nId_Opcion = SCOPE_IDENTITY()
+
+insert into Permisos_Opciones (nid_rol, nid_opcion, nEstado, nUsuario_Creador, dDatetime_Creador)
+values
+(@nidLA, @nId_Opcion, 1, @nId_Usuario, getDate()),
+(@nidADM, @nId_Opcion, 1, @nId_Usuario, getDate()),
+(@nidRH, @nId_Opcion, 1, @nId_Usuario, getDate())
+commit transaction
+end try
+
+begin catch
+rollback transaction
+end catch
+end
+go
+```
+
+```sql
 insert into Entidades_Transacciones (nEstado, nTipo_Entidad, nId_Entidad_Padre, sDescripcion, 
 dDatetime_Creacion,nUsuario_Creador,dDatetime_Update,nUsuario_Update)
 VALUES(1,2,1,'HORAS A FAVOR',
