@@ -44,5 +44,28 @@ VALUES
     ('Nuevo módulo de Comunicaciones', 'Crea boletines informativos de manera rápida usando nuestras plantillas pre-diseñadas. Programa su envío o mándalos al instante, ¡tú decides! Además, podrás guardarlos como borrador y continuar editándolos cuando lo necesites. *Disponible para el área administrativa.', '2024-10-07', '2024-10-07 21:32:00.687', 172, 1, 2365),
     ('Actualización del sistema', 'El sistema ha sido actualizado para mejorar su rendimiento. Los cambios ya están activos para una experiencia optimizada.', '2024-10-14', '2024-10-14 20:22:09.293', 172, 2, 2372);
 
+------------------INSERCION DE NUEVA VERSION-----------------------------------
+
+INSERT INTO Version (sVersion, sNombre_Version, nEstado, dFecha_Inicio, dFecha_Fin, dDatetime_Creador, nUsuario_Creador)
+VALUES 
+    ('3.13.0', 'FRONTEND_VERSION', 1, '2024-11-12', null, '2024-11-12', 172);
+    
+
+INSERT INTO 
+Files 
+	(nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete) 
+VALUES 
+	(3,'Versions/Imagenes/3-cierrepermiso-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null),
+	(3,'Versions/Imagenes/3-gestiontardanza-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null),
+	(3,'Versions/Imagenes/3-masivocolaborador-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+	
+
+INSERT INTO 
+Titulo_Version 
+	(sTitle, sDescription, dFecha_Inicio, dDatetime_Create, dDatetime_Update, nUsuario_Creador, nUsuario_Update, nId_v, nId_File)
+VALUES 
+	('Gestiona las tardanzas', 'Gestiona tardanzas y puntualidad con una vista organizada y un indicador dinámico para un seguimiento completo de la asistencia de cada colaborador.', GETDATE(), GETDATE(), null, 172, null, 3, 2401),
+	('Cierre de Permisos', 'Gestiona permisos y recuperación de horas de manera eficiente.', GETDATE(), GETDATE(), null, 172, null, 3, 2400),
+	('Creación Masiva de Colaboradores', 'Simplifica la incorporación de nuevos colaboradores, agiliza la incorporación masiva de nuevos colaboradores con la función de "Inserción Masiva".', GETDATE(), GETDATE(), null, 172, null, 3, 2402)
 
 ```
