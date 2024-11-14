@@ -46,26 +46,56 @@ VALUES
 
 ------------------INSERCION DE NUEVA VERSION-----------------------------------
 
-INSERT INTO Version (sVersion, sNombre_Version, nEstado, dFecha_Inicio, dFecha_Fin, dDatetime_Creador, nUsuario_Creador)
-VALUES 
-    ('3.13.0', 'FRONTEND_VERSION', 1, '2024-11-12', null, '2024-11-12', 172);
-    
 
-INSERT INTO 
-Files 
-	(nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete) 
-VALUES 
-	(3,'Versions/Imagenes/3-cierrepermiso-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null),
-	(3,'Versions/Imagenes/3-gestiontardanza-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null),
-	(3,'Versions/Imagenes/3-masivocolaborador-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+IF NOT EXISTS (
+	SELECT * FROM VERSION WHERE sVersion = '3.13.0'
+)
+BEGIN
+	BEGIN TRY
+		BEGIN TRANSACTION
+			INSERT INTO Version (sVersion, sNombre_Version, nEstado, dFecha_Inicio, dFecha_Fin, dDatetime_Creador, nUsuario_Creador)
+			VALUES 
+		    ('3.13.0', 'FRONTEND_VERSION', 1, '2024-11-12', null, '2024-11-12', 172);
+			DECLARE @nId_Version INT;
+		 	SET @nId_Version = SCOPE_IDENTITY();
+			IF @nId_Version IS NOT NULL
+				BEGIN	
+			DECLARE @ID_FILE1 INT, @ID_FILE2 INT, @ID_FILE3 INT
+			
+			INSERT INTO  Files 
+		    (nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete) 
+			VALUES 
+		    (@nId_Version,'Versions/Imagenes/3-cierrepermiso-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+		    set @ID_FILE1 = SCOPE_IDENTITY();
+			    
+			    
+			INSERT INTO FILES
+		    (nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+			VALUES
+            (@nId_Version,'Versions/Imagenes/3-gestiontardanza-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+            set @ID_FILE2 = SCOPE_IDENTITY();
+            
+			INSERT INTO FILES
+		    (nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
+			VALUES
+            (@nId_Version,'Versions/Imagenes/3-masivocolaborador-2024-14-11.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+            set @ID_FILE3 = SCOPE_IDENTITY();
+			    
+
+			INSERT INTO 
+			Titulo_Version 
+			    (sTitle, sDescription, dFecha_Inicio, dDatetime_Create, dDatetime_Update, nUsuario_Creador, nUsuario_Update, nId_v, nId_File)
+				VALUES 
+			    ('Gestiona las tardanzas', 'Gestiona tardanzas y puntualidad con una vista organizada y un indicador dinámico para un seguimiento completo de la asistencia de cada colaborador.', GETDATE(), GETDATE(), null, 172, null, @nId_Version, @ID_FILE1),
+			    ('Cierre de Permisos', 'Gestiona permisos y recuperación de horas de manera eficiente.', GETDATE(), GETDATE(), null, 172, null, @nId_Version, @ID_FILE2),
+			    ('Creación Masiva de Colaboradores', 'Simplifica la incorporación de nuevos colaboradores, agiliza la incorporación masiva de nuevos colaboradores con la función de "Inserción Masiva".', GETDATE(), GETDATE(), null, 172, null, @nId_Version, @ID_FILE3)
+			END
+		COMMIT TRANSACTION
+	END TRY
 	
-
-INSERT INTO 
-Titulo_Version 
-	(sTitle, sDescription, dFecha_Inicio, dDatetime_Create, dDatetime_Update, nUsuario_Creador, nUsuario_Update, nId_v, nId_File)
-VALUES 
-	('Gestiona las tardanzas', 'Gestiona tardanzas y puntualidad con una vista organizada y un indicador dinámico para un seguimiento completo de la asistencia de cada colaborador.', GETDATE(), GETDATE(), null, 172, null, 3, 2401),
-	('Cierre de Permisos', 'Gestiona permisos y recuperación de horas de manera eficiente.', GETDATE(), GETDATE(), null, 172, null, 3, 2400),
-	('Creación Masiva de Colaboradores', 'Simplifica la incorporación de nuevos colaboradores, agiliza la incorporación masiva de nuevos colaboradores con la función de "Inserción Masiva".', GETDATE(), GETDATE(), null, 172, null, 3, 2402)
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+	END CATCH
+END
 
 ```
