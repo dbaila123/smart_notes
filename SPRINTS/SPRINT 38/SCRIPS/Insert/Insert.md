@@ -1,16 +1,56 @@
 ```sql
+-- inserción de slug para cierre de permisos:
+-- David
+if not exists (
+select * from opciones where sSlug = 'REQUEST-CLOSING-LIST'
+)
+begin
+declare
+@nId_Opcion int,
+@nId_Usuario int,
+@nid_modulo int,
+@nidLA int,
+@nidADM int,
+@nidRH int
+
+select @nId_Usuario = nId_Usuario from Usuarios where sEmail = 'smart@materiagris.pe'
+
+select @nid_modulo = nid_modulo from modulos where sDescripcion = 'SOLICITUDES'
+select @nidLA = nId_Rol from Roles where sDescripcion = 'LÍDER ADMINISTRATIVO'
+select @nidADM = nId_Rol from Roles where sDescripcion = 'ADMINISTRACIÓN'
+select @nidRH = nId_Rol from Roles where sDescripcion = 'RRHH'
+
+begin try
+begin transaction
+insert into opciones (nFuncionalidad_Tipo, sDescripcion, sComentario, nEstado, nUsuario_Creador, dDatetime_Creador, sSlug, nId_Modulo)
+
+values (2, 'LISTADO DE CIERRES', 'Ver el listado de cierre de permisos', 1, @nId_Usuario, GETDATE(), 'REQUEST-CLOSING-LIST', @nid_modulo)
+set @nId_Opcion = SCOPE_IDENTITY()
+
+insert into Permisos_Opciones (nid_rol, nid_opcion, nEstado, nUsuario_Creador, dDatetime_Creador)
+values
+(@nidLA, @nId_Opcion, 1, @nId_Usuario, getDate()),
+(@nidADM, @nId_Opcion, 1, @nId_Usuario, getDate()),
+(@nidRH, @nId_Opcion, 1, @nId_Usuario, getDate())
+commit transaction
+end try
+
+begin catch
+rollback transaction
+end catch
+end
+go
+```
+
+```sql
 insert into Entidades_Transacciones (nEstado, nTipo_Entidad, nId_Entidad_Padre, sDescripcion, 
 dDatetime_Creacion,nUsuario_Creador,dDatetime_Update,nUsuario_Update)
 VALUES(1,2,1,'HORAS A FAVOR',
 '2024-10-24 15:30:33',172,NULL,NULL)
 
-
-
-  
 update Entidades_Transacciones  
 set sDescripcion =  'DESCUENTOS'  
 where sDescripcion =  'TARDANZAS A DESCUENTO'
-
 
 alter table Tipos_Solicitudes 
 add b_recuperable bit
@@ -19,15 +59,17 @@ INSERT INTO Configs (sTabla, sCodigo, sDescripcion, sComentario, sCodigo_Externo
 VALUES  
 ('VENCIMIENTO-SOLICITUDES', 30, 'TIEMPO DE VENCIMIENTO SOLICITUDES','TIEMPO PARA DESCUENTO DE LA SOLICITUD', 'T-V-S', 1, 172, 1, GETDATE())
 
+
 ALTER TABLE Transacciones_Saldo_Mins  
 DROP CONSTRAINT DF__Transacci__sObse__68DD7AB4;  
   
 ALTER TABLE Transacciones_Saldo_Mins  
 ALTER COLUMN sObservacion NVARCHAR(MAX);  
-  
+
+-------VERFICAR ALE 
 ALTER TABLE Transacciones_Saldo_Mins  
 ADD CONSTRAINT DF__Transacci__sObse__68DD7AB4 DEFAULT null FOR sObservacion;
-
+--------------
 
 update Tipos_Solicitudes 
 set b_recuperable = 1 
