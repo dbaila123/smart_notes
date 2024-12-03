@@ -11,133 +11,73 @@ AS
 
 BEGIN
 
-SET
+SET NOCOUNT ON;
 
-NOCOUNT ON;
-
-BEGIN
-
-TRY
+BEGIN TRY
 
 DECLARE @UltimaFecha DATE;
 
-  
-
 DECLARE @ExisteConfiguración BIT = 0;
-
-  
 
 DECLARE @MensajeError VARCHAR(500);
 
-  
-
 DECLARE @IdProximoCierre INT;
 
-  
-
 DECLARE @FechaActual DATE = CAST(GETDATE() AS DATE);
-
-  
 
 DECLARE @DiasVigentes INT;
 
   
 
-SELECT
+-- Obtener días vigentes de la fecha de cierre más cercana a la fecha actual
 
-@DiasVigentes = nCantidadDias
+SELECT TOP 1 @DiasVigentes = nCantidadDias
 
-FROM
+FROM ClosingDate
 
-ClosingDate
+WHERE nEstadoDate = 1
 
-WHERE
+AND dSinceEffectDay <= @FechaActual
 
-nEstadoDate = 1;
+ORDER BY dSinceEffectDay DESC;
 
   
+
+-- Validaciones
 
 IF @nCantidadDias <= 0
 
 BEGIN
 
-SET
+SET @MensajeError = 'La cantidad de días debe ser mayor a 0';
 
-@MensajeError = 'La cantidad de días debe ser mayor a 0';
-
-  
-
-THROW 51000,
-
-@MensajeError,
-
-1;
+THROW 51000, @MensajeError, 1;
 
 END
+
+  
 
 IF @dSinceEffectDay < @FechaActual
 
 BEGIN
 
-SET
+SET @MensajeError = 'La fecha de efecto no puede ser menor a la fecha actual';
 
-@MensajeError = 'La fecha de efecto no puede ser menor a la fecha actual';
-
-  
-
-THROW 51001,
-
-@MensajeError,
-
-1;
+THROW 51001, @MensajeError, 1;
 
 END
 
-IF @DiasVigentes IS NOT NULL
+  
 
-AND @DiasVigentes = @nCantidadDias
+IF @DiasVigentes IS NOT NULL AND @DiasVigentes = @nCantidadDias
 
 BEGIN
 
-SET
+SET @MensajeError = 'La cantidad de días debe ser diferente a la configuración vigente más cercana a la fecha actual';
 
-@MensajeError = 'La cantidad de días debe ser diferente a la configuración vigente';
-
-  
-
-THROW 51002,
-
-@MensajeError,
-
-1;
+THROW 51002, @MensajeError, 1;
 
 END
-
-SELECT
-
-TOP 1
-
-@UltimaFecha = dSinceEffectDay,
-
-@ExisteConfiguración = 1,
-
-@IdProximoCierre = nIdClosingDate
-
-FROM
-
-ClosingDate
-
-WHERE
-
-nEstadoDate = 2
-
--- Solo registros pendientes
-
-AND dSinceEffectDay >= @FechaActual
-
-ORDER BY
-
-dSinceEffectDay ASC;
 
   
 
@@ -145,13 +85,9 @@ BEGIN TRANSACTION;
 
   
 
-IF @dSinceEffectDay = @FechaActual
+-- Inhabilitar registros mayores o iguales a la fecha actual
 
-BEGIN
-
-UPDATE
-
-ClosingDate
+UPDATE ClosingDate
 
 SET
 
@@ -161,43 +97,15 @@ dDatetime_Update = GETDATE(),
 
 nUsuario_Update = @nUsuario_Update
 
-WHERE
+WHERE dSinceEffectDay >= @FechaActual
 
-nEstadoDate = 1;
+AND nEstadoDate = 1;
 
   
 
-IF @ExisteConfiguración = 1
+-- Insertar nuevo registro con estado 1
 
-BEGIN
-
-UPDATE
-
-ClosingDate
-
-SET
-
-nEstadoDate = 0,
-
-dDatetime_Update = GETDATE(),
-
-nUsuario_Update = @nUsuario_Update
-
-WHERE
-
-nIdClosingDate = @IdProximoCierre
-
-AND nEstadoDate = 2;
-
-END
-
--- Insertar nuevo registro como activo
-
-INSERT
-
-INTO
-
-ClosingDate (
+INSERT INTO ClosingDate (
 
 nCantidadDias,
 
@@ -219,85 +127,11 @@ VALUES (
 
 @nUsuario_Update,
 
-1,
-
--- Activo
+1, -- Activo
 
 GETDATE()
 
 );
-
-END
-
-ELSE
-
--- Si es una fecha futura
-
-BEGIN
-
--- Si existe una fecha pendiente, desactivarla
-
-IF @ExisteConfiguración = 1
-
-BEGIN
-
-UPDATE
-
-ClosingDate
-
-SET
-
-nEstadoDate = 0,
-
-dDatetime_Update = GETDATE(),
-
-nUsuario_Update = @nUsuario_Update
-
-WHERE
-
-nIdClosingDate = @IdProximoCierre
-
-AND nEstadoDate = 2;
-
-END
-
--- Insertar nuevo registro como pendiente
-
-INSERT
-
-INTO
-
-ClosingDate (
-
-nCantidadDias,
-
-dSinceEffectDay,
-
-nUsuario_Creador,
-
-nEstadoDate,
-
-dDatetime_Creador
-
-)
-
-VALUES (
-
-@nCantidadDias,
-
-@dSinceEffectDay,
-
-@nUsuario_Update,
-
-2,
-
--- Pendiente
-
-GETDATE()
-
-);
-
-END
 
   
 
@@ -317,13 +151,9 @@ SCOPE_IDENTITY() as nIdClosingDate,
 
 @dSinceEffectDay as dSinceEffectDay,
 
-CASE
+1 as nEstadoDate;
 
-WHEN @dSinceEffectDay = @FechaActual THEN 1
-
-ELSE 2
-
-END as nEstadoDate;
+  
 
 END TRY
 

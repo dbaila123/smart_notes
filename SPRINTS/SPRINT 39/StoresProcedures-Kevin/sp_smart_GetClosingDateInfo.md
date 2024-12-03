@@ -5,23 +5,19 @@ AS
 
 BEGIN
 
-SET
+SET NOCOUNT ON;
 
-NOCOUNT ON;
+BEGIN TRY
 
-BEGIN
+  
 
-TRY
+DECLARE @dFecha_Actual DATE = CONVERT(DATE, GETDATE());
 
--- Declarar variable para la fecha actual
+  
 
-DECLARE @dFecha_Actual DATE = CONVERT(DATE,
+WITH RegistrosClosing AS (
 
-GETDATE());
-
--- Obtener y devolver la fecha vigente y la próxima
-
-SELECT
+SELECT TOP 1
 
 'Vigente' as sTipoFecha,
 
@@ -33,23 +29,23 @@ dSinceEffectDay,
 
 nEstadoDate
 
-FROM
+FROM ClosingDate
 
-ClosingDate
-
-WHERE
-
-dSinceEffectDay <= @dFecha_Actual
+WHERE dSinceEffectDay <= @dFecha_Actual
 
 AND nEstadoDate = 1
+
+ORDER BY dSinceEffectDay DESC -- Obtiene el más cercano a la fecha actual
+
+  
 
 UNION ALL
 
   
 
-SELECT
+-- Obtener el próximo registro
 
-TOP 1
+SELECT TOP 1
 
 'Próxima' as sTipoFecha,
 
@@ -61,19 +57,33 @@ dSinceEffectDay,
 
 nEstadoDate
 
-FROM
+FROM ClosingDate
 
-ClosingDate
+WHERE dSinceEffectDay > @dFecha_Actual
 
-WHERE
+AND nEstadoDate = 1
 
-dSinceEffectDay > @dFecha_Actual
+ORDER BY dSinceEffectDay ASC
 
-AND nEstadoDate = 2
+)
 
-ORDER BY
+SELECT
 
-dSinceEffectDay;
+sTipoFecha,
+
+nIdClosingDate,
+
+nCantidadDias,
+
+dSinceEffectDay,
+
+nEstadoDate
+
+FROM RegistrosClosing
+
+ORDER BY dSinceEffectDay;
+
+  
 
 END TRY
 
@@ -85,7 +95,7 @@ ERROR_MESSAGE() as Mensaje,
 
 ERROR_LINE() as Linea,
 
-ERROR_NUMBER() as Numero
+ERROR_NUMBER() as Numero;
 
 END CATCH
 
