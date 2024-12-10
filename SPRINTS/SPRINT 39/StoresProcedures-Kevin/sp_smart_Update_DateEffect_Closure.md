@@ -27,6 +27,32 @@ DECLARE @FechaActual DATE = CAST(GETDATE() AS DATE);
 
 DECLARE @DiasVigentes INT;
 
+-- Validar si existe una fecha de cierre con los mismos valores
+
+DECLARE @ExisteMismaConfiguracion BIT = 0;
+
+SELECT @ExisteMismaConfiguracion = 1
+
+FROM ClosingDate
+
+WHERE dSinceEffectDay = @dSinceEffectDay
+
+AND nCantidadDias = @nCantidadDias
+
+AND nEstadoDate = 1;
+
+  
+
+IF @ExisteMismaConfiguracion = 1
+
+BEGIN
+
+SET @MensajeError = 'Ya existe una fecha de cierre con la misma fecha y cantidad de días';
+
+THROW 51003, @MensajeError, 1;
+
+END
+
   
 
 -- Obtener días vigentes de la fecha de cierre más cercana a la fecha actual
@@ -81,6 +107,36 @@ END
 
   
 
+-- Validar si existe una fecha de cierre próxima con los mismos valores
+
+DECLARE @ExisteProximaConfiguracion BIT = 0;
+
+SELECT @ExisteProximaConfiguracion = 1
+
+FROM ClosingDate
+
+WHERE dSinceEffectDay > @FechaActual
+
+AND nCantidadDias = @nCantidadDias
+
+AND nEstadoDate = 1
+
+AND dSinceEffectDay = @dSinceEffectDay;
+
+  
+
+IF @ExisteProximaConfiguracion = 1
+
+BEGIN
+
+SET @MensajeError = 'Ya existe una fecha de cierre próxima con la misma cantidad de días';
+
+THROW 51004, @MensajeError, 1;
+
+END
+
+  
+
 BEGIN TRANSACTION;
 
   
@@ -97,7 +153,7 @@ dDatetime_Update = GETDATE(),
 
 nUsuario_Update = @nUsuario_Update
 
-WHERE dSinceEffectDay >= @FechaActual
+WHERE dSinceEffectDay > @FechaActual
 
 AND nEstadoDate = 1;
 
