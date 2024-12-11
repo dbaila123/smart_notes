@@ -27,6 +27,36 @@ DECLARE @FechaActual DATE = CAST(GETDATE() AS DATE);
 
 DECLARE @DiasVigentes INT;
 
+-- Verificar si existe un registro con la fecha actual
+
+DECLARE @ExisteRegistroFechaActual BIT = 0;
+
+SELECT @ExisteRegistroFechaActual = 1
+
+FROM ClosingDate
+
+WHERE dSinceEffectDay = @FechaActual
+
+AND nEstadoDate = 1;
+
+  
+
+-- Si existe un registro con la fecha actual, la nueva fecha debe ser mayor
+
+IF @ExisteRegistroFechaActual = 1 AND @dSinceEffectDay <= @FechaActual
+
+BEGIN
+
+SET @MensajeError = 'Ya existe un registro para la fecha actual. La nueva fecha de efecto debe ser mayor a ' +
+
+CONVERT(VARCHAR(10), @FechaActual, 103);
+
+THROW 51005, @MensajeError, 1;
+
+END
+
+  
+
 -- Validar si existe una fecha de cierre con los mismos valores
 
 DECLARE @ExisteMismaConfiguracion BIT = 0;
