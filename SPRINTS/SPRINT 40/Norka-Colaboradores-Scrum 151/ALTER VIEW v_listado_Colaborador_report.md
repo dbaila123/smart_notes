@@ -7,7 +7,7 @@ SELECT
 
 c.nId_Colaborador AS nId,
 
-p.sPersona_Nombre AS sNombre_Colaborador,
+UPPER(p.sPersona_Nombre) AS sNombre_Colaborador,
 
 CASE
 
