@@ -9,13 +9,7 @@ c.nId_Colaborador AS nId,
 
 UPPER(p.sPersona_Nombre) AS sNombre_Colaborador,
 
-CASE
-
-WHEN con.sDescripcion = 'PASAPORTE' THEN 'PAS'
-
-ELSE con.sDescripcion
-
-END as sTipo_Documento,
+con.sDescripcion as sTipo_Documento,
 
 d.sNumero_Documento,
 

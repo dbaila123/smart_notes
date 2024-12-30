@@ -11,21 +11,7 @@ p.sPersona_Nombre AS sNombre_Colaborador,
 
 d.nTipo_Documento,
 
-CONCAT(
-
-CASE
-
-WHEN c_doc.sDescripcion = 'PASAPORTE' THEN 'PAS'
-
-ELSE c_doc.sDescripcion
-
-END,
-
-' ',
-
-d.sNumero_Documento
-
-) AS sDocumento_Identidad,
+CONCAT(c_doc.sDescripcion, ' ', d.sNumero_Documento) AS sDocumento_Identidad,
 
 CONVERT(DATETIME2(7), c.dDatetime_Creador) AS dFec_Registro,
 
