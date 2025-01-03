@@ -1,0 +1,54 @@
+```SQL
+CREATE FUNCTION fg_get_supervisors_director_by_collaborators
+
+(@nIdColaborador INT,
+
+@bOnlyPrincipal BIT)
+
+RETURNS VARCHAR(200)
+
+AS
+
+BEGIN
+
+DECLARE @sNombre_Director VARCHAR(200)
+
+DECLARE @sNombre_Lider VARCHAR(200)
+
+  
+
+SELECT TOP 1 @sNombre_Director = CONCAT(percol.sPrimer_Nombre, ' ', percol.sApe_paterno)
+
+FROM fb_get_supervisors_by_collaborators(@nIdColaborador, NULL) supcol
+
+LEFT JOIN Colaboradores coladirec ON supcol.nId_Supervisor = coladirec.nId_Colaborador
+
+LEFT JOIN Personas percol ON percol.nId_persona = coladirec.nId_Persona
+
+ORDER BY nOrden DESC
+
+  
+
+SELECT TOP 1 @sNombre_Lider = CONCAT(percol.sPrimer_Nombre, ' ', percol.sApe_paterno)
+
+FROM fb_get_supervisors_by_collaborators(@nIdColaborador, NULL) supcol
+
+LEFT JOIN Colaboradores colalider ON supcol.nId_Supervisor = colalider.nId_Colaborador
+
+LEFT JOIN Personas percol ON percol.nId_persona = colalider.nId_Persona
+
+ORDER BY nOrden ASC
+
+  
+
+RETURN CASE @bOnlyPrincipal
+
+WHEN 1 THEN @sNombre_Director
+
+ELSE @sNombre_Lider
+
+END
+
+END
+
+```

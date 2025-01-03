@@ -13,6 +13,10 @@ d.nTipo_Documento,
 
 CONCAT(c_doc.sDescripcion, ' ', d.sNumero_Documento) AS sDocumento_Identidad,
 
+c_doc.sDescripcion as sTipo_Documento,
+
+d.sNumero_Documento,
+
 CONVERT(DATETIME2(7), c.dDatetime_Creador) AS dFec_Registro,
 
 CONVERT(DATETIME2(7), c.dFec_Ingreso) AS dFec_Ingreso,

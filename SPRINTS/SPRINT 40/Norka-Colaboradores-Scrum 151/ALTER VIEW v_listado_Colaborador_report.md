@@ -41,13 +41,9 @@ CONVERT(DATETIME2(7), c.dDatetime_Delete) AS dFecha_Cese,
 
 c2.sDescripcion AS sNombre_Estado,
 
-Sup_li.nId_Supervisor AS nLider,
+dbo.fg_get_supervisors_director_by_collaborators(c.nId_Colaborador, 1) AS sNombre_Director,
 
-Sup_li.sNombre_Supervisor AS sNombre_Lider,
-
-Sup_di.nId_Supervisor AS nDirector,
-
-Sup_di.sNombre_Supervisor AS sNombre_Director,
+dbo.fg_get_supervisors_director_by_collaborators(c.nId_Colaborador, 0) AS sNombre_Lider,
 
 cl.dFecha_Reingreso,
 
@@ -74,78 +70,6 @@ LEFT JOIN Cargos c6 ON CC.nId_Cargo = C6.nId_Cargo
 LEFT JOIN Empresas_Usuarias eu ON eu.nId_Empresa = c.nId_Empresa
 
 LEFT JOIN Personas p2 ON p2.nId_Persona = eu.nId_Persona
-
-LEFT JOIN (
-
-SELECT
-
-nId_Colaborador,
-
-nId_Supervisor,
-
-sNombre_Supervisor,
-
-nOrden,
-
-ROW_NUMBER() OVER(PARTITION BY nId_Colaborador ORDER BY nOrden ASC) AS rn
-
-FROM (
-
-SELECT
-
-supcol.nId_Colaborador,
-
-CONCAT(percol.sPrimer_Nombre, ' ', percol.sApe_paterno) AS sNombre_Supervisor,
-
-supcol.nId_Supervisor,
-
-supcol.nOrden
-
-FROM fb_get_supervisors_by_collaborators(NULL, NULL) supcol
-
-JOIN Colaboradores supcolinfo ON supcol.nId_Supervisor = supcolinfo.nId_Colaborador
-
-JOIN Personas percol ON percol.nId_persona = supcolinfo.nId_Persona
-
-) AS SupervisorData
-
-) Sup_li ON Sup_li.nId_Colaborador = c.nId_Colaborador AND Sup_li.rn = 1
-
-LEFT JOIN (
-
-SELECT
-
-nId_Colaborador,
-
-nId_Supervisor,
-
-sNombre_Supervisor,
-
-nOrden,
-
-ROW_NUMBER() OVER(PARTITION BY nId_Colaborador ORDER BY nOrden DESC) AS rn
-
-FROM (
-
-SELECT
-
-supcol.nId_Colaborador,
-
-CONCAT(percol.sPrimer_Nombre, ' ', percol.sApe_paterno) AS sNombre_Supervisor,
-
-supcol.nId_Supervisor,
-
-supcol.nOrden
-
-FROM fb_get_supervisors_by_collaborators(NULL, NULL) supcol
-
-JOIN Colaboradores supcolinfo ON supcol.nId_Supervisor = supcolinfo.nId_Colaborador
-
-JOIN Personas percol ON percol.nId_persona = supcolinfo.nId_Persona
-
-) AS SupervisorData
-
-) Sup_di ON Sup_di.nId_Colaborador = c.nId_Colaborador AND Sup_di.rn = 1
 
 LEFT JOIN Configs c2 ON c2.sCodigo = CONVERT(nvarchar(max), c.nEstado_Colaborador) AND c2.sTabla = 'ESTADO_COLABORADOR'
 
