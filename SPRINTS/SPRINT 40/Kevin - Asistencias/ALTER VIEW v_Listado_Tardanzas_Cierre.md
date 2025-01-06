@@ -9,13 +9,7 @@ tsm.nId_Colaborador,
 
 p.sPersona_Nombre AS sNombre_Colaborador,
 
-CONCAT(CASE
-
-WHEN c_doc.sDescripcion = 'PASAPORTE' THEN 'PAS'
-
-ELSE c_doc.sDescripcion
-
-END, ' ', d.sNumero_Documento) AS sDocumento_Identidad,
+CONCAT(c_doc.sDescripcion,' ', d.sNumero_Documento) AS sDocumento_Identidad,
 
 c.sUrl_Foto AS sUrl_Image,
 

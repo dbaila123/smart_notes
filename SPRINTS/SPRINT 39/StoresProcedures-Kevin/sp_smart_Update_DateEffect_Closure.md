@@ -59,29 +59,29 @@ END
 
 -- Validar si existe una fecha de cierre con los mismos valores
 
-DECLARE @ExisteMismaConfiguracion BIT = 0;
+--DECLARE @ExisteMismaConfiguracion BIT = 0;
 
-SELECT @ExisteMismaConfiguracion = 1
+--SELECT @ExisteMismaConfiguracion = 1
 
-FROM ClosingDate
+--FROM ClosingDate
 
-WHERE dSinceEffectDay = @dSinceEffectDay
+--WHERE dSinceEffectDay = @dSinceEffectDay
 
-AND nCantidadDias = @nCantidadDias
+--AND nCantidadDias = @nCantidadDias
 
-AND nEstadoDate = 1;
+--AND nEstadoDate = 1;
 
   
 
-IF @ExisteMismaConfiguracion = 1
+--IF @ExisteMismaConfiguracion = 1
 
-BEGIN
+--BEGIN
 
-SET @MensajeError = 'Ya existe una fecha de cierre con la misma fecha y cantidad de días';
+-- SET @MensajeError = 'Ya existe una fecha de cierre con la misma fecha y cantidad de días';
 
-THROW 51003, @MensajeError, 1;
+-- THROW 51003, @MensajeError, 1;
 
-END
+--END
 
   
 
@@ -105,7 +105,7 @@ IF @nCantidadDias <= 0
 
 BEGIN
 
-SET @MensajeError = 'La cantidad de días debe ser mayor a 0';
+SET @MensajeError = 'La cantidad de días debe ser mayor a 0.';
 
 THROW 51000, @MensajeError, 1;
 
@@ -117,7 +117,7 @@ IF @dSinceEffectDay < @FechaActual
 
 BEGIN
 
-SET @MensajeError = 'La fecha de efecto no puede ser menor a la fecha actual';
+SET @MensajeError = 'La fecha de efecto no puede ser menor a la fecha actual.';
 
 THROW 51001, @MensajeError, 1;
 
@@ -129,7 +129,7 @@ IF @DiasVigentes IS NOT NULL AND @DiasVigentes = @nCantidadDias
 
 BEGIN
 
-SET @MensajeError = 'La cantidad de días debe ser diferente a la configuración vigente más cercana a la fecha actual';
+SET @MensajeError = 'La cantidad de días debe ser diferente a la configuración vigente más cercana a la fecha actual.';
 
 THROW 51002, @MensajeError, 1;
 
@@ -159,7 +159,7 @@ IF @ExisteProximaConfiguracion = 1
 
 BEGIN
 
-SET @MensajeError = 'Ya existe una fecha de cierre próxima con la misma cantidad de días';
+SET @MensajeError = 'Ya existe una fecha de cierre próxima con la misma cantidad de días.';
 
 THROW 51004, @MensajeError, 1;
 
@@ -227,7 +227,7 @@ COMMIT TRANSACTION;
 
 SELECT
 
-'Configuración actualizada exitosamente' as Mensaje,
+'Configuración actualizada exitosamente' as sMensaje,
 
 1 as Success,
 
@@ -253,7 +253,7 @@ ROLLBACK TRANSACTION;
 
 SELECT
 
-ERROR_MESSAGE() as Mensaje,
+ERROR_MESSAGE() as sMensaje,
 
 0 as Success,
 

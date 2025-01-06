@@ -1,0 +1,51 @@
+```SQL
+CREATE TABLE tenant0001.dbo.ClosingDate (
+
+nIdClosingDate int IDENTITY(1,1) NOT NULL,
+
+nCantidadDias int NOT NULL,
+
+dSinceEffectDay date NOT NULL,
+
+nUsuario_Creador int NOT NULL,
+
+nEstadoDate int NOT NULL,
+
+dDatetime_Creador datetime NOT NULL,
+
+nUsuario_Update int NULL,
+
+dDatetime_Update datetime NULL,
+
+nUsuario_Delete int NULL,
+
+dDatetime_Delete datetime NULL
+
+);
+
+
+INSERT INTO ClosingDate (
+
+nCantidadDias,
+
+dSinceEffectDay,
+
+nUsuario_Creador,
+
+nEstadoDate,
+
+dDatetime_Creador,
+
+nUsuario_Update,
+
+dDatetime_Update,
+
+nUsuario_Delete,
+
+dDatetime_Delete
+
+)
+
+VALUES
+
+(30, '2021-11-01', 666, 1, '2021-11-01 12:00:00', NULL, NULL, NULL, NULL)

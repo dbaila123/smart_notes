@@ -25,6 +25,10 @@ p.sPersona_Nombre AS sNombre_Colaborador,
 
 CONCAT(ISNULL(c_doc.sDescripcion,''), ' ', ISNULL(d.sNumero_Documento,'')) AS sDocumento_Identidad,
 
+c_doc.sDescripcion as sTipo_Documento,
+
+d.sNumero_Documento,
+
 c.sUrl_Foto,
 
 t.sTelefono AS sContacto_Telefonico,
@@ -123,23 +127,33 @@ ELSE null
 
 END nEstado_Solicitud_Marca_Salida,
 
+  
+
 -- obtener coordenadas de marcaciones
 
 mEntrada.nLatitude EntradaLatitude,
 
 mEntrada.nLongitude EntradaLongitude,
 
+  
+
 mSalida.nLatitude SalidaLatitude,
 
 mSalida.nLongitude SalidadLongitude,
+
+  
 
 mSalida_Almuerzo.nLatitude Salida_AlmuerzoLatitude,
 
 mSalida_Almuerzo.nLongitude Salida_AlmuerzoLongitude,
 
+  
+
 mIngreso_Almuerzo.nLatitude Ingreso_AlmuerzoLatitude,
 
 mIngreso_Almuerzo.nLongitude Ingreso_AlmuerzoLongitude
+
+  
 
 FROM Asistencias a
 

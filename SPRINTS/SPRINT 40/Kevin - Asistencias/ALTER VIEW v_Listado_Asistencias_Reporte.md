@@ -1,4 +1,8 @@
 ```SQL
+-- dbo.v_Listado_Asistencias_Reporte source
+
+  
+
 CREATE VIEW [dbo].[v_Listado_Asistencias_Reporte] AS
 
 SELECT
@@ -35,13 +39,7 @@ u.nId_Usuario AS nId_User,
 
 a.dTiempo_Laboradas AS nTotal_Horas_Trabajadas,
 
-CASE
-
-WHEN c_doc.sDescripcion = 'PASAPORTE' THEN 'PAS'
-
-ELSE c_doc.sDescripcion
-
-END as sTipo_Documento,
+c_doc.sDescripcion as sTipo_Documento,
 
 d.sNumero_Documento,
 
@@ -85,10 +83,6 @@ END bPermiso,
 
 mEntrada.Hora_Ingreso,
 
-  
-
-  
-
 -- mEntrada.sJustificacion sJustificacion,
 
 cast(concat_ws(' ',
@@ -97,31 +91,19 @@ iif(mEntrada.sJustificacion is not null, mEntrada.sComentario + ': ', ''),
 
 mEntrada.sJustificacion + '- ',
 
-  
-
 iif(mSalida_Almuerzo.sJustificacion is not null, mSalida_Almuerzo.sComentario + ': ', ''),
 
 mSalida_Almuerzo.sJustificacion + '- ',
 
-  
-
 iif(mIngreso_Almuerzo.sJustificacion is not null, mIngreso_Almuerzo.sComentario + ': ', ''),
 
 mIngreso_Almuerzo.sJustificacion + '- ',
-
-  
 
 iif(mSalida.sJustificacion is not null, mSalida.sComentario + ': ', ''),
 
 mSalida.sJustificacion + '- '
 
 ) as varchar(max)) sJustificacion,
-
-  
-
-  
-
-  
 
 mSalida.Hora_Salida,
 
