@@ -1,5 +1,5 @@
 ```SQL
-CREATE TABLE tenant0001.dbo.ClosingDate (
+CREATE TABLE ClosingDate (
 
 nIdClosingDate int IDENTITY(1,1) NOT NULL,
 
