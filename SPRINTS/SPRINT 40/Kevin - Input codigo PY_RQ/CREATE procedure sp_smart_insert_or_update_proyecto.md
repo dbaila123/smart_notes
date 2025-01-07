@@ -1,39 +1,39 @@
 ```SQL
-CREATE procedure [dbo].[sp_smart_insert_or_update_proyecto]
+CREATE PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
 
 (
 
-@nId_Usuario int,
+@nId_Usuario INT,
 
-@nId_Proyecto int = 0,
+@nId_Proyecto INT = 0,
 
-@sNombre_Sin_Prefijo varchar(max),
+@sNombre_Sin_Prefijo VARCHAR(MAX),
 
-@sNombre varchar(max),
+@sNombre VARCHAR(MAX),
 
-@sCodigo varchar(max),
+@sCodigo VARCHAR(MAX),
 
-@sPrefijo varchar(50),
+@sPrefijo VARCHAR(50),
 
-@sPrefijo_Codigo varchar(10),
+@sPrefijo_Codigo VARCHAR(10),
 
-@sId_Tipo_Servicio varchar(max),
+@sId_Tipo_Servicio VARCHAR(MAX),
 
-@nId_Lider int,
+@nId_Lider INT,
 
-@nId_Director int,
+@nId_Director INT,
 
-@nId_Coordinador int,
+@nId_Coordinador INT,
 
-@sDescripcion varchar(max),
+@sDescripcion VARCHAR(MAX),
 
-@dFecha_Inicio date,
+@dFecha_Inicio DATE,
 
-@dFecha_Fin date,
+@dFecha_Fin DATE,
 
-@nTipo_Acceso int = 0,
+@nTipo_Acceso INT = 0,
 
-@action int
+@action INT
 
 )
 
@@ -41,83 +41,77 @@ AS
 
 BEGIN TRY
 
-  
+DECLARE
 
-  
+@code VARCHAR(MAX),
 
-declare @code varchar(max)
+@message VARCHAR(MAX), --MENSAJE DE ERROR
 
-declare @message varchar(max) --MENSAJE DE ERROR
+@count INT,
 
-declare @count int
+@currentProject VARCHAR(MAX),
 
-declare @currentProject varchar(max)
+@IdProyecto INT,
 
-  
+@GeneratedCodigo VARCHAR(MAX);
 
-declare @IdProyecto as int
+-- Acción de inserción
 
-declare @GeneratedCodigo varchar(max)
+IF @action = 1
 
-  
+BEGIN
 
-if @action = 1
+SET @code = '200';
 
-begin
+SET @message = 'Proyecto registrado correctamente.';
 
-set @code = '200'
+SET @count = (
 
-set @message = 'Proyecto registrado correctamente.'
+SELECT COUNT(*)
 
-  
+FROM Proyectos p
 
-set @count = (select
+JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
-COUNT(*)
+JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-from Proyectos p
+WHERE p.sNombre = @sNombre
 
-join Configs c
+AND cp.nId_Coordinador = @nId_Coordinador
 
-on c.sCodigo = p.sId_Tipo_Servicio
+AND c.nEstado = 1
 
-join Coordinadores_Proyectos cp
+AND c.sTabla = 'TIPO_SERVICIO'
 
-on cp.nId_Proyecto = p.nId_Proyecto
+);
 
-where p.sNombre = @sNombre
+IF @count = 0
 
-and cp.nId_Coordinador = @nId_Coordinador
+BEGIN
 
-and c.nEstado = 1
+-- Generación del código del proyecto
 
-and c.sTabla = 'TIPO_SERVICIO')
+IF @sCodigo IS NULL
 
-  
+BEGIN
 
-if @count = 0
+SET @GeneratedCodigo = (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos);
 
-begin
+--SET @GeneratedCodigo = CONCAT('PRY ', (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos));
 
-if @sCodigo IS NULL
+END
 
-begin
+ELSE
 
--- Generamos el código como 'PROY-' seguido del ID del proyecto
+BEGIN
 
-set @GeneratedCodigo = CONCAT('PRY-', (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos))
+SET @GeneratedCodigo = @sCodigo;
 
-end
+END
 
-else
+-- Insertar proyecto
 
-begin
-
-set @GeneratedCodigo = @sCodigo
-
-end
-
-insert into Proyectos
+INSERT INTO Proyectos
 
 (
 
@@ -153,7 +147,7 @@ nTipo_Acceso
 
 )
 
-values
+VALUES
 
 (
 
@@ -173,9 +167,9 @@ values
 
 @nId_Director,
 
-1,
+1, -- estado activo
 
-1,
+1, -- estado activo
 
 @dFecha_Inicio,
 
@@ -183,19 +177,17 @@ values
 
 @nId_Usuario,
 
-DATEADD(hour,-5,getdate()),
+DATEADD(HOUR, -5, GETDATE()),
 
 @nTipo_Acceso
 
-)
+);
 
-  
+SET @IdProyecto = (SELECT SCOPE_IDENTITY());
 
-set @IdProyecto = (select SCOPE_IDENTITY())
+-- Insertar en Coordinadores_Proyectos
 
-  
-
-insert into Coordinadores_Proyectos
+INSERT INTO Coordinadores_Proyectos
 
 (
 
@@ -213,7 +205,7 @@ dDatetime_Creador
 
 )
 
-values
+VALUES
 
 (
 
@@ -221,179 +213,117 @@ values
 
 @IdProyecto,
 
-0,
+0, -- No principal
 
-1,
+1, -- Estado activo
 
 @nId_Usuario,
 
-DATEADD(hour,-5,getdate())
+DATEADD(HOUR, -5, GETDATE())
 
-)
+);
 
-  
+SELECT @code AS 'Code', @message AS 'Message', @IdProyecto AS 'IdProyecto';
 
-select @code as 'Code', @message as 'Message', @IdProyecto 'IdProyecto'
+END
 
-  
+ELSE
 
-end
+BEGIN
 
-  
+SET @code = '400';
 
-else
+SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
 
-begin
+SELECT @code AS 'Code', @message AS 'Message', @IdProyecto AS 'IdProyecto';
 
-set @code = '400'
+END
 
-set @message = 'El '+@sNombre+' ya tiene un coordinador con el mismo nombre.'
+END
 
-  
+-- Acción de actualización
 
-select @code as 'Code', @message as 'Message', @IdProyecto 'IdProyecto'
+IF @action = 2
 
-end
+BEGIN
 
-end
+SET @code = '200';
 
-  
+SET @message = 'Proyecto actualizado correctamente.';
 
-if @action = 2
+SET @currentProject = (
 
-begin
+SELECT p.sNombre
 
-set @code = '200'
+FROM Proyectos p
 
-set @message = 'Proyecto actualizado correctamente.'
+JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
-  
+JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-set @currentProject = (select
+WHERE p.sNombre = @sNombre
 
-p.sNombre
+AND cp.nId_Coordinador = @nId_Coordinador
 
-from Proyectos p
+AND c.nEstado = 1
 
-join Configs c
+AND c.sTabla = 'TIPO_SERVICIO'
 
-on c.sCodigo = p.sId_Tipo_Servicio
+);
 
-join Coordinadores_Proyectos cp
+DECLARE @nId_Proyecto_out INT;
 
-on cp.nId_Proyecto = p.nId_Proyecto
+SET @nId_Proyecto_out = (
 
-where p.sNombre = @sNombre
+SELECT p.nId_Proyecto
 
-and cp.nId_Coordinador = @nId_Coordinador
+FROM Proyectos p
 
-and c.nEstado = 1
+JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
-and c.sTabla = 'TIPO_SERVICIO')
+JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-  
+WHERE p.sNombre = @sNombre
 
-declare @nId_Proyecto_out int
+AND cp.nId_Coordinador = @nId_Coordinador
 
-  
+AND c.nEstado = 1
 
-set @nId_Proyecto_out = (select
+AND c.sTabla = 'TIPO_SERVICIO'
 
-p.nId_Proyecto
+);
 
-from Proyectos p
+IF @currentProject = @sNombre AND @nId_Proyecto != @nId_Proyecto_out
 
-join Configs c
+BEGIN
 
-on c.sCodigo = p.sId_Tipo_Servicio
+SET @code = '400';
 
-join Coordinadores_Proyectos cp
+SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
 
-on cp.nId_Proyecto = p.nId_Proyecto
+SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
 
-where p.sNombre = @sNombre
+END
 
-and cp.nId_Coordinador = @nId_Coordinador
+ELSE
 
-and c.nEstado = 1
+DECLARE @CodigoP VARCHAR(MAX) = NULL
 
-and c.sTabla = 'TIPO_SERVICIO')
+set @CodigoP = iif(@sCodigo IS NULL, cast(@nId_Proyecto as varchar), @sCodigo)
 
-  
+-- Actualización de proyecto
 
-if @currentProject = @sNombre and @nId_Proyecto != @nId_Proyecto_out
+UPDATE Proyectos
 
-begin
+SET
 
-set @code = '400'
-
-set @message = 'El '+@sNombre+' ya tiene un coordinador con el mismo nombre.'
-
-/*
-
-update Proyectos
-
-set sDescripcion = @sDescripcion,
-
-sId_Tipo_Servicio = @sId_Tipo_Servicio,
-
-nId_Lider = @nId_Lider,
-
-nId_Director = @nId_Director,
-
-nUsuario_Update = @nId_Usuario,
-
-dDatetime_Update = DATEADD(hour,-5,getdate())
-
-where nId_Proyecto = @nId_Proyecto
-
-print @code*/
-
-select @code as 'Code', @message as 'Message', @nId_Proyecto 'IdProyecto'
-
-end
-
-else
-
-begin
-
-/*
-
-set @count = (select
-
-COUNT(*)
-
-from Proyectos p
-
-join Configs c
-
-on c.sCodigo = p.sId_Tipo_Servicio
-
-join Coordinadores_Proyectos cp
-
-on cp.nId_Proyecto = p.nId_Proyecto
-
-where p.sNombre = @sNombre_Sin_Prefijo
-
-and cp.nId_Coordinador = @nId_Coordinador
-
-and c.nEstado = 1
-
-and c.sTabla = 'TIPO_SERVICIO')
-
-  
-
-if @count = 0
-
-begin */
-
-update Proyectos
-
-set sNombre = @sNombre,
+sNombre = @sNombre,
 
 sNombre_Proyecto_Sin_Prefijo = @sNombre_Sin_Prefijo,
 
 sPrefijo = @sPrefijo_Codigo,
+
+sCodigo = @CodigoP,
 
 sDescripcion = @sDescripcion,
 
@@ -411,55 +341,32 @@ nUsuario_Update = @nId_Usuario,
 
 nTipo_Acceso = @nTipo_Acceso,
 
-dDatetime_Update = DATEADD(hour,-5,getdate())
+dDatetime_Update = DATEADD(HOUR, -5, GETDATE())
 
-where nId_Proyecto = @nId_Proyecto
+WHERE nId_Proyecto = @nId_Proyecto;
 
-  
+-- Actualización de Coordinadores_Proyectos
 
-update Coordinadores_Proyectos
+UPDATE Coordinadores_Proyectos
 
-set nId_Coordinador = @nId_Coordinador,
+SET
 
-nId_Proyecto = @nId_Proyecto,
+nId_Coordinador = @nId_Coordinador,
 
 nUsuario_Update = @nId_Usuario,
 
-dDatetime_Update = DATEADD(hour,-5,getdate())
+dDatetime_Update = DATEADD(HOUR, -5, GETDATE())
 
-where nId_Proyecto = @nId_Proyecto
+WHERE nId_Proyecto = @nId_Proyecto;
 
-  
+SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
 
-select @code as 'Code', @message as 'Message', @nId_Proyecto 'IdProyecto'
-
-/*end
-
-else
-
-begin
-
-set @code = '400'
-
-set @message = 'El proyecto '+@sNombre_Sin_Prefijo+' ya tiene un coordinador con el mismo nombre....'
-
-  
-
-select @code as 'Code', @message as 'Message'
-
-end*/
-
-end
-
-end
-
-  
+END
 
 END TRY
 
 BEGIN CATCH
 
-SELECT ERROR_SEVERITY() AS 'Code',ERROR_MESSAGE() AS 'Message', @nId_Proyecto AS 'IdProyecto'
+SELECT ERROR_SEVERITY() AS 'Code', ERROR_MESSAGE() AS 'Message', @nId_Proyecto AS 'IdProyecto';
 
 END CATCH
-```

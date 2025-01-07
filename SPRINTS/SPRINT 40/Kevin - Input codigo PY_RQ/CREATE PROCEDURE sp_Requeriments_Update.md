@@ -21,7 +21,11 @@ CREATE PROCEDURE sp_Requeriments_Update
 
 @dDatetime_Update datetime,
 
-@sCodigo nvarchar(MAX) = NULL
+@sCodigo nvarchar(MAX) = NULL,
+
+@sCodigo_sinprefijo nvarchar(max),
+
+@sNombre_SinPrefijo nvarchar(max)
 
 AS
 
@@ -29,9 +33,31 @@ BEGIN
 
 DECLARE @UpdatedId INT;
 
-  
-
 BEGIN TRY
+
+IF EXISTS (
+
+SELECT 1
+
+FROM REQUERIMIENTOS
+
+WHERE sCodigo = @sCodigo
+
+)
+
+BEGIN
+
+SET @UpdatedId = 0;
+
+SELECT @UpdatedId AS Result;
+
+--RETURN;
+
+END
+
+DECLARE @codigoQ VARCHAR(MAX) = NULL
+
+set @codigoQ = iif(@sCodigo = 'null', concat('RQ',cast(@nId_Requerimiento as varchar)), @sCodigo)
 
 UPDATE REQUERIMIENTOS
 
@@ -51,13 +77,15 @@ dFecha_Fin = @dFecha_Fin,
 
 nUsuario_Update = @nUsuario_Update,
 
-dDatetime_Update = @dDatetime_Update,
+dDatetime_Update = GETDATE(),
 
-sCodigo = ISNULL(@sCodigo, sCodigo)
+sCodigo = @codigoQ,
+
+sCodigo_SinPrefijo = @sCodigo_sinprefijo,
+
+sNombre_SinPrefijo = @sNombre_SinPrefijo
 
 WHERE nId_Requerimiento = @nId_Requerimiento;
-
-  
 
 SET @UpdatedId = 1;
 
@@ -74,4 +102,3 @@ SELECT @UpdatedId AS Result;
 END CATCH
 
 END;
-```
