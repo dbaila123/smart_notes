@@ -1,3 +1,4 @@
+```sql
 ALTER PROCEDURE [dbo].[sp_smart_get_collaborators_report]
 
 (
@@ -327,3 +328,5 @@ print 'adios'
 EXECUTE sp_executesql @script
 
 END
+```
+

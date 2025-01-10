@@ -1,4 +1,4 @@
-```SLQ
+```SQL
 ALTER TABLE Requerimientos ADD sPrefijo NVARCHAR(2) DEFAULT 'RQ' NOT NULL;  
   
   
