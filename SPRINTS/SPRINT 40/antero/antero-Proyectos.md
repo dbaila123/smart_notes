@@ -20,12 +20,6 @@ UPDATE Requerimientos
 SET sNombre_SinPrefijo = LTRIM(RTRIM(SUBSTRING(sNombre, 5, LEN(sNombre))))
 
 WHERE sNombre LIKE 'RQ - %';
-----------------
-UPDATE Requerimientos
-
-SET sNombre_SinPrefijo = LTRIM(RTRIM(SUBSTRING(sNombre, 5, LEN(sNombre))))
-
-WHERE sNombre LIKE 'RQ -%';
 
 --------------ACTUALIZACIÓN REQUERIMIENTOS SCODIGO-----------------
 
@@ -33,7 +27,7 @@ UPDATE Requerimientos set sCodigo = CONCAT_WS('', 'RQ', nId_Requerimiento) where
 
 ---------------ACTUALIZACIÓN REQUERIMINETOS SNOMBRE----------------
 
-UPDATE Requerimientos set sNombre = CONCAT_WS(' ', sCodigo, sNombre_SinPrefijo)
+UPDATE Requerimientos set sNombre = sNombre_SinPrefijo
 
 ----------------ACTUALIZAR PROYECTOS SIN PROYECTOS-----------------
 
