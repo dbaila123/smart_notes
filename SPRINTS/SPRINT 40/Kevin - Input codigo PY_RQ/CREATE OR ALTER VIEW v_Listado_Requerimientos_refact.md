@@ -7,7 +7,7 @@ SELECT
 
 r.nId_Requerimiento,
 
-CONCAT(r.sCodigo, ' ', r.sNombre) AS sNombre_Requerimiento, -- Modificado para mantener el formato original
+CONCAT(r.sCodigo, ' ', r.sNombre) AS sNombre_Requerimiento,
 
 r.sPrefijo,
 
