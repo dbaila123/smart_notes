@@ -23,6 +23,8 @@ CONCAT(pDir.sPrimer_Nombre, ' ', pDir.sApe_Paterno) AS sNombreDirector,
 
 p.sNombre AS sNombre_Proyecto,
 
+p.sCodigo AS sCodigo_proyecto,
+
 CONCAT(p.sCodigo, ' ', p.sNombre) AS sNombre_Proyecto_ConPrefijo,
 
 (
@@ -39,7 +41,7 @@ AND c.sCodigo = CAST(p.sPrefijo AS VARCHAR(10))
 
 r.sNombre_SinPrefijo,
 
-LTRIM(SUBSTRING(r.sCodigo, 4, LEN(r.sCodigo))) AS sCodigo_sinprefijo,
+LTRIM(SUBSTRING(r.sCodigo, 3, LEN(r.sCodigo))) AS sCodigo_sinprefijo,
 
 CONVERT(DATE, r.dFecha_Inicio) AS dFecha_Inicio,
 
