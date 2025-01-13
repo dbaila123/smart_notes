@@ -7,7 +7,7 @@ SELECT
 
 r.nId_Requerimiento,
 
-CONCAT(r.sCodigo, ' ', r.sNombre) AS sNombre_Requerimiento, -- Modificado para mantener el formato original
+CONCAT(r.sCodigo, ' ', r.sNombre) AS sNombre_Requerimiento,
 
 r.sPrefijo,
 
@@ -22,6 +22,8 @@ CONCAT(pLider.sPrimer_Nombre, ' ', pLider.sApe_Paterno) AS sNombreLider,
 CONCAT(pDir.sPrimer_Nombre, ' ', pDir.sApe_Paterno) AS sNombreDirector,
 
 p.sNombre AS sNombre_Proyecto,
+
+p.sCodigo AS sCodigo_proyecto,
 
 CONCAT(p.sCodigo, ' ', p.sNombre) AS sNombre_Proyecto_ConPrefijo,
 
@@ -39,7 +41,7 @@ AND c.sCodigo = CAST(p.sPrefijo AS VARCHAR(10))
 
 r.sNombre_SinPrefijo,
 
-LTRIM(SUBSTRING(r.sCodigo, 4, LEN(r.sCodigo))) AS sCodigo_sinprefijo,
+LTRIM(SUBSTRING(r.sCodigo, 3, LEN(r.sCodigo))) AS sCodigo_sinprefijo,
 
 CONVERT(DATE, r.dFecha_Inicio) AS dFecha_Inicio,
 
