@@ -133,13 +133,13 @@ p.nId_Proyecto
 
 FROM Proyectos p
 
-JOIN Requerimientos r
+JOIN v_Listado_Requerimientos_refact r
 
 ON p.nId_Proyecto = r.nId_Proyecto
 
-WHERE r.sNombre LIKE '%' + @sNombre_Filter + '%' COLLATE Latin1_general_CI_AI
+WHERE
 
-  
+r.sNombre_Requerimiento LIKE '%' + @sNombre_Filter + '%' COLLATE Latin1_general_CI_AI
 
 DECLARE @tabla_tempAll varchar(MAX)
 
@@ -498,4 +498,3 @@ EXEC sp_executesql @script
   
 
 END
-```
