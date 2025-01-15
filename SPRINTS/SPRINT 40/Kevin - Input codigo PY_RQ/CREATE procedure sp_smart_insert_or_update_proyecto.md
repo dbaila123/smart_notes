@@ -89,7 +89,9 @@ DECLARE
 
   
 
-@message VARCHAR(MAX), --MENSAJE DE ERROR
+@message VARCHAR
+
+(MAX), --MENSAJE DE ERROR
 
   
 
@@ -129,7 +131,9 @@ SET @message = 'Proyecto registrado correctamente.';
 
   
 
-SET @count = (
+SET @count =
+
+(
 
   
 
@@ -192,6 +196,8 @@ BEGIN
 SET @GeneratedCodigo = (SELECT
 
 CONCAT(c.sDescripcion,ISNULL(MAX(p.nId_Proyecto), 0) + 1) AS ProyectoIdDescripcion
+
+  
 
 FROM
 
@@ -641,7 +647,11 @@ BEGIN
 
 DECLARE @CodigoP VARCHAR(MAX) = NULL
 
-set @CodigoP = iif(@sCodigo IS NULL, CONCAT(@sPrefijo,cast(@nId_Proyecto as varchar)), @sCodigo)
+DECLARE @NewPrefijo VARCHAR(MAX)
+
+set @NewPrefijo = (select c.sDescripcion from Configs c where sTabla = 'PREFIJO_PROYECTO' and sCodigo = @sPrefijo_Codigo)
+
+set @CodigoP = iif(@sCodigo IS NULL, CONCAT(@NewPrefijo,cast(@nId_Proyecto as varchar)), @sCodigo)
 
 END
 
