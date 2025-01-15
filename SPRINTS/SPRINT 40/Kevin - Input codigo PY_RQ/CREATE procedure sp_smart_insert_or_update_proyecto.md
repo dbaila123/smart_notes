@@ -189,7 +189,25 @@ BEGIN
 
   
 
-SET @GeneratedCodigo = (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos);
+SET @GeneratedCodigo = (SELECT
+
+CONCAT(c.sDescripcion,ISNULL(MAX(p.nId_Proyecto), 0) + 1) AS ProyectoIdDescripcion
+
+FROM
+
+Proyectos p
+
+LEFT JOIN
+
+Configs c ON p.sPrefijo = c.sCodigo
+
+WHERE
+
+c.sTabla = 'PREFIJO_PROYECTO' AND c.sCodigo = @sPrefijo_Codigo
+
+GROUP BY
+
+c.sDescripcion)
 
   
 
@@ -605,7 +623,11 @@ BEGIN
 
 SET @code = '400';
 
+  
+
 SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
+
+  
 
 SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
 
