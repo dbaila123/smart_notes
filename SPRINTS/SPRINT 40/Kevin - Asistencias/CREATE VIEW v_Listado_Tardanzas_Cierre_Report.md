@@ -1,5 +1,5 @@
 ```SQL 
-CREATE VIEW v_Listado_Tardanzas_Cierre_Report
+CREATE OR ALTER VIEW v_Listado_Tardanzas_Cierre_Report
 
 AS
 

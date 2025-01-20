@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_Tareas as SELECT
+CREATE OR ALTER VIEW v_Listado_Tareas as SELECT
 
 tb_task.nId_Tarea nId,
 

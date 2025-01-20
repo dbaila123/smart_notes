@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_Requeriments_Insert
+CREATE OR ALTER PROCEDURE sp_Requeriments_Insert
 
 @sNombre NVARCHAR(MAX),
 

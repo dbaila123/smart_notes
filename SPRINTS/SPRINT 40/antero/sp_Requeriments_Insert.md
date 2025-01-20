@@ -1,4 +1,5 @@
-CREATE PROCEDURE sp_Requeriments_Insert
+```sql
+CREATE OR ALTER PROCEDURE sp_Requeriments_Insert
 
 @sNombre NVARCHAR(MAX),
 
@@ -105,3 +106,4 @@ END
 SELECT @InsertedId AS 'nId_Requerimiento';
 
 END;
+```

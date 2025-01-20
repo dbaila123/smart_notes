@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE [dbo].[get_configuraciones](
+CREATE OR ALTER PROCEDURE [dbo].[get_configuraciones](
 
 @configurations_string nvarchar(max),
 

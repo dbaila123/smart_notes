@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW [dbo].[v_Listado_Requerimientos_refact]
+CREATE OR ALTER VIEW [dbo].[v_Listado_Requerimientos_refact]
 
 AS
 

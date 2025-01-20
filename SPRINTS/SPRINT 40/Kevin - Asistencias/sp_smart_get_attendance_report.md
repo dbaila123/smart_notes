@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE [dbo].[sp_smart_get_attendance_report]
+CREATE OR ALTER PROCEDURE [dbo].[sp_smart_get_attendance_report]
 
 (
 

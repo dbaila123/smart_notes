@@ -3,7 +3,7 @@
 
   
 
-CREATE VIEW [dbo].[v_Listado_Asistencias_Reporte] AS
+CREATE OR ALTER VIEW [dbo].[v_Listado_Asistencias_Reporte] AS
 
 SELECT
 

@@ -1,5 +1,5 @@
 ```SQL
-ALTER PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
+ALTER OR ALTER PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
 
 (
 

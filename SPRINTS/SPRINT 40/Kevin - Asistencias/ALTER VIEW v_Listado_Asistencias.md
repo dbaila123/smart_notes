@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW [dbo].[v_Listado_Asistencias] AS
+CREATE OR ALTER VIEW [dbo].[v_Listado_Asistencias] AS
 
 SELECT
 

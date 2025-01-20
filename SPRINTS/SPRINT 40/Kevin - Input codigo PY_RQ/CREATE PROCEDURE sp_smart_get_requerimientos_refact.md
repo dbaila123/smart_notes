@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_smart_get_requerimientos_refact
+CREATE OR ALTER PROCEDURE sp_smart_get_requerimientos_refact
 (  
     @nId_User int,  
  @Id_Proyecto int,  

@@ -1,5 +1,5 @@
 ```sql
-CREATE PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
+CREATE OR ALTER PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
 
 (
 

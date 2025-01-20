@@ -1,5 +1,5 @@
 ```sql
-CREATE PROCEDURE sp_smart_get_proyectos_refact
+CREATE OR ALTER PROCEDURE sp_smart_get_proyectos_refact
 
 (
 

@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_Tesoreria AS
+CREATE OR ALTER VIEW v_Listado_Tesoreria AS
 
 SELECT
 

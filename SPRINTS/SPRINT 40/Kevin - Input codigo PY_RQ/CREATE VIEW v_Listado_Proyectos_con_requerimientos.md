@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_Proyectos_con_requerimientos
+CREATE OR ALTER VIEW v_Listado_Proyectos_con_requerimientos
 
 AS
 

@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_Requeriments_Update
+CREATE OR ALTER PROCEDURE sp_Requeriments_Update
 
 @nId_Requerimiento int,
 
