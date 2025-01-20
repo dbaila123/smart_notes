@@ -1,102 +1,63 @@
 ```SQL
-ALTER PROCEDURE [dbo].[sp_smart_insert_or_update_proyecto]
+CREATE PROCEDURE sp_smart_get_proyectos_refact
 
 (
 
-@nId_Usuario INT,
+@IdProyecto int, ---Obtener By IdProyecto
 
-@nId_Proyecto INT = 0,
+@nId_Usuario int,
 
-@sNombre_Sin_Prefijo VARCHAR(MAX),
+@nTipoFilter int, ---1 Pry , 2 Rq
 
-@sNombre VARCHAR(MAX),
+@sNombre_Filter varchar(max),
 
-@sCodigo VARCHAR(MAX),
+@sFilterThree nvarchar(max), ----Id Requerimiento (notificacion)
 
-@sPrefijo VARCHAR(50),
+@sFilterFour nvarchar(max),
 
-@sPrefijo_Codigo VARCHAR(10),
+@fechaCreaIni varchar(max),
 
-@sId_Tipo_Servicio VARCHAR(MAX),
+@fechaCreaFin varchar(max),
 
-@nId_Lider INT,
+@sFilterOne nvarchar(max), --Id Coordinador
 
-@nId_Director INT,
+@sFilterTwo nvarchar(max), --Estado del proyecto
 
-@nId_Coordinador INT,
+@sFilterFive varchar(max), --scodigo-----------------------------------------
 
-@sDescripcion VARCHAR(MAX),
+@pnum int, --obligatorio --Número de Páginas
 
-@dFecha_Inicio DATE,
+@size int, --obligatorio --Cantidad de Registros por página
 
-@dFecha_Fin DATE,
+@campo varchar(MAX), --obligatorio column name toOrder
 
-@nTipo_Acceso INT = 0,
-
-@action INT
+@order varchar(MAX) --obligatorio asc || desc
 
 )
-AS
 
-BEGIN TRY
+as
 
-DECLARE
+begin
 
-@code VARCHAR(MAX),
+DECLARE @script AS nvarchar(max)
 
-@message VARCHAR(MAX), --MENSAJE DE ERROR
+DECLARE @whereClause AS nvarchar(max)
 
-@count INT,
+DECLARE @orderClause AS nvarchar(max)
 
-@currentProject VARCHAR(MAX),
+DECLARE @paginationClause AS nvarchar(max)
 
-@IdProyecto INT,
+DECLARE @selectClause AS nvarchar(max)
 
-@GeneratedCodigo VARCHAR(MAX);
-
--- Acción de inserción
-
-IF @action = 1
+IF @IdProyecto is not null
 
 BEGIN
 
-SET @code = '200';
+SET @selectClause = 'SELECT V.*,
 
-SET @message = 'Proyecto registrado correctamente.';
+V.sNombre_Proyecto_Detalle as sNombre_Proyecto,
 
-SET @count = (
-
-SELECT COUNT(*)
-
-FROM Proyectos p
-
-JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
-
-JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
-
-WHERE p.sNombre = @sNombre
-
-AND cp.nId_Coordinador = @nId_Coordinador
-
-AND c.nEstado = 1
-
-AND c.sTabla = 'TIPO_SERVICIO'
-
-);
-
-IF @count = 0
-
-BEGIN
-
--- Generación del código del proyecto
-
-IF @sCodigo IS NULL
-
-BEGIN
-
-SET @GeneratedCodigo = (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos);
-
---SET @GeneratedCodigo = CONCAT('PRY ', (SELECT ISNULL(MAX(nId_Proyecto), 0) + 1 FROM Proyectos));
+(SELECT COUNT(*) FROM v_Listado_Proyectos_con_requerimientos WHERE '
 
 END
 
@@ -104,123 +65,99 @@ ELSE
 
 BEGIN
 
-SET @GeneratedCodigo = @sCodigo;
+SET @selectClause = 'SELECT V.*,
+
+V.sNombre_Proyecto_Lista as sNombre_Proyecto,
+
+(SELECT COUNT(*) FROM v_Listado_Proyectos_con_requerimientos WHERE '
 
 END
--- Insertar proyecto
 
-INSERT INTO Proyectos
+  
 
-(
+DECLARE @nId_Rol int = (select nId_Rol from Roles_Usuarios ru where ru.nId_Usuario = @nId_Usuario)
 
-sNombre_Proyecto_Sin_Prefijo,
+  
 
-sNombre,
+DECLARE @sSlug1 int = (select count(o.sSlug) from Permisos_Opciones po
 
-sCodigo,
+  
 
-sPrefijo,
+join Opciones o on o.nId_Opcion = po.nId_Opcion
 
-sDescripcion,
+where po.nId_Rol = @nId_Rol and o.sSlug = 'PROJECTS-LIST-ALL'
 
-sId_Tipo_Servicio,
+and po.nEstado = 1)
 
-nId_Lider,
+  
 
-nId_Director,
+DECLARE @IdColaborador int = (
 
-sEstado_Proyecto,
+select c.nId_Colaborador from Usuarios u
 
-nEstado,
+join Personas p on u.nId_Persona = p.nId_Persona
 
-dFecha_Inicio,
+join Colaboradores c on c.nId_Persona = p.nId_Persona
 
-dFecha_Fin,
-
-nUsuario_Creador,
-
-dDatetime_Creador,
-
-nTipo_Acceso
+where u.nId_Usuario = @nId_Usuario
 
 )
 
-VALUES
+  
 
-(
+IF @IdProyecto is not null
 
-@sNombre_Sin_Prefijo,
+BEGIN
 
-@sNombre,
+--Obtener Detalle del proyecto por id
 
-@GeneratedCodigo,
+SET @whereClause = N'nId_Proyecto = ' + CONVERT(varchar, @IdProyecto)
 
-@sPrefijo_Codigo,
+END
 
-@sDescripcion,
+ELSE IF @nTipoFilter = 2 AND @sNombre_Filter IS NOT NULL AND @sFilterThree IS NULL AND @sFilterFour IS NULL ---FiltroRequerimiento
 
-@sId_Tipo_Servicio,
+BEGIN
 
-@nId_Lider,
+IF @sSlug1 > 0
 
-@nId_Director,
+BEGIN
 
-1, -- estado activo
+---TIENE PERMISO PARA VER TODO Y BUSCA POR REQUERIMIENTOS
 
-1, -- estado activo
+print 'entro1'
 
-@dFecha_Inicio,
+DECLARE @TempIdPryByNameRQAll TABLE (nId_Proyecto int)
 
-@dFecha_Fin,
+INSERT INTO @TempIdPryByNameRQAll
 
-@nId_Usuario,
+SELECT DISTINCT
 
-DATEADD(HOUR, -5, GETDATE()),
+p.nId_Proyecto
 
-@nTipo_Acceso
+FROM Proyectos p
 
-);
-SET @IdProyecto = (SELECT SCOPE_IDENTITY());
+JOIN v_Listado_Requerimientos_refact r
 
--- Insertar en Coordinadores_Proyectos
+ON p.nId_Proyecto = r.nId_Proyecto
 
-INSERT INTO Coordinadores_Proyectos
+WHERE
 
-(
+r.sNombre_Requerimiento LIKE '%' + @sNombre_Filter + '%' COLLATE Latin1_general_CI_AI
 
-nId_Coordinador,
+DECLARE @tabla_tempAll varchar(MAX)
 
-nId_Proyecto,
+SELECT
 
-nPrincipal,
+* INTO #proyectos_all_nombre_req_all
 
-nEstado,
+FROM @TempIdPryByNameRQAll
 
-nUsuario_Creador,
+SET @tabla_tempAll = '#proyectos_all_nombre_req_all'
 
-dDatetime_Creador
+  
 
-)
-
-VALUES
-
-(
-
-@nId_Coordinador,
-
-@IdProyecto,
-
-0, -- No principal
-
-1, -- Estado activo
-
-@nId_Usuario,
-
-DATEADD(HOUR, -5, GETDATE())
-
-);
-
-SELECT @code AS 'Code', @message AS 'Message', @IdProyecto AS 'IdProyecto';
+SET @whereClause = N'nId_Proyecto in (select * from ' + @tabla_tempAll +')' + ' and nPrincipal = ' +CONVERT(nvarchar, 1 )
 
 END
 
@@ -228,148 +165,350 @@ ELSE
 
 BEGIN
 
-SET @code = '400';
+--BUSCANDO POR REQUERIMIENTOS Y SOLO MUETRA LOS PROYECTOS DEL USUARIO LOGUEADO
 
-SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
+DECLARE @TempIdPryByNameRQ TABLE (nId_Proyecto int)
 
-SELECT @code AS 'Code', @message AS 'Message', @IdProyecto AS 'IdProyecto';
+INSERT INTO @TempIdPryByNameRQ
 
-END
+SELECT DISTINCT
 
-END
-
--- Acción de actualización
-
-IF @action = 2
-
-BEGIN
-
-
-
-SET @code = '200';
-
-SET @message = 'Proyecto actualizado correctamente.';
-
-SET @currentProject = (
-
-SELECT p.sNombre
+p.nId_Proyecto
 
 FROM Proyectos p
 
-JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
+JOIN v_Listado_Requerimientos_refact r on p.nId_Proyecto = r.nId_Proyecto
 
-JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
+JOIN Proyecto_Lider pl on pl.nId_Proyecto = p.nId_Proyecto
 
-WHERE p.sNombre = @sNombre
+WHERE (p.nId_Director = @IdColaborador or pl.nId_Lider = @IdColaborador)
 
-and p.nid_proyecto = @nId_Proyecto
+AND r.sNombre_Requerimiento like '%' + @sNombre_Filter + '%' COLLATE Latin1_general_CI_AI
 
-AND cp.nId_Coordinador = @nId_Coordinador
+  
 
-AND c.nEstado = 1
+DECLARE @tabla_temp varchar(MAX)
 
-AND c.sTabla = 'TIPO_SERVICIO'
+SELECT
 
-);
+* INTO #proyectos_all_nombre_req
 
+FROM @TempIdPryByNameRQ
 
-DECLARE @nId_Proyecto_out INT;
+SET @tabla_temp = '#proyectos_all_nombre_req'
 
+  
 
-SET @nId_Proyecto_out = (
+SET @whereClause = N'nId_Proyecto in (select * from ' + @tabla_temp +')' + ' and nPrincipal = ' +CONVERT(nvarchar, 1 )
+
+END
+
+END
+
+ELSE IF @sFilterThree IS NOT NULL
+
+BEGIN
+
+---OBTENEMOS EL ID DEL PROYECTO MEDIANTE EL ID DEL REQUERIMIENTO (NOTIFICACION)
+
+DECLARE @TempIdPryByIdRq TABLE (nId_Proyecto int)
+
+INSERT INTO @TempIdPryByIdRq
+
+SELECT p.nId_Proyecto FROM
+
+Proyectos p
+
+JOIN Requerimientos r ON r.nId_Proyecto = p.nId_Proyecto
+
+WHERE r.nId_Requerimiento IN (@sFilterThree)
+
+  
+
+BEGIN
+
+DECLARE @tabla_temp_2 varchar(MAX)
+
+  
+
+SELECT
+
+* INTO #proyectos_all_IdRq
+
+FROM @TempIdPryByIdRq
+
+SET @tabla_temp_2 = '#proyectos_all_IdRq'
+
+END
+
+SET @whereClause = N'nId_Proyecto in (select * from ' + @tabla_temp_2 +')' + ' and nPrincipal = ' +CONVERT(nvarchar, 1 )
+
+END
+
+ELSE IF @sFilterFour IS NOT NULL
+
+BEGIN
+
+---OBTENEMOS EL ID DEL PROYECTO MEDIANTE EL ID DEL PROYECTO (NOTIFICACION)
+
+DECLARE @TempIdPryByIdPry TABLE (nId_Proyecto int) --@TempIdPryByIdRq
+
+INSERT INTO @TempIdPryByIdPry
 
 SELECT p.nId_Proyecto
 
-FROM Proyectos p
+FROM
 
-JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
+Proyectos p
 
-JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
+WHERE p.nId_Proyecto IN (@sFilterFour)
 
-WHERE p.sNombre = @sNombre
+  
 
-and p.nid_proyecto = @nId_Proyecto
-
-AND cp.nId_Coordinador = @nId_Coordinador
-
-AND c.nEstado = 1
-
-AND c.sTabla = 'TIPO_SERVICIO'
-
-);
-
-
-IF (@currentProject = @sNombre AND @nId_Proyecto != @nId_Proyecto_out)
-BEGIN	
-	SET @code = '400';
-	
-	SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
-	
-	SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
-
-END
-ELSE
 BEGIN
-	DECLARE @CodigoP VARCHAR(MAX) = NULL
-	set @CodigoP = iif(@sCodigo IS NULL, CONCAT(@sPrefijo,cast(@nId_Proyecto as varchar)), @sCodigo)
-END
--- Actualización de proyecto
 
+DECLARE @tabla_temp_3 varchar(MAX)
 
-UPDATE Proyectos
+SELECT
 
-SET
+* INTO #proyectos_all_IdPry
 
-sNombre = @sNombre,
+FROM @TempIdPryByIdPry
 
-sNombre_Proyecto_Sin_Prefijo = @sNombre_Sin_Prefijo,
-
-sPrefijo = @sPrefijo_Codigo,
-
-sCodigo = @CodigoP,
-
-sDescripcion = @sDescripcion,
-
-sId_Tipo_Servicio = @sId_Tipo_Servicio,
-
-nId_Lider = @nId_Lider,
-
-nId_Director = @nId_Director,
-
-dFecha_Inicio = @dFecha_Inicio,
-
-dFecha_Fin = @dFecha_Fin,
-
-nUsuario_Update = @nId_Usuario,
-
-nTipo_Acceso = @nTipo_Acceso,
-
-dDatetime_Update = DATEADD(HOUR, -5, GETDATE())
-
-WHERE nId_Proyecto = @nId_Proyecto;
-
--- Actualización de Coordinadores_Proyectos
-
-UPDATE Coordinadores_Proyectos
-
-SET
-
-nId_Coordinador = @nId_Coordinador,
-
-nUsuario_Update = @nId_Usuario,
-
-dDatetime_Update = DATEADD(HOUR, -5, GETDATE())
-
-WHERE nId_Proyecto = @nId_Proyecto;
-
-SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
+SET @tabla_temp_3 = '#proyectos_all_IdPry'
 
 END
 
-END TRY
+SET @whereClause = N'nId_Proyecto in (select * from ' + @tabla_temp_3 +')' + ' and nPrincipal = ' +CONVERT(nvarchar, 1 )
 
-BEGIN CATCH
+END
 
-SELECT ERROR_SEVERITY() AS 'Code', ERROR_MESSAGE() AS 'Message', @nId_Proyecto AS 'IdProyecto';
+ELSE
 
-END CATCH
+BEGIN
+
+IF @sSlug1 > 0
+
+BEGIN
+
+---CUENTA CON LA VISTA TODO LOS PROYECTOS
+
+SET @whereClause = N'nPrincipal = ' +CONVERT(nvarchar, 1 )
+
+END
+
+ELSE
+
+BEGIN
+
+----MUESTRA LOS PROYECTOS SUYOS
+
+SET @whereClause = N'nLider = ' + CONVERT(varchar, @IdColaborador)+ ' or nDirector = ' + CONVERT(varchar, @IdColaborador) + ' and nPrincipal = ' +CONVERT(nvarchar, 1 )
+
+END
+
+END
+
+DECLARE
+
+@conditions AS TABLE (condition nvarchar(max))
+
+DECLARE @conditionOUT AS nvarchar(max)
+
+  
+
+IF @fechaCreaIni IS NOT NULL AND @fechaCreaFin IS NOT NULL
+
+BEGIN
+
+EXEC sp_get_dates_condition 'dFecha_Creacion', @fechaCreaIni ,@fechaCreaFin, @conditionOUT OUTPUT
+
+  
+
+INSERT INTO @conditions VALUES(@conditionOUT)
+
+END
+
+  
+
+-------------------------------------------------------------------------------------------------------------------
+
+IF @sFilterFive IS NOT NULL
+
+BEGIN
+
+-- Puedes usar sp_get_like_condition para búsquedas parciales
+
+EXEC sp_get_like_condition 'sCodigo', @sFilterFive, @conditionOUT OUTPUT
+
+INSERT INTO @conditions VALUES(@conditionOUT)
+
+  
+
+-- O si prefieres una búsqueda exacta, puedes usar:
+
+-- INSERT INTO @conditions VALUES('sCodigo = ''' + @sFilterFive + '''')
+
+END
+
+  
+
+-------------------------------------------------------------------------------------------------------------------
+
+  
+
+  
+
+IF @sNombre_Filter IS NOT NULL AND @nTipoFilter =1 AND @sFilterThree IS NULL
+
+BEGIN
+
+EXEC sp_get_like_condition 'sNombre_Proyecto_Lista', @sNombre_Filter, @conditionOUT OUTPUT
+
+INSERT INTO @conditions VALUES(@conditionOUT)
+
+END
+
+  
+
+IF @sFilterOne IS NOT NULL
+
+BEGIN
+
+INSERT INTO @conditions VALUES( N'nCoordinador in('+@sFilterOne+')')
+
+END
+
+  
+
+IF @sFilterTwo IS NOT NULL
+
+BEGIN
+
+INSERT INTO @conditions VALUES('nEstado in('+@sFilterTwo+')')
+
+END
+
+  
+
+-- Construir la cláusula ORDER BY
+
+SET @orderClause = 'ORDER BY ' + @campo + ' ' + @order
+
+  
+
+-- Construir la cláusula OFFSET FETCH
+
+SET @paginationClause = 'OFFSET ' + CAST((@pnum - 1) * @size AS VARCHAR) + ' ROWS FETCH NEXT ' + CAST(@size AS VARCHAR) + ' ROWS ONLY'
+
+  
+
+DECLARE @conditionsClause AS nvarchar(max)
+
+  
+
+-- Concatenar las condiciones en una variable
+
+SET @conditionsClause = (SELECT STRING_AGG(condition, ' AND ') FROM @conditions)
+
+  
+
+IF @conditionsClause IS NULL --obtener por Id
+
+BEGIN
+
+SET @script = @selectClause + @whereClause + ') AS total
+
+,(SELECT COUNT(*) from Proyecto_Lider
+
+WHERE nId_Proyecto = V.nId_Proyecto
+
+AND nEstado = 1) AS nlideres
+
+,(SELECT ISNULL(STRING_AGG(P.sPrimer_Nombre +'' '' +P.sApe_Paterno,'',''),'''') LIDERES
+
+FROM Proyecto_Lider PL
+
+INNER JOIN Colaboradores C ON PL.nId_Lider = C.nId_Colaborador
+
+LEFT JOIN Personas P ON P.nId_Persona = C.nId_Persona
+
+WHERE PL.nId_Proyecto = V.NID_PROYECTO AND PL.nEstado = 1
+
+AND PL.nPrincipal = 0) AS slideres
+
+,(SELECT STRING_AGG(VLP.nlider,'','') FROM v_Listado_Proyectos_con_requerimientos VLP WHERE VLP.nId_Proyecto = V.nId_Proyecto) AS snidlideres
+
+FROM v_Listado_Proyectos_con_requerimientos V WHERE ' + @whereClause
+
+END
+
+ELSE IF @pnum IS NULL AND @size IS NULL ----Descarga
+
+BEGIN
+
+SET @script = @selectClause + @conditionsClause + ' AND ' + @whereClause + ') AS total
+
+,(SELECT COUNT(*) from Proyecto_Lider
+
+WHERE nId_Proyecto = V.nId_Proyecto
+
+AND nEstado = 1) AS nlideres
+
+,(SELECT ISNULL(STRING_AGG(P.sPrimer_Nombre +'' '' +P.sApe_Paterno,'',''),'''') LIDERES
+
+FROM Proyecto_Lider PL
+
+INNER JOIN Colaboradores C ON PL.nId_Lider = C.nId_Colaborador
+
+LEFT JOIN Personas P ON P.nId_Persona = C.nId_Persona
+
+WHERE PL.nId_Proyecto = V.NID_PROYECTO AND PL.nEstado = 1
+
+AND PL.nPrincipal = 0) AS slideres
+
+,(SELECT
+
+STRING_AGG(VLP.nlider,'','') FROM v_Listado_Proyectos_con_requerimientos VLP WHERE VLP.nId_Proyecto = V.nId_Proyecto) AS snidlideres
+
+FROM v_Listado_Proyectos_con_requerimientos V WHERE ' + @conditionsClause + ' AND ' + @whereClause + ' ' + @orderClause
+
+END
+
+ELSE
+
+BEGIN
+
+SET @script = @selectClause + @conditionsClause + ' AND ' + @whereClause + ') AS total
+
+,(SELECT COUNT(*) from Proyecto_Lider
+
+WHERE nId_Proyecto = V.nId_Proyecto
+
+AND nEstado = 1) AS nlideres ,(SELECT ISNULL(STRING_AGG(P.sPrimer_Nombre +'' '' +P.sApe_Paterno,'',''),'''') LIDERES
+
+FROM Proyecto_Lider PL
+
+INNER JOIN Colaboradores C ON PL.nId_Lider = C.nId_Colaborador
+
+LEFT JOIN Personas P ON P.nId_Persona = C.nId_Persona
+
+  
+
+WHERE PL.nId_Proyecto = V.NID_PROYECTO AND PL.nEstado = 1
+
+AND PL.nPrincipal = 0) AS slideres
+
+,(SELECT STRING_AGG(VLP.nlider,'','') FROM v_Listado_Proyectos_con_requerimientos VLP WHERE VLP.nId_Proyecto = V.nId_Proyecto) AS snidlideres
+
+FROM v_Listado_Proyectos_con_requerimientos V WHERE ' + @conditionsClause + ' AND ' + @whereClause + ' ' + @orderClause + ' ' + @paginationClause
+
+END
+
+-- Ejecutar la consulta
+
+EXEC sp_executesql @script
+
+  
+
+END
