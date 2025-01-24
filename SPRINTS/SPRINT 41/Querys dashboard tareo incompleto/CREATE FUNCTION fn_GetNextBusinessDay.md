@@ -33,8 +33,6 @@ WHERE dFecha = @NextDay
 
 AND nEstado = 1
 
-AND nTipo_Feriado IN (1, 2)
-
 )
 
 BREAK;
