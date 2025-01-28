@@ -16,7 +16,7 @@ declare @nid_opcion int
   
 INSERT INTO opciones
 (nFuncionalidad_Tipo, sDescripcion, sComentario, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete, sSlug, nId_Modulo)
-VALUES(2, 'INDICADORES DEL COLABORADOR', 'Indicador de Marcas Extemp. y Tareo Icompleto', 1, 172, getdate(), NULL, NULL, NULL, NULL, 'COLABORADOR-INDICADORES-TODO',2)
+VALUES(2, 'INDICADORES DEL COLABORADOR', 'Indicador de Marcas Extemp. y Tareo Icompleto', 1, 172, getdate(), NULL, NULL, NULL, NULL, 'COLLABORATORS-DASHBOARD-ALL',2)
 
 set @nid_opcion = SCOPE_IDENTITY()
 
