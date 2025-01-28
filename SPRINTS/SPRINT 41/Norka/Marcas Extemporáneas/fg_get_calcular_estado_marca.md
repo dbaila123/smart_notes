@@ -1,5 +1,5 @@
 ```SQL
-CREATE FUNCTION fg_get_calcular_estado_marca(
+CREATE FUNCTION fg_get_calcular_estado_marca (
 
 @id_colaborador INT,
 
@@ -61,7 +61,7 @@ WHERE nId_Colaborador = @id_colaborador
 
 AND CAST(dFecha_Marca AS DATE) = @fecha_asistencia
 
-  
+AND nEstado=2;
 
 -- Determinar el estado basado en las reglas
 
@@ -115,5 +115,6 @@ END
 
 RETURN @estado;
 
+END;
 END;
 ```
