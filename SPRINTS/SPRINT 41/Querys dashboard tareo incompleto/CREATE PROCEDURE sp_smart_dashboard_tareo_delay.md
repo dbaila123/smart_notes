@@ -25,6 +25,10 @@ DECLARE @conditionOUT AS nvarchar(max)
 
 DECLARE @count INT
 
+-- Convertir @SNombreColaborador a minúsculas
+
+SET @sNombreColaborador = LOWER(@sNombreColaborador)
+
   
 
 -- Construir condición de búsqueda por nombre
@@ -33,13 +37,15 @@ IF @SNombreColaborador IS NOT NULL
 
 BEGIN
 
-EXEC sp_get_multiple_like_condition 'sNombre_Colaborador', @SNombreColaborador, @conditionOUT OUTPUT
+EXEC sp_get_multiple_like_condition 'sNombre_Completo', @SNombreColaborador, @conditionOUT OUTPUT
 
 INSERT INTO @conditions VALUES (@conditionOUT)
 
 END
 
   
+
+-- Construir condición de búsqueda por supervisor
 
 IF @sFilterOne IS NOT NULL
 
@@ -107,6 +113,8 @@ nId_Colaborador INT,
 
 NombreColaborador NVARCHAR(200),
 
+NombreCompleto NVARCHAR(200),
+
 FechaRegistro DATE,
 
 FechaCreacion DATETIME,
@@ -130,6 +138,8 @@ SELECT
 v.nId_Colaborador,
 
 v.sNombre_Colaborador,
+
+v.sNombre_Completo,
 
 v.dFecha_Registro,
 
@@ -164,6 +174,8 @@ SELECT
 ut.nId_Colaborador,
 
 ut.sNombre_Colaborador,
+
+ut.sNombre_Completo,
 
 ut.dFecha_Registro,
 
@@ -241,7 +253,13 @@ t.nId_Colaborador,
 
 t.NombreColaborador as sNombre_Colaborador,
 
+t.NombreCompleto as sNombre_Completo,
+
 dl.nDias_Laborados,
+
+@FechaInicio as dFecha_Inicio,
+
+@FechaFin as dFecha_fin,
 
 COUNT(CASE WHEN t.EstadoTareo = 'Retrasado' THEN 1 END) AS nDias_Tareo_Retraso,
 
@@ -306,6 +324,8 @@ GROUP BY
 t.nId_Colaborador,
 
 t.NombreColaborador,
+
+t.NombreCompleto,
 
 dl.nDias_Laborados
 

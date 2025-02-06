@@ -7,7 +7,9 @@ SELECT
 
 t.nId_Colaborador,
 
-p.sPersona_Nombre AS sNombre_Colaborador,
+CONCAT(p.sPrimer_Nombre , ' ', p.sApe_Paterno) AS sNombre_Colaborador,
+
+p.sPersona_Nombre as sNombre_Completo,
 
 t.dFecha_Registro,
 
@@ -25,7 +27,7 @@ FROM
 
 Tareas t
 
-LEFT JOIN Colaboradores c ON t.nId_Colaborador = c.nId_Colaborador
+INNER JOIN Colaboradores c ON t.nId_Colaborador = c.nId_Colaborador AND c.nEstado_Colaborador = 1
 
 LEFT JOIN Personas p ON c.nId_Persona = p.nId_Persona
 
