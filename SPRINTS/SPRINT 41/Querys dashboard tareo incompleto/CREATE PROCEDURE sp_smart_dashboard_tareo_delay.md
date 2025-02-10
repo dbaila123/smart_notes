@@ -1,13 +1,15 @@
 ```SQL
-CREATE PROCEDURE sp_smart_dashboard_tareo_delay
+CREATE PROCEDURE sp_smart_dashboard_tareo_delay (
 
 @FechaInicio DATE,
 
 @FechaFin DATE,
 
-@sNombreColaborador varchar(MAX) = NULL,
+@sNombreColaborador VARCHAR(MAX) = NULL,
 
 @sFilterOne NVARCHAR(MAX) = NULL -- Supervisores
+
+)
 
 AS
 
@@ -15,31 +17,35 @@ BEGIN
 
 SET NOCOUNT ON;
 
+  
+
 -- Variables para el filtro dinámico
 
-DECLARE @whereClause AS nvarchar(max) = ''
+DECLARE @whereClause AS NVARCHAR(MAX) = '';
 
-DECLARE @conditions AS TABLE (condition nvarchar(max))
+DECLARE @conditions AS TABLE (condition NVARCHAR(MAX));
 
-DECLARE @conditionOUT AS nvarchar(max)
+DECLARE @conditionOUT AS NVARCHAR(MAX);
 
-DECLARE @count INT
+DECLARE @count INT;
+
+  
 
 -- Convertir @SNombreColaborador a minúsculas
 
-SET @sNombreColaborador = LOWER(@sNombreColaborador)
+SET @sNombreColaborador = LOWER(@sNombreColaborador);
 
   
 
 -- Construir condición de búsqueda por nombre
 
-IF @SNombreColaborador IS NOT NULL
+IF @sNombreColaborador IS NOT NULL
 
 BEGIN
 
-EXEC sp_get_multiple_like_condition 'sNombre_Completo', @SNombreColaborador, @conditionOUT OUTPUT
+EXEC sp_get_multiple_like_condition 'sNombre_Completo', @sNombreColaborador, @conditionOUT OUTPUT;
 
-INSERT INTO @conditions VALUES (@conditionOUT)
+INSERT INTO @conditions VALUES (@conditionOUT);
 
 END
 
@@ -53,25 +59,25 @@ BEGIN
 
 DECLARE @CollaboratorsListTeam VARCHAR(MAX);
 
-SET @CollaboratorsListTeam = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVARCHAR(MAX), @sFilterOne),0,0)
+SET @CollaboratorsListTeam = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVARCHAR(MAX), @sFilterOne), 0, 0);
 
-INSERT INTO @conditions VALUES ('nId_Colaborador in('+@CollaboratorsListTeam+')')
+INSERT INTO @conditions VALUES ('nId_Colaborador in(' + @CollaboratorsListTeam + ')');
 
 END
 
   
 
-  
-
 -- Construir WHERE clause
 
-SELECT @count = COUNT(*) FROM @conditions
+SELECT @count = COUNT(*) FROM @conditions;
+
+  
 
 IF @count > 0
 
 BEGIN
 
-SET @whereClause = N' AND '
+SET @whereClause = N' AND ';
 
 END
 
@@ -81,27 +87,23 @@ WHILE @count > 0
 
 BEGIN
 
-DECLARE @condition_temp VARCHAR(max) = (SELECT TOP(1) condition FROM @conditions)
+DECLARE @condition_temp VARCHAR(MAX) = (SELECT TOP(1) condition FROM @conditions);
+
+  
 
 IF @count = 1
 
-BEGIN
-
-SET @whereClause = CONCAT(@whereClause, @condition_temp)
-
-END
+SET @whereClause = CONCAT(@whereClause, @condition_temp);
 
 ELSE
 
-BEGIN
+SET @whereClause = CONCAT(@whereClause, @condition_temp, ' AND ');
 
-SET @whereClause = CONCAT(@whereClause, @condition_temp, ' AND ')
+  
 
-END
+DELETE TOP(1) FROM @conditions;
 
-DELETE TOP(1) FROM @conditions
-
-SELECT @count = COUNT(*) FROM @conditions
+SELECT @count = COUNT(*) FROM @conditions;
 
 END
 
@@ -129,7 +131,7 @@ EstadoTareo VARCHAR(50)
 
   
 
-DECLARE @sql nvarchar(max) = N'
+DECLARE @sql NVARCHAR(MAX) = N'
 
 WITH UltimosTareos AS (
 
@@ -161,9 +163,7 @@ v_Listado_TareoStatus v
 
 WHERE
 
-v.dFecha_Registro BETWEEN @FechaInicio AND @FechaFin'
-
-+ @whereClause + '
+v.dFecha_Registro BETWEEN @FechaInicio AND @FechaFin' + @whereClause + '
 
 )
 
@@ -213,11 +213,9 @@ RN = 1';
 
 -- Ejecutar la consulta dinámica
 
-EXEC sp_executesql @sql,
+EXEC sp_executesql @sql, N'@FechaInicio DATE, @FechaFin DATE', @FechaInicio, @FechaFin;
 
-N'@FechaInicio DATE, @FechaFin DATE',
-
-@FechaInicio, @FechaFin;
+  
 
 CREATE TABLE #DiasLaborados (
 
@@ -235,13 +233,15 @@ SELECT
 
 a.nId_Colaborador,
 
-COUNT(DISTINCT a.dFecha_Asistencia) as nDias_Laborados
+COUNT(DISTINCT a.dFecha_Asistencia) AS nDias_Laborados
 
 FROM Asistencias a
 
 WHERE a.dFecha_Asistencia BETWEEN @FechaInicio AND @FechaFin
 
 AND a.nTiene_Marca >= 1
+
+AND a.nLlenado > 0
 
 GROUP BY a.nId_Colaborador;
 
@@ -251,55 +251,17 @@ SELECT
 
 t.nId_Colaborador,
 
-t.NombreColaborador as sNombre_Colaborador,
+t.NombreColaborador AS sNombre_Colaborador,
 
-t.NombreCompleto as sNombre_Completo,
+t.NombreCompleto AS sNombre_Completo,
 
 dl.nDias_Laborados,
 
-@FechaInicio as dFecha_Inicio,
+@FechaInicio AS dFecha_Inicio,
 
-@FechaFin as dFecha_fin,
+@FechaFin AS dFecha_fin,
 
 COUNT(CASE WHEN t.EstadoTareo = 'Retrasado' THEN 1 END) AS nDias_Tareo_Retraso,
-
-/* MAX(t.DiasRetraso) AS nMax_DiasRetraso,
-
-COUNT(CASE
-
-WHEN t.EstadoTareo = 'Retrasado' AND
-
-t.DiasRetraso <= 2 THEN 1
-
-END) AS nRetrasos_Leves,
-
-COUNT(CASE
-
-WHEN t.EstadoTareo = 'Retrasado' AND
-
-t.DiasRetraso > 2 AND
-
-t.DiasRetraso <= 5 THEN 1
-
-END) AS nRetrasos_Moderados,
-
-COUNT(CASE
-
-WHEN t.EstadoTareo = 'Retrasado' AND
-
-t.DiasRetraso > 5 THEN 1
-
-END) AS nRetrasos_Graves,
-
-SUM(CASE
-
-WHEN t.FechaRegistro >= DATEADD(DAY, -7, @FechaFin)
-
-AND t.EstadoTareo = 'Retrasado' THEN 1
-
-ELSE 0
-
-END) AS nRetrasos_UltimaSemana,*/
 
 --porcentaje de cumplimiento
 
@@ -307,7 +269,7 @@ CASE
 
 WHEN dl.nDias_Laborados > 0 THEN
 
-CAST(((dl.nDias_Laborados - COUNT(CASE WHEN t.EstadoTareo = 'Retrasado' THEN 1 END)) * 100.0 / dl.nDias_Laborados) AS DECIMAL(5,2))
+CAST(((dl.nDias_Laborados - COUNT(CASE WHEN t.EstadoTareo = 'Retrasado' THEN 1 END)) * 100.0 / dl.nDias_Laborados) AS DECIMAL(5, 2))
 
 ELSE 0
 
