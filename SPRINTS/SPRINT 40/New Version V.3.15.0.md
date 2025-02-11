@@ -17,13 +17,13 @@ BEGIN
 			INSERT INTO  Files 
 		    (nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete) 
 			VALUES 
-		    (@nId_Version,'Versions/Imagenes/5-codigopryrq-2025-01-17.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+		    (@nId_Version,'Version/Imagenes/5-codigopryrq-2025-01-17.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
 		    set @ID_FILE1 = SCOPE_IDENTITY();
 			    
 			INSERT INTO FILES
 		    (nId_Entidad, sUrl_File, sEntidad, sTipo_File, nSize_File, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete)
 			VALUES
-            (@nId_Version,'Versions/Imagenes/5-reporteindicadores-2025-01-17.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
+            (@nId_Version,'Version/Imagenes/5-reporteindicadores-2025-01-17.jpg','Version','image/jpeg',2500,1,172,GETDATE(),null,null,null,null)
             set @ID_FILE2 = SCOPE_IDENTITY();    
 
 			INSERT INTO 

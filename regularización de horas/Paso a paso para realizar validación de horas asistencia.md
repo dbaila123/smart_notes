@@ -28,7 +28,19 @@
 --select count(*) from tareas where nId_Cierre = 
 
 --update tareas set nEstado_Pago = 2 where nId_Cierre IN (11,12)
-
+--actualización de asistencia para todos los colaboradores de todo 2024
+--EXEC sp_update_attendance_massive_or_individual null,'2024-01-01', '2024-01-31',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-02-01', '2024-02-29',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-03-01', '2024-03-25',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-03-26', '2024-04-29',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-04-30', '2024-05-30',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-05-31', '2024-06-27',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-06-28', '2024-07-30',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-07-31', '2024-08-28',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-08-29', '2024-09-27',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-09-28', '2024-10-29',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-10-30', '2024-11-27',172
+--EXEC sp_update_attendance_massive_or_individual null,'2024-11-28', '2024-12-26',172
 --cierre asistencia
 --exec sp_create_closing_attendance @nId_User=255,@dFecha_Inicio_Asistencia='2024-01-01 00:00:00',@dFecha_Fin_Asistencia='2024-01-31 00:00:00',@dFecha_Inicio_Tardanza='2024-01-01 00:00:00',@dFecha_Fin_Tardanza='2024-01-31 00:00:00',@dFecha_Periodo='2024-01-01 00:00:00'
 --exec sp_create_closing_attendance @nId_User=255,@dFecha_Inicio_Asistencia='2024-02-01 00:00:00',@dFecha_Fin_Asistencia='2024-02-29 00:00:00',@dFecha_Inicio_Tardanza='2024-02-01 00:00:00',@dFecha_Fin_Tardanza='2024-02-29 00:00:00',@dFecha_Periodo='2024-02-01 00:00:00'

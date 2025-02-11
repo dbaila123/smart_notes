@@ -134,6 +134,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 --------------------------------FEBRERO-------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -223,6 +224,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 --------------------------------MARZO-------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -375,7 +377,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
-
+GO
 ---------------------------------------ABRIL------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -507,7 +509,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
-
+GO
 ---------------------------------------MAYO------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -646,6 +648,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ---------------------------------------JUNIO------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -775,6 +778,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ---------------------------JULIO----------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -914,6 +918,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ------------------------------AGOSTO---------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -1039,6 +1044,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ------------------------------SEPTIEMBRE---------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -1158,6 +1164,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ------------------------------OCTUBRE---------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -1297,6 +1304,7 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ------------------------------NOVIEMBRE---------------------------------------
 CREATE TABLE #Colaboradores_cierre(
 	nIdentificador_Colaborador INT IDENTITY (1,1),
@@ -1434,4 +1442,5 @@ WHERE ca.nId_Cierre = @nId_Cierre;
 
 DROP TABLE #Colaboradores_cierre;
 DROP TABLE #Horas_descontadas;
+GO
 ```
