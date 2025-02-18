@@ -37,17 +37,11 @@ CREATE PROCEDURE sp_smart_insert_or_update_proyecto (
 
 AS
 
-BEGIN
-
-TRY
+BEGIN TRY
 
 DECLARE @code VARCHAR(MAX);
 
-  
-
-DECLARE @message VARCHAR(MAX);
-
--- MENSAJE DE ERROR
+DECLARE @message VARCHAR(MAX); -- MENSAJE DE ERROR
 
 DECLARE @count INT;
 
@@ -129,7 +123,7 @@ IF @sCodigo IS NULL
 
 BEGIN
 
-SET @sCodigo = '-'
+SET @sCodigo = '-';
 
 END
 
@@ -347,9 +341,7 @@ ELSE
 
 BEGIN
 
-/*-- Generar código si sCodigo es nulo
-
-DECLARE @CodigoP VARCHAR(MAX) = NULL;
+/*DECLARE @CodigoP VARCHAR(MAX) = NULL;
 
 DECLARE @NewPrefijo VARCHAR(MAX);
 
@@ -361,7 +353,7 @@ IF @sCodigo IS NULL
 
 BEGIN
 
-SET @sCodigo = '-'
+SET @sCodigo = '-';
 
 END
 
