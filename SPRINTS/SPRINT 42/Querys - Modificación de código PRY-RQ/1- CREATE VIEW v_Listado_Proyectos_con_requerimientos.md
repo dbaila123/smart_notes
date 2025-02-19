@@ -3,7 +3,9 @@ CREATE VIEW v_Listado_Proyectos_con_requerimientos
 
 AS
 
-SELECT DISTINCT p.nId_Proyecto,
+SELECT DISTINCT
+
+p.nId_Proyecto,
 
 pl.nPrincipal,
 
@@ -11,15 +13,17 @@ pl.nId_Lider as nLider /*Se muestra el lider principal o el lider segundario par
 
 p.sNombre_Proyecto_Sin_Prefijo,
 
-p.sNombre_Proyecto_Sin_Prefijo as sNombre_Proyecto_Detalle,
+CONCAT(cPrefProy.sDescripcion, ' - ', p.sNombre_Proyecto_Sin_Prefijo) as sNombre_Proyecto_Detalle,
 
-concat((SELECT c.sDescripcion from Configs c where c.sTabla = 'PREFIJO_PROYECTO' and c.sCodigo = CAST(p.sPrefijo as VARCHAR(10))),
+/*CASE
 
-' - ',
+WHEN p.sCodigo!= '-' THEN CONCAT(p.sCodigo, ' ', p.sNombre_Proyecto_Sin_Prefijo)
 
-p.sNombre_Proyecto_Sin_Prefijo)
+ELSE CONCAT((SELECT c.sDescripcion from Configs c where c.sTabla = 'PREFIJO_PROYECTO' and c.sCodigo = CAST(p.sPrefijo as VARCHAR(10))), ' - ', p.sNombre_Proyecto_Sin_Prefijo)
 
-as sNombre_Proyecto_Lista,
+END as sNombre_Proyecto_Lista,*/
+
+p.sNombre as sNombre_Proyecto_Lista,
 
 p.sDescripcion,
 
@@ -31,9 +35,9 @@ p.sCodigo as sCodigo_Proyecto,
 
 p.sPrefijo AS sPrefijo_Codigo,
 
-(SELECT c.sDescripcion from Configs c where c.sTabla = 'PREFIJO_PROYECTO' and c.sCodigo = CAST(p.sPrefijo as VARCHAR(10))) as sPrefijo,
+cPrefProy.sDescripcion as sPrefijo,
 
-(SELECT c.sDescripcion from Configs c where sTabla = 'TIPO_ACCESO_PROYECTO' and c.sCodigo = CAST(p.nTipo_Acceso as VARCHAR(10))) as sTipo_Acceso,
+cTipoAcceso.sDescripcion as sTipo_Acceso,
 
 concat(pLider.sPrimer_Nombre, ' ', pLider.sApe_Paterno) sLider /*Se muestra el Lider Principal*/,
 
@@ -45,9 +49,9 @@ cp.nId_Coordinador as nCoordinador,
 
 pCoodinador.sPersona_Nombre as sCoordinador,
 
-(SELECT c.sCodigo from Configs c where sTabla = 'TIPO_SERVICIO' and c.sCodigo = p.sId_Tipo_Servicio ) as nTipo_Servicio,
+cTipoServ.sCodigo as nTipo_Servicio,
 
-(SELECT c.sDescripcion from Configs c where sTabla = 'TIPO_SERVICIO' and c.sCodigo = p.sId_Tipo_Servicio ) as sTipo_Servicio,
+cTipoServ.sDescripcion as sTipo_Servicio,
 
 convert(datetime2(7), p.dFecha_Inicio) AS dFecha_Inicio,
 
@@ -77,8 +81,6 @@ p.dFecha_Modificacion_Estado,
 
 convert(datetime2(7), p.dDatetime_Creador) AS dFecha_Creacion,
 
-  
-
 CASE
 
 WHEN p.nUsuario_Creador = 172 or p.nUsuario_Creador = 666
@@ -105,11 +107,9 @@ WHERE tb_user_creator.nId_Usuario = p.nUsuario_Creador
 
 END AS sNombre_Usuario_Creador,
 
-  
-
 p.sEstado_Proyecto AS nEstado,
 
-(SELECT c.sDescripcion from Configs c where sTabla = 'ESTADO_PROYECTO' and c.sCodigo = p.sEstado_Proyecto ) as sEstado_Descripcion,
+cEstadoProy.sDescripcion as sEstado_Descripcion,
 
 pCliente.sPersona_Nombre sCliente,
 
@@ -127,7 +127,9 @@ ELSE convert(bit,0)
 
 END bJustificacion,
 
-(SELECT ISNULL (SUM(rc.nEstimacion),0) from Requerimientos r
+(SELECT ISNULL(SUM(rc.nEstimacion),0)
+
+from Requerimientos r
 
 JOIN Requerimientos_Categoria rc on rc.nId_Requerimiento = r.nId_Requerimiento
 
@@ -137,29 +139,47 @@ where r.nId_Proyecto = p.nId_Proyecto) nEstimacion
 
 FROM Proyectos p
 
-join Proyecto_Lider pl on p.nId_Proyecto = pl.nId_Proyecto and pl.nEstado = 1--PRY_LIDER
+JOIN Proyecto_Lider pl ON p.nId_Proyecto = pl.nId_Proyecto and pl.nEstado = 1--PRY_LIDER
 
-join Colaboradores cLider on cLider.nId_Colaborador = p.nId_Lider --LIDER
+JOIN Colaboradores cLider ON cLider.nId_Colaborador = p.nId_Lider --LIDER
 
-join Personas pLider on pLider.nId_Persona = cLider.nId_Persona ---LIDER
+JOIN Personas pLider ON pLider.nId_Persona = cLider.nId_Persona ---LIDER
 
-join Colaboradores cDirector on cDirector.nId_Colaborador = p.nId_Director --DIRECTOR
+JOIN Colaboradores cDirector ON cDirector.nId_Colaborador = p.nId_Director --DIRECTOR
 
-join Personas pDirector on pDirector.nId_Persona = cDirector.nId_Persona ---DIRECTOR
+JOIN Personas pDirector ON pDirector.nId_Persona = cDirector.nId_Persona ---DIRECTOR
 
-left join Coordinadores_Proyectos cp on cp.nId_Proyecto = p.nId_Proyecto --COODINADOR_PROYECTO
+LEFT JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto --COODINADOR_PROYECTO
 
-left join Coordinadores coodi on coodi.nId_Coordinador = cp.nId_Coordinador --COODINADOR
+LEFT JOIN Coordinadores coodi ON coodi.nId_Coordinador = cp.nId_Coordinador --COODINADOR
 
-left join Personas pCoodinador on pCoodinador.nId_Persona = coodi.nId_Persona --COODINAROR
+LEFT JOIN Personas pCoodinador ON pCoodinador.nId_Persona = coodi.nId_Persona --COODINAROR
 
-join Clientes cliente on cliente.nId_Cliente = coodi.nId_Cliente --CLIENTE
+JOIN Clientes cliente ON cliente.nId_Cliente = coodi.nId_Cliente --CLIENTE
 
-join Personas pCliente on pCliente.nId_Persona = cliente.nId_Persona --CLIENTE
+JOIN Personas pCliente ON pCliente.nId_Persona = cliente.nId_Persona --CLIENTE
 
-left join Tareas t on t.nId_Proyecto = p.nId_Proyecto
+LEFT JOIN Tareas t ON t.nId_Proyecto = p.nId_Proyecto
 
-GROUP by p.nId_Proyecto,
+JOIN Configs cPrefProy ON cPrefProy.sTabla = 'PREFIJO_PROYECTO'
+
+AND cPrefProy.sCodigo = CAST(p.sPrefijo as VARCHAR(10))
+
+JOIN Configs cTipoAcceso ON cTipoAcceso.sTabla = 'TIPO_ACCESO_PROYECTO'
+
+AND cTipoAcceso.sCodigo = CAST(p.nTipo_Acceso as VARCHAR(10))
+
+JOIN Configs cTipoServ ON cTipoServ.sTabla = 'TIPO_SERVICIO'
+
+AND cTipoServ.sCodigo = p.sId_Tipo_Servicio
+
+JOIN Configs cEstadoProy ON cEstadoProy.sTabla = 'ESTADO_PROYECTO'
+
+AND cEstadoProy.sCodigo = p.sEstado_Proyecto
+
+GROUP BY
+
+p.nId_Proyecto,
 
 p.sPrefijo,
 
@@ -169,7 +189,7 @@ pl.nPrincipal,
 
 p.nId_Lider,
 
-p.sNombre ,
+p.sNombre,
 
 p.sNombre_Proyecto_Sin_Prefijo,
 
@@ -195,11 +215,11 @@ pCoodinador.sPersona_Nombre,
 
 p.dFecha_Inicio,
 
-P.dFecha_Fin,
+p.dFecha_Fin,
 
-P.dFecha_Modificacion_Estado,
+p.dFecha_Modificacion_Estado,
 
-P.dDatetime_Creador,
+p.dDatetime_Creador,
 
 p.nUsuario_Creador,
 
@@ -209,4 +229,14 @@ p.nEstado,
 
 p.nTipo_Acceso,
 
-pCliente.sPersona_Nombre;
+pCliente.sPersona_Nombre,
+
+cPrefProy.sDescripcion,
+
+cTipoAcceso.sDescripcion,
+
+cTipoServ.sCodigo,
+
+cTipoServ.sDescripcion,
+
+cEstadoProy.sDescripcion;

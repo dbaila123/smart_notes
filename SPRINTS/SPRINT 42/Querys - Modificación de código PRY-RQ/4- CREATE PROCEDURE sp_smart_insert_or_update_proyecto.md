@@ -51,6 +51,34 @@ DECLARE @IdProyecto INT;
 
 DECLARE @GeneratedCodigo VARCHAR(MAX);
 
+DECLARE @NombreFinal VARCHAR(MAX);
+
+IF @sCodigo <> '-'
+
+BEGIN
+
+SET @NombreFinal = CONCAT(@sCodigo, ' ', + @sNombre)
+
+END
+
+ELSE
+
+BEGIN
+
+IF @sPrefijo_Codigo = '1'
+
+SET @NombreFinal = CONCAT('PRY', ' - ', + @sNombre)
+
+ELSE IF @sPrefijo_Codigo = '2'
+
+SET @NombreFinal = CONCAT('MAN', ' - ', + @sNombre)
+
+ELSE
+
+SET @NombreFinal = @sNombre
+
+END
+
   
 
 -- Acción de inserción
@@ -75,7 +103,7 @@ JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
 JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-WHERE p.sNombre = @sNombre
+WHERE p.sNombre = @NombreFinal
 
 AND cp.nId_Coordinador = @nId_Coordinador
 
@@ -169,7 +197,7 @@ VALUES (
 
 @sNombre_Sin_Prefijo,
 
-@sNombre,
+@NombreFinal,
 
 @sCodigo,
 
@@ -251,7 +279,7 @@ BEGIN
 
 SET @code = '400';
 
-SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
+SET @message = 'El ' + @NombreFinal + ' ya tiene un coordinador con el mismo nombre.';
 
 SELECT @code AS 'Code', @message AS 'Message', @IdProyecto AS 'IdProyecto';
 
@@ -275,7 +303,7 @@ SET @message = 'Proyecto actualizado correctamente.';
 
 SET @currentProject = (
 
-SELECT p.sNombre
+SELECT COUNT(*)
 
 FROM Proyectos p
 
@@ -283,9 +311,7 @@ JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
 JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-WHERE p.sNombre = @sNombre
-
-AND p.nid_proyecto = @nId_Proyecto
+WHERE p.sNombre = @NombreFinal
 
 AND cp.nId_Coordinador = @nId_Coordinador
 
@@ -293,11 +319,11 @@ AND c.nEstado = 1
 
 AND c.sTabla = 'TIPO_SERVICIO'
 
+AND p.nId_Proyecto <> @nId_Proyecto
+
 );
 
-  
-
-DECLARE @nId_Proyecto_out INT;
+/*DECLARE @nId_Proyecto_out INT;
 
   
 
@@ -311,7 +337,7 @@ JOIN Configs c ON c.sCodigo = p.sId_Tipo_Servicio
 
 JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
 
-WHERE p.sNombre = @sNombre
+WHERE p.sNombre = @NombreFinal
 
 AND p.nid_proyecto = @nId_Proyecto
 
@@ -321,17 +347,17 @@ AND c.nEstado = 1
 
 AND c.sTabla = 'TIPO_SERVICIO'
 
-);
+);*/
 
   
 
-IF (@currentProject = @sNombre AND @nId_Proyecto!= @nId_Proyecto_out)
+IF @currentProject <> 0
 
 BEGIN
 
 SET @code = '400';
 
-SET @message = 'El ' + @sNombre + ' ya tiene un coordinador con el mismo nombre.';
+SET @message = 'El ' + @NombreFinal + ' ya tiene un coordinador con el mismo nombre.';
 
 SELECT @code AS 'Code', @message AS 'Message', @nId_Proyecto AS 'IdProyecto';
 
@@ -363,7 +389,7 @@ END
 
 UPDATE Proyectos
 
-SET sNombre = @sNombre,
+SET sNombre = @NombreFinal,
 
 sNombre_Proyecto_Sin_Prefijo = @sNombre_Sin_Prefijo,
 

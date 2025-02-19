@@ -7,7 +7,9 @@ SELECT
 
 r.nId_Requerimiento,
 
-CONCAT(r.sPrefijo, ' - ', r.sNombre) AS sNombre_Requerimiento,
+r.sNombre AS sNombre_Requerimiento,
+
+CONCAT(r.sPrefijo, ' - ', r.sNombre_SinPrefijo) AS sNombre_Requerimiento_ConPrefijo,
 
 r.sPrefijo,
 
@@ -25,19 +27,9 @@ p.sNombre AS sNombre_Proyecto,
 
 p.sCodigo AS sCodigo_proyecto,
 
-CONCAT(p.sCodigo, ' ', p.sNombre) AS sNombre_Proyecto_ConPrefijo,
+CONCAT(cPrefProj.sDescripcion, ' - ', p.sNombre_Proyecto_Sin_Prefijo) as sNombre_Proyecto_ConPrefijo,
 
-(
-
-SELECT c.sDescripcion
-
-FROM Configs c
-
-WHERE c.sTabla = 'PREFIJO_PROYECTO'
-
-AND c.sCodigo = CAST(p.sPrefijo AS VARCHAR(10))
-
-) AS sPrefijoPRY,
+cPrefProj.sDescripcion AS sPrefijoPRY,
 
 r.sNombre_SinPrefijo,
 
@@ -71,7 +63,7 @@ r.nEstado AS nEstado_Requerimiento,
 
 prmc.nEstimado AS nEstimacion,
 
-co.sDescripcion AS sEstado_Requerimiento,
+cEstadoReq.sDescripcion AS sEstado_Requerimiento,
 
 CASE
 
@@ -105,7 +97,7 @@ ELSE CONCAT(pCrea.sPrimer_Nombre, ' ', pCrea.sApe_Paterno)
 
 END AS sNombre_Usuario_Creador,
 
-cSer.sDescripcion AS sTipo_Servicio_Req,
+cTipoServ.sDescripcion AS sTipo_Servicio_Req,
 
 r.sCodigo
 
@@ -135,14 +127,18 @@ JOIN Personas p2 ON c2.nId_Persona = p2.nId_Persona
 
 JOIN pryRqMinutosCalculados prmc ON prmc.nId_Requerimiento = r.nId_Requerimiento
 
-JOIN Configs co ON co.sCodigo = CONVERT(VARCHAR, r.nEstado)
+JOIN Configs cEstadoReq ON cEstadoReq.sCodigo = CONVERT(VARCHAR, r.nEstado)
 
-AND co.sTabla = 'ESTADO_REQUERIMIENTO'
+AND cEstadoReq.sTabla = 'ESTADO_REQUERIMIENTO'
 
 JOIN Usuarios uCrea ON uCrea.nId_Usuario = r.nUsuario_Creador
 
 JOIN Personas pCrea ON pCrea.nId_Persona = uCrea.nId_Persona
 
-JOIN Configs cSer ON cSer.sCodigo = p.sId_Tipo_Servicio
+JOIN Configs cTipoServ ON cTipoServ.sCodigo = p.sId_Tipo_Servicio
 
-AND cSer.sTabla = 'TIPO_SERVICIO';
+AND cTipoServ.sTabla = 'TIPO_SERVICIO'
+
+JOIN Configs cPrefProj ON cPrefProj.sCodigo = CAST(p.sPrefijo AS VARCHAR(10))
+
+AND cPrefProj.sTabla = 'PREFIJO_PROYECTO';

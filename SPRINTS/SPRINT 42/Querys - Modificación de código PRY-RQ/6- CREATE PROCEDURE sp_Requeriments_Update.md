@@ -33,7 +33,35 @@ BEGIN
 
 DECLARE @UpdatedId INT;
 
+DECLARE @NombreFinal NVARCHAR(MAX);
+
 BEGIN TRY
+
+IF @sCodigo IS NULL
+
+BEGIN
+
+SET @sCodigo = '-';
+
+END
+
+  
+
+IF @sCodigo <> '-'
+
+BEGIN
+
+SET @NombreFinal = CONCAT(@sCodigo, ' ', + @sNombre)
+
+END
+
+ELSE
+
+BEGIN
+
+SET @NombreFinal = CONCAT('RQ', ' - ', + @sNombre)
+
+END
 
 IF EXISTS (
 
@@ -63,7 +91,7 @@ UPDATE REQUERIMIENTOS
 
 SET nId_Proyecto = @nId_Proyecto,
 
-sNombre = @sNombre,
+sNombre = @NombreFinal,
 
 nId_Lider = @nId_Lider,
 

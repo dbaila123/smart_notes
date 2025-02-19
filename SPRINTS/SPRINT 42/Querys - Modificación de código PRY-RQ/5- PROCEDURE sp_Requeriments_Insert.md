@@ -49,7 +49,35 @@ DECLARE @InsertedId INT;
 
 DECLARE @CodigoSinPrefijo NVARCHAR(MAX);
 
+DECLARE @NombreFinal NVARCHAR(MAX);
+
   
+
+IF @sCodigo IS NULL
+
+BEGIN
+
+SET @sCodigo = '-';
+
+END
+
+  
+
+IF @sCodigo <> '-'
+
+BEGIN
+
+SET @NombreFinal = CONCAT(@sCodigo, ' ', + @sNombre)
+
+END
+
+ELSE
+
+BEGIN
+
+SET @NombreFinal = CONCAT('RQ', ' - ', + @sNombre)
+
+END
 
 IF @sCodigo IS NOT NULL
 
@@ -87,7 +115,7 @@ VALUES
 
 (
 
-@sNombre, @sDescripcion, @nEstado, @nId_Proyecto, @nUsuario_Creador, @dDatetime_Creador,
+@NombreFinal, @sDescripcion, @nEstado, @nId_Proyecto, @nUsuario_Creador, @dDatetime_Creador,
 
 @nUsuario_Update, @dDatetime_Update, @nUsuario_Delete, @dDatetime_Delete, @dFecha_Inicio, @nId_Metodologia,
 
@@ -107,9 +135,25 @@ END
 
 SET @InsertedId = SCOPE_IDENTITY();
 
+/*IF @sCodigo = '-'
+
+BEGIN
+
+UPDATE Requerimientos
+
+SET sCodigo = '-',
+
+sCodigo_SinPrefijo = '-'
+
+WHERE nId_Requerimiento = @InsertedId;
+
+END*/
+
   
 
-IF @sCodigo IS NULL
+  
+
+/*IF @sCodigo IS NULL
 
 BEGIN
 
@@ -141,9 +185,7 @@ SET sCodigo = @sCodigo
 
 WHERE nId_Requerimiento = @InsertedId;
 
-  
-
-END
+END*/
 
   
 
