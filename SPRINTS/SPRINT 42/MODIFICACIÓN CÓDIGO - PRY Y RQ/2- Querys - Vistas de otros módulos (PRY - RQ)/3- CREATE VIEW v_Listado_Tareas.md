@@ -21,7 +21,7 @@ tb_conf_activity.sDescripcion sNombre_Tipo_Actividad,
 
 tb_task.nId_Proyecto sCodigo_Proyecto,
 
-tb_project.sNombre_Proyecto_Sin_Prefijo sNombre_Proyecto,
+tb_project.sNombre sNombre_Proyecto,
 
 tb_task.sId_Categoria sCodigo_Categoria,
 
@@ -178,4 +178,3 @@ join Configs tb_conf_state on tb_task.nEstado_Tarea = tb_conf_state.sCodigo and 
 join Configs tb_conf_service on tb_project.sId_Tipo_Servicio = tb_conf_service.sCodigo and tb_conf_service.sTabla = 'TIPO_SERVICIO'
 
 join Requerimientos r on tb_task.nId_Requerimiento = r.nId_Requerimiento;
-```

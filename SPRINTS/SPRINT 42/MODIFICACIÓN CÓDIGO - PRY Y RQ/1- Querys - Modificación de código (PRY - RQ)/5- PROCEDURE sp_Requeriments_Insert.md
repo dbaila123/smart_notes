@@ -67,7 +67,7 @@ IF @sCodigo <> '-'
 
 BEGIN
 
-SET @NombreFinal = CONCAT(@sCodigo, ' ', + @sNombre)
+SET @NombreFinal = CONCAT(@sCodigo, ' - ', + @sNombre)
 
 END
 
