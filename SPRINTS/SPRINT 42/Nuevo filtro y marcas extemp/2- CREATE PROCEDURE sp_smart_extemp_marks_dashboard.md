@@ -1,0 +1,220 @@
+```SQL
+CREATE PROCEDURE sp_smart_extemp_marks_dashboard
+
+@FechaInicio DATE,
+
+@FechaFin DATE,
+
+@sNombreColaborador varchar(MAX) = NULL,
+
+@sFilterOne NVARCHAR(MAX) = NULL,-- Supervisores
+
+@sFilterSeven NVARCHAR(MAX) = NULL
+
+  
+
+AS
+
+BEGIN
+
+SET NOCOUNT ON;
+
+  
+
+-- Variables para el filtro dinámico
+
+DECLARE @whereClause AS nvarchar(max) = ''
+
+DECLARE @conditions AS TABLE (condition nvarchar(max))
+
+DECLARE @conditionOUT AS nvarchar(max)
+
+-- DECLARE @paginationClause AS nvarchar(max);
+
+DECLARE @count INT
+
+  
+
+-- Construir condición de búsqueda por nombre
+
+IF @sNombreColaborador IS NOT NULL
+
+BEGIN
+
+EXEC sp_get_like_condition 'p.sPersona_Nombre', @sNombreColaborador, @conditionOUT OUTPUT
+
+INSERT INTO @conditions VALUES (@conditionOUT)
+
+END
+
+  
+
+PRINT @conditionOUT
+
+  
+
+-- Construir condición de búsqueda por supervisor
+
+IF @sFilterOne IS NOT NULL
+
+BEGIN
+
+DECLARE @CollaboratorsListTeam VARCHAR(MAX);
+
+SET @CollaboratorsListTeam = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVARCHAR(MAX), @sFilterOne),0,0)
+
+INSERT INTO @conditions VALUES ('c.nId_Colaborador in('+@CollaboratorsListTeam+')')
+
+END
+
+-- Construir condición de búsqueda por estado del colaborador
+
+IF @sFilterSeven IS NOT NULL
+
+BEGIN
+
+INSERT INTO @conditions VALUES('nEstado_Colaborador in('+@sFilterSeven+')')
+
+END
+
+  
+
+-- Construir WHERE clause
+
+SELECT @count = COUNT(*) FROM @conditions
+
+IF @count > 0
+
+BEGIN
+
+SET @whereClause = N' AND '
+
+END
+
+  
+
+WHILE @count > 0
+
+BEGIN
+
+DECLARE @condition_temp VARCHAR(max) = (SELECT TOP(1) condition FROM @conditions)
+
+IF @count = 1
+
+BEGIN
+
+SET @whereClause = CONCAT(@whereClause, @condition_temp)
+
+END
+
+ELSE
+
+BEGIN
+
+SET @whereClause = CONCAT(@whereClause, @condition_temp, ' AND ')
+
+END
+
+DELETE TOP(1) FROM @conditions
+
+SELECT @count = COUNT(*) FROM @conditions
+
+END
+
+  
+
+-- Consulta principal con la cláusula WHERE dinámica sPersona_Nombre AS sNombres_Apellidos,
+
+DECLARE @sqlQuery NVARCHAR(MAX)
+
+SET @sqlQuery = N'
+
+SELECT
+
+nId_Colaborador,
+
+sPersona_Nombre AS sNombres_Apellidos,
+
+sPrimer_Nombre+ '' '' +sApe_Paterno AS sNombre_Colaborador,
+
+nEstado_Colaborador,
+
+SUM(CASE WHEN EstadoMarca IN (1,2) THEN 1 ELSE 0 END) AS nTotal_Dias_Laborados,
+
+@FechaInicio AS dFecha_Inicio,
+
+@FechaFin AS dFecha_Fin,
+
+SUM(CASE WHEN EstadoMarca = 0 THEN 1 ELSE 0 END) AS nSin_Marcas,
+
+SUM(CASE WHEN EstadoMarca = 1 THEN 1 ELSE 0 END) AS nDias_Normal,
+
+SUM(CASE WHEN EstadoMarca = 2 THEN 1 ELSE 0 END) AS nMarcas_Extemp
+
+FROM (
+
+SELECT
+
+m.nId_Colaborador,
+
+p.sPersona_Nombre,
+
+p.sPrimer_Nombre as sPrimer_Nombre,
+
+p.sApe_Paterno AS sApe_Paterno,
+
+c.nEstado_Colaborador,
+
+dbo.fg_get_calcular_estado_marca_extemp(m.nId_Colaborador, m.dFecha_Asistencia) AS EstadoMarca,
+
+m.dFecha_Asistencia
+
+FROM
+
+Asistencias m
+
+INNER JOIN
+
+Colaboradores c ON c.nId_Colaborador = m.nId_Colaborador
+
+INNER JOIN
+
+Personas p ON c.nId_Persona = p.nId_Persona
+
+WHERE
+
+m.dFecha_Asistencia BETWEEN @FechaInicio AND @FechaFin
+
+' + @whereClause + '
+
+) AS MarcasExtemp
+
+GROUP BY
+
+sPersona_Nombre,nId_Colaborador, sPrimer_Nombre, sApe_Paterno, nEstado_Colaborador
+
+ORDER BY nMarcas_Extemp DESC'
+
+  
+
+  
+
+--Set @paginationClause
+
+--EXEC sp_get_pagination_clause @pnum, @size , @paginationClause OUTPUT
+
+-- Ejecutar la consulta dinámica con los parámetros correctamente declarados
+
+EXEC sp_executesql
+
+@sqlQuery,
+
+N'@FechaInicio DATE, @FechaFin DATE',
+
+@FechaInicio = @FechaInicio,
+
+@FechaFin = @FechaFin
+
+  
+
+END;

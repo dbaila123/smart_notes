@@ -1,4 +1,5 @@
 ```SQL
+
 CREATE VIEW v_Listado_Requerimientos_refact
 
 AS
@@ -85,7 +86,7 @@ ELSE convert(bit, 0)
 
 END AS bJustificacion,
 
-r.dDatetime_Creador AS dFecha_Creacion,
+convert(datetime2(7), r.dDatetime_Creador) AS dFecha_Creacion,
 
 CASE
 

@@ -44,6 +44,3 @@ UPDATE Requerimientos
 SET sCodigo = '-'
 
 WHERE sCodigo = 'RQ - '
-
-
-
