@@ -13,9 +13,9 @@ CREATE PROCEDURE[dbo].[sp_smart_get_requerimientos_refact]
 
 @sFilterNotification NVARCHAR(MAX), --Filtro por Id de requerimiento
 
-@fechaCreaIni varchar(max),
+--@fechaCreaIni varchar(max),
 
-@fechaCreaFin varchar(max),
+--@fechaCreaFin varchar(max),
 
 ----------------------------------------------------
 
@@ -191,7 +191,7 @@ DECLARE @condition AS nvarchar(max);
 
   
 
-IF @fechaCreaIni IS NOT NULL AND @fechaCreaFin IS NOT NULL
+/*IF @fechaCreaIni IS NOT NULL AND @fechaCreaFin IS NOT NULL
 
 BEGIN
 
@@ -201,7 +201,7 @@ EXEC sp_get_dates_condition 'dFecha_Creacion', @fechaCreaIni ,@fechaCreaFin, @co
 
 INSERT INTO @conditions_array VALUES(@condition)
 
-END
+END*/
 
   
 

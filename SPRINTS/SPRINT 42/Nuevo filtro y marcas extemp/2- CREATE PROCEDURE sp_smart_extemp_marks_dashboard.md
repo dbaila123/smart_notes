@@ -9,7 +9,7 @@ CREATE PROCEDURE sp_smart_extemp_marks_dashboard
 
 @sFilterOne NVARCHAR(MAX) = NULL,-- Supervisores
 
-@sFilterSeven NVARCHAR(MAX) = NULL
+@sfilterTwo NVARCHAR(MAX) = NULL -- Estado
 
   
 
@@ -28,8 +28,6 @@ DECLARE @whereClause AS nvarchar(max) = ''
 DECLARE @conditions AS TABLE (condition nvarchar(max))
 
 DECLARE @conditionOUT AS nvarchar(max)
-
--- DECLARE @paginationClause AS nvarchar(max);
 
 DECLARE @count INT
 
@@ -63,17 +61,17 @@ DECLARE @CollaboratorsListTeam VARCHAR(MAX);
 
 SET @CollaboratorsListTeam = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVARCHAR(MAX), @sFilterOne),0,0)
 
-INSERT INTO @conditions VALUES ('c.nId_Colaborador in('+@CollaboratorsListTeam+')')
+INSERT INTO @conditions VALUES ('mec.nId_Colaborador in('+@CollaboratorsListTeam+')')
 
 END
 
 -- Construir condición de búsqueda por estado del colaborador
 
-IF @sFilterSeven IS NOT NULL
+IF @sfilterTwo IS NOT NULL
 
 BEGIN
 
-INSERT INTO @conditions VALUES('nEstado_Colaborador in('+@sFilterSeven+')')
+INSERT INTO @conditions VALUES('mec.nEstado_Colaborador in('+@sfilterTwo+')')
 
 END
 
@@ -87,7 +85,7 @@ IF @count > 0
 
 BEGIN
 
-SET @whereClause = N' AND '
+SET @whereClause = N'WHERE '
 
 END
 
@@ -123,85 +121,189 @@ END
 
   
 
--- Consulta principal con la cláusula WHERE dinámica sPersona_Nombre AS sNombres_Apellidos,
+-- Consulta principal con la cláusula WHERE dinámica
 
 DECLARE @sqlQuery NVARCHAR(MAX)
 
 SET @sqlQuery = N'
 
-SELECT
+SELECT dFecha
 
-nId_Colaborador,
+INTO #DiasFeriados
 
-sPersona_Nombre AS sNombres_Apellidos,
+FROM Feriados
 
-sPrimer_Nombre+ '' '' +sApe_Paterno AS sNombre_Colaborador,
+WHERE dFecha BETWEEN @FechaInicio AND @FechaFin
 
-nEstado_Colaborador,
-
-SUM(CASE WHEN EstadoMarca IN (1,2) THEN 1 ELSE 0 END) AS nTotal_Dias_Laborados,
-
-@FechaInicio AS dFecha_Inicio,
-
-@FechaFin AS dFecha_Fin,
-
-SUM(CASE WHEN EstadoMarca = 0 THEN 1 ELSE 0 END) AS nSin_Marcas,
-
-SUM(CASE WHEN EstadoMarca = 1 THEN 1 ELSE 0 END) AS nDias_Normal,
-
-SUM(CASE WHEN EstadoMarca = 2 THEN 1 ELSE 0 END) AS nMarcas_Extemp
-
-FROM (
+AND nEstado = 1
 
 SELECT
 
 m.nId_Colaborador,
 
-p.sPersona_Nombre,
+m.nId_Asistencia,
 
-p.sPrimer_Nombre as sPrimer_Nombre,
-
-p.sApe_Paterno AS sApe_Paterno,
+c.nId_Persona,
 
 c.nEstado_Colaborador,
 
-dbo.fg_get_calcular_estado_marca_extemp(m.nId_Colaborador, m.dFecha_Asistencia) AS EstadoMarca,
+COUNT(CASE WHEN ma.nEstado IN (0,1) THEN 1 ELSE NULL END) AS nTotal_Dias_Laborados,
 
-m.dFecha_Asistencia
+COUNT(CASE WHEN ma.nEstado IN (0,1) AND ma.nMarcaje_Extemporaneo = 0 THEN 1 ELSE NULL END) AS nDias_Normal,
 
-FROM
+COUNT(CASE WHEN ma.nEstado IN (0,1) AND ma.nMarcaje_Extemporaneo = 1 THEN 1 ELSE NULL END) AS nMarcas_Extemp
 
-Asistencias m
+INTO #MarcaExtempCalculada
 
-INNER JOIN
+FROM Asistencias m
 
-Colaboradores c ON c.nId_Colaborador = m.nId_Colaborador
+INNER JOIN Marcas ma
 
-INNER JOIN
+ON m.nId_Colaborador = ma.nId_Colaborador
 
-Personas p ON c.nId_Persona = p.nId_Persona
+AND m.dFecha_Asistencia = ma.dFecha_Jornada
 
-WHERE
+INNER JOIN Colaboradores c
 
-m.dFecha_Asistencia BETWEEN @FechaInicio AND @FechaFin
+ON m.nId_Colaborador = c.nId_Colaborador
+
+INNER JOIN Horarios_Colaboradores hc
+
+ON c.nId_Colaborador = hc.nId_Colaborador
+
+AND hc.nEstado = 1
+
+INNER JOIN Horarios_Detalles hd ON hc.nId_Horario = hd.nId_Horario AND
+
+CASE
+
+WHEN hd.nDia = 0 THEN ''Sunday''
+
+WHEN hd.nDia = 1 THEN ''Monday''
+
+WHEN hd.nDia = 2 THEN ''Tuesday''
+
+WHEN hd.nDia = 3 THEN ''Wednesday''
+
+WHEN hd.nDia = 4 THEN ''Thursday''
+
+WHEN hd.nDia = 5 THEN ''Friday''
+
+WHEN hd.nDia = 6 THEN ''Saturday''
+
+END = DATENAME(WEEKDAY, m.dFecha_Asistencia)
+
+WHERE m.dFecha_Asistencia BETWEEN @FechaInicio AND @FechaFin
+
+AND m.nTiene_Marca > 0
+
+AND NOT EXISTS (SELECT 1 FROM #DiasFeriados df WHERE df.dFecha = m.dFecha_Asistencia)
+
+GROUP BY m.nId_Colaborador, m.nId_Asistencia, c.nId_Persona, c.nEstado_Colaborador
+
+SELECT
+
+s.nId_Colaborador,
+
+COUNT(CASE WHEN s.nEstado_Solicitud = 1 THEN 1 ELSE NULL END) AS nSolicitudes_Pendientes,
+
+COUNT(CASE WHEN s.nEstado_Solicitud = 3 THEN 1 ELSE NULL END) AS nSolicitudes_Aprobadas,
+
+COUNT(CASE WHEN s.nEstado_Solicitud IN (1, 3) THEN 1 ELSE NULL END) AS nTotal_Solicitudes
+
+INTO #SolicitudesInfo
+
+FROM Solicitudes s
+
+INNER JOIN Horarios_Colaboradores hc on s.nId_Colaborador = hc.nId_Colaborador AND hc.nEstado = 1
+
+INNER JOIN Horarios_Detalles hd ON hc.nId_Horario = hd.nId_Horario AND
+
+CASE
+
+WHEN hd.nDia = 0 THEN ''Sunday''
+
+WHEN hd.nDia = 1 THEN ''Monday''
+
+WHEN hd.nDia = 2 THEN ''Tuesday''
+
+WHEN hd.nDia = 3 THEN ''Wednesday''
+
+WHEN hd.nDia = 4 THEN ''Thursday''
+
+WHEN hd.nDia = 5 THEN ''Friday''
+
+WHEN hd.nDia = 6 THEN ''Saturday''
+
+END = DATENAME(WEEKDAY, s.dFecha_Solicitud)
+
+WHERE s.dFecha_Solicitud BETWEEN @FechaInicio AND @FechaFin
+
+AND s.nId_Tipo_Solicitud = 4
+
+AND NOT EXISTS (SELECT 1 FROM #DiasFeriados df WHERE df.dFecha = s.dFecha_Solicitud)
+
+GROUP BY s.nId_Colaborador
+
+select
+
+mec.nId_Colaborador,
+
+p.sPersona_Nombre AS sNombres_Apellidos,
+
+p.sPrimer_Nombre + '' '' + p.sApe_Paterno AS sNombre_Colaborador,
+
+mec.nEstado_Colaborador,
+
+@FechaInicio AS dFecha_Inicio,
+
+@FechaFin AS dFecha_Fin,
+
+COUNT(mec.nId_Asistencia) as nTotal_Dias_Laborados,
+
+COUNT(CASE WHEN mec.nDias_Normal > 0 AND mec.nMarcas_Extemp = 0 THEN 1 ELSE NULL END) as nDias_Normal,
+
+COUNT(CASE WHEN mec.nMarcas_Extemp > 0 THEN 1 ELSE NULL END) as nMarcas_Extemp,
+
+COALESCE(si.nSolicitudes_Pendientes, 0) AS nSolicitudes_Pendientes,
+
+COALESCE(si.nSolicitudes_Aprobadas, 0) AS nSolicitudes_Aprobadas,
+
+COALESCE(si.nTotal_Solicitudes, 0) AS nTotal_Solicitudes
+
+from Personas p
+
+INNER JOIN #MarcaExtempCalculada mec on p.nId_Persona = mec.nId_Persona
+
+LEFT JOIN #SolicitudesInfo si on mec.nId_Colaborador = si.nId_Colaborador
 
 ' + @whereClause + '
 
-) AS MarcasExtemp
-
 GROUP BY
 
-sPersona_Nombre,nId_Colaborador, sPrimer_Nombre, sApe_Paterno, nEstado_Colaborador
+p.sPersona_Nombre,
 
-ORDER BY nMarcas_Extemp DESC'
+mec.nId_Colaborador,
+
+p.sPrimer_Nombre,
+
+p.sApe_Paterno,
+
+mec.nEstado_Colaborador,
+
+si.nSolicitudes_Pendientes,
+
+si.nSolicitudes_Aprobadas,
+
+si.nTotal_Solicitudes
+
+ORDER BY
+
+nMarcas_Extemp DESC
+
+DROP TABLE #DiasFeriados'
 
   
-
-  
-
---Set @paginationClause
-
---EXEC sp_get_pagination_clause @pnum, @size , @paginationClause OUTPUT
 
 -- Ejecutar la consulta dinámica con los parámetros correctamente declarados
 
