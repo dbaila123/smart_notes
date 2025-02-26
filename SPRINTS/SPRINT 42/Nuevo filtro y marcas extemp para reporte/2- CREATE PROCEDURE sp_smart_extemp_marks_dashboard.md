@@ -235,9 +235,9 @@ WHEN hd.nDia = 5 THEN ''Friday''
 
 WHEN hd.nDia = 6 THEN ''Saturday''
 
-END = DATENAME(WEEKDAY, s.dFecha_Solicitud)
+END = DATENAME(WEEKDAY, s.dFecha_Inicio)
 
-WHERE s.dFecha_Solicitud BETWEEN @FechaInicio AND @FechaFin
+WHERE s.dFecha_Inicio BETWEEN @FechaInicio AND @FechaFin
 
 AND s.nId_Tipo_Solicitud = 4
 
