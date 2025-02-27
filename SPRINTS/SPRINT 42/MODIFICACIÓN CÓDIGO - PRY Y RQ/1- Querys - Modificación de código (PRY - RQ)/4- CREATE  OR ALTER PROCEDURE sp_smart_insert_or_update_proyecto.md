@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_smart_insert_or_update_proyecto (
+CREATE OR ALTER PROCEDURE sp_smart_insert_or_update_proyecto (
 
 @nId_Usuario INT,
 

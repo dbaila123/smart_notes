@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Participantes_Tesoreria_Principales AS
+CREATE OR ALTER VIEW v_Participantes_Tesoreria_Principales AS
 
 WITH CTE_Solicitudes AS (
 

@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_smart_dashboard_tareo_delay (
+CREATE OR ALTER PROCEDURE sp_smart_dashboard_tareo_delay (
 
 @FechaInicio DATE,
 
@@ -255,7 +255,9 @@ WHERE a.dFecha_Asistencia BETWEEN @FechaInicio AND @FechaFin
 
 AND a.nTiene_Marca >= 1
 
-AND a.nLlenado > 0
+--AND a.nLlenado > 0
+
+AND sEstadoLLenadoTareo IN ('COMPLETO','INCOMPLETO')
 
 GROUP BY a.nId_Colaborador;
 

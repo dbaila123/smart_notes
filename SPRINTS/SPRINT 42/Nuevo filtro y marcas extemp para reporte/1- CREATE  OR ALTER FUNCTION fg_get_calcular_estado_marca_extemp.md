@@ -1,5 +1,5 @@
 ```SQL
-CREATE FUNCTION fg_get_calcular_estado_marca_extemp(
+CREATE OR ALTER FUNCTION fg_get_calcular_estado_marca_extemp(
 
 @id_colaborador INT,
 

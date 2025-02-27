@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_Solicitudes AS
+CREATE OR ALTER VIEW v_Listado_Solicitudes AS
 
 SELECT
 
