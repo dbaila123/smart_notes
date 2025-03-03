@@ -897,7 +897,7 @@ BEGIN
 
 INSERT INTO @configuraciones
 
-SELECT CAST(c.nId_Colaborador as nvarchar(max)) as sCodigo,
+SELECT DISTINCT CAST (c.nId_Colaborador as nvarchar(max)) as sCodigo,
 
 p.sPersona_Nombre as sDescripcion,
 
@@ -911,15 +911,15 @@ JOIN Usuarios u ON u.nId_Persona = p.nId_Persona
 
 JOIN Horarios_Colaboradores hc ON c.nId_Colaborador = hc.nId_Colaborador
 
-JOIN Team_Colaboradors tc ON c.nId_Colaborador = tc.nId_Colaborador
+JOIN colaboradores_supervisor cs ON c.nId_Colaborador = cs.nId_Colaborador
 
 WHERE c.nEstado_Colaborador = 1
 
 AND hc.nEstado = 1
 
-AND c.nId_Colaborador != @Id_Colaborador
+--AND c.nId_Colaborador != @Id_Colaborador
 
-AND tc.nPrincipal = 1
+AND cs.bPrincipal = 1
 
 END
 
@@ -1913,9 +1913,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
 
 BEGIN
 
-INSERT INTO @configuraciones
-
-SELECT p.nId_Proyecto as sCodigo,
+INSERT INTO @configuraciones SELECT p.nId_Proyecto as sCodigo,
 
 CONCAT(p.sNombre, ' ', '(', pc.sPrimer_Nombre , ')') as sDescripcion,
 
@@ -2605,6 +2603,8 @@ from Tipos_Solicitudes
 
 where nEstado = 1
 
+AND nId_Tipo_Solicitud NOT IN (26)
+
 -- AND nId_Tipo_Solicitud NOT IN (21, 20)
 
 END
@@ -3168,6 +3168,8 @@ CONCAT(ts.sDescripcion,
 FROM Tipos_Solicitudes ts
 
 WHERE ts.nEstado = 1
+
+and ts.nId_Tipo_Solicitud NOT IN (26)
 
 and ts.nId_Categoria NOT IN (2))
 
