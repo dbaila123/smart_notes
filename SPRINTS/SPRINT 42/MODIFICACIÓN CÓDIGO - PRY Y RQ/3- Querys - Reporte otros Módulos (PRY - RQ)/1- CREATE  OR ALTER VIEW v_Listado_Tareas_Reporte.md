@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_Tareas_Reporte AS
+CREATE OR ALTER VIEW v_Listado_Tareas_Reporte AS
 
 SELECT
 

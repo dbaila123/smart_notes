@@ -1,5 +1,5 @@
 ```SQL
-CREATE VIEW v_Listado_TareoStatus
+CREATE OR ALTER VIEW v_Listado_TareoStatus
 
 AS
 

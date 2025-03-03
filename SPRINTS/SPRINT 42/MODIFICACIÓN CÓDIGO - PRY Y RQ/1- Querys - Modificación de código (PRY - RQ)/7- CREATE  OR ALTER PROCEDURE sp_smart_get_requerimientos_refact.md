@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE[dbo].[sp_smart_get_requerimientos_refact]
+CREATE OR ALTER PROCEDURE [dbo].[sp_smart_get_requerimientos_refact]
 
 (
 

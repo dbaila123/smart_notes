@@ -1,5 +1,5 @@
 ```SQL
-CREATE PROCEDURE sp_smart_extemp_marks_dashboard
+CREATE OR ALTER PROCEDURE sp_smart_extemp_marks_dashboard
 
 @FechaInicio DATE,
 

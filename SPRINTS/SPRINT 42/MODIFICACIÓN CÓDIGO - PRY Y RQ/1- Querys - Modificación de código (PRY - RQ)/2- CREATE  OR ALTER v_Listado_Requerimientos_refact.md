@@ -1,6 +1,6 @@
 ```SQL
 
-CREATE VIEW v_Listado_Requerimientos_refact
+CREATE OR ALTER VIEW v_Listado_Requerimientos_refact
 
 AS
 
