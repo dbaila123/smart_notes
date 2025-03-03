@@ -1,5 +1,5 @@
 ```SQL
-ALTER PROCEDURE sp_validate_overlap_requests_on_massive
+ALTER PROCEDURE [dbo].[sp_validate_overlap_requests_on_massive]
 
 @collaboratorId INT,
 
@@ -17,6 +17,8 @@ ALTER PROCEDURE sp_validate_overlap_requests_on_massive
 
 @categoryId INT
 
+  
+
 AS
 
 BEGIN
@@ -30,6 +32,56 @@ IF @frecuencyType = 1 -- Hour
 BEGIN
 
 -- Validate the input = Category != Mark + Task and nAfecta_Asistencia = 1
+
+  
+
+DECLARE @dHora_Inicio TIME = null, @dHoraFin Time = null, @dHora_Ini_Refrigerio TIME = null, @dHoraFin_Refrigerio TIME = null
+
+  
+
+SELECT @dHora_Inicio = ht.dHora_Entrada,
+
+@dHoraFin = ht.dHora_Salida,
+
+@dHora_Ini_Refrigerio = ht.dHora_Salida_Refrigerio,
+
+@dHoraFin_Refrigerio = ht.dHora_Retorno_Refrigerio
+
+FROM Horario_Total_Detalle ht
+
+JOIN Horarios_Colaboradores hc ON hc.nId_Horario = ht.nId_Horario
+
+AND ht.nDia = dbo.fn_get_weekday(@startDate)
+
+AND hc.nId_Colaborador = @collaboratorId
+
+WHERE hc.nEstado = 1
+
+  
+
+  
+
+IF (@dHora_Inicio IS NULL OR @dHora_Inicio > @startHour OR @dHoraFin < @endHour ) AND @affectAttendance = 1
+
+BEGIN
+
+SET @result = 'Rango fuera del horario laboral'
+
+end
+
+  
+
+/* IF (@startHour BETWEEN @dHora_Ini_Refrigerio AND @dHoraFin_Refrigerio )
+
+OR (@endHour BETWEEN @dHora_Ini_Refrigerio AND @dHoraFin_Refrigerio )
+
+BEGIN
+
+SET @result = 'Dentro de un rango de refrigerio'
+
+end
+
+*/
 
 IF @categoryId != 4 AND @affectAttendance = 1
 
@@ -48,8 +100,6 @@ WHERE s.nId_Colaborador = @collaboratorId AND
 ts.nEstado = 1 AND
 
 s.nEstado_Solicitud NOT IN (2,6,7) AND
-
-ts.nId_Categoria = @categoryId AND
 
 ts.nAfecta_Asistencia = 1 AND
 
@@ -123,7 +173,7 @@ ts.nEstado = 1 AND
 
 s.nEstado_Solicitud NOT IN (2,6,7) AND
 
-ts.nId_Categoria = @categoryId AND
+ts.nTipo_Frecuencia != @frecuencyType AND
 
 ts.nAfecta_Asistencia = 1 AND
 
@@ -174,6 +224,8 @@ JOIN Tipos_Solicitudes ts ON s.nId_Tipo_Solicitud = ts.nId_Tipo_Solicitud
 WHERE s.nId_Colaborador = @collaboratorId AND
 
 ts.nEstado = 1 AND
+
+s.nEstado_Solicitud NOT IN (2,6,7) AND
 
 ts.nTipo_Frecuencia = @frecuencyType AND
 
@@ -280,5 +332,7 @@ END
   
 
 SELECT @result
+
+END
 
 END```
