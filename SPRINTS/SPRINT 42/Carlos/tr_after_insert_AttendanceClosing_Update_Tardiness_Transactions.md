@@ -1,1 +1,0 @@
-tr_after_insert_AttendanceClosing_Update_Tardiness_Transactions
