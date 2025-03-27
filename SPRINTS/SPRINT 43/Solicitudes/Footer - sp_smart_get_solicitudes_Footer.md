@@ -1,0 +1,229 @@
+```sql
+CREATE OR ALTER  PROCEDURE [dbo].[sp_smart_get_solicitudes_Footer]  
+(  
+ @nId_User INT,  
+ @SNombreColaborador nvarchar(max),  
+ @sSlugToGetList nvarchar(max),  
+ ----------------------------------------------------  
+ @fechaCreaIni VARCHAR(MAX),  
+ @fechaCreaFin VARCHAR(MAX),  
+ @fechaEfectoInicio VARCHAR(MAX),  
+ @fechaEfectoFin VARCHAR(MAX),  
+ @sFilterOne Nvarchar(max), --Filtro por categoria  
+ @sFilterTwo Nvarchar(max), --Tipo de solicitud  
+ @sFilterThree Nvarchar(max), --Estado de la solicitud  
+ @sFilterFour Nvarchar(max), -- Por proyecto | Por equipo  
+ @sFilterFive Nvarchar(max), -- Aprovadores  
+ @sFilterSix Nvarchar(max), -- Aprovadores----ID GENERAL  
+ @sFilterNotification Nvarchar(max)  
+)  
+AS  
+BEGIN  
+ DECLARE @CollaboratorsList VARCHAR(MAX);  
+ DECLARE @solicitudHAprobada AS nvarchar(max);  
+    DECLARE @solicitudHPendiente as nvarchar(max);  
+    DECLARE @solicitudDAprobada AS nvarchar(max);  
+    DECLARE @solicitudDPendiente as nvarchar(max);  
+    DECLARE @viewClause AS nvarchar(max);  
+ DECLARE @whereClause AS nvarchar(max);  
+ DECLARE @orderClause AS nvarchar(max);  
+ DECLARE @paginationClause AS nvarchar(max);  
+ DECLARE @contador AS nvarchar(max);  
+  
+ --GET IMPORTANTS DATA  
+ DECLARE @nId_Colaborador INT = (SELECT tb_collab.nId_Colaborador FROM Usuarios tb_user  
+         JOIN Personas tb_person on tb_user.nId_Persona = tb_person.nId_Persona  
+         JOIN Colaboradores tb_collab on tb_person.nId_Persona = tb_collab.nId_Persona  
+         where tb_user.nId_Usuario = @nId_User);  
+    DECLARE @viewToQuery AS nvarchar(max);  
+  
+  
+    SET @viewToQuery = 'v_Listado_Solicitudes'  
+  
+  
+ IF @sSlugToGetList = 'SOLICITUD-LISTA-INDIVIDUAL'  
+  BEGIN  
+   SET @viewClause = N'select isnull(SUM(nCantidad),0) from (select * from '+@viewToQuery+' where nId_Colaborador ='+CONVERT(varchar,@nId_Colaborador)+')a';  
+  END  
+ ELSE IF @sSlugToGetList = 'TEAM-HAVE-SUBORDINATE'  
+  BEGIN  
+   SET @CollaboratorsList = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVARCHAR(MAX), @nId_Colaborador),0,0)  
+   IF @sFilterFour = '0'  
+    BEGIN  
+     SET @viewClause = N'select * from (select * from '+@viewToQuery+' where nId_Colaborador IN('+@CollaboratorsList+'))a'  
+    END  
+   ELSE IF @sFilterFour = '1'  
+    BEGIN  
+     SET @viewClause = N'select isnull(SUM(nCantidad),0) from (select v.* from '  
+                      +@viewToQuery+ ' as v join Tareas as t on t.nId_Tarea = v.nId_Tarea  
+                      where t.nId_Lider_Pry = '+CONVERT(varchar, @nId_Colaborador)+' or t.nId_Director_Pry = '+CONVERT(varchar, @nId_Colaborador)+' or t.nId_Lider_RQ = '+CONVERT(varchar, @nId_Colaborador)  
+                        +')a';  
+    END  
+   ELSE  
+    BEGIN  
+     SET @viewClause = N'select isnull(SUM(nCantidad),0) from (select v.* from '  
+                      +@viewToQuery+ ' as v left join Tareas as t on t.nId_Tarea = v.nId_Tarea  
+                      where t.nId_Lider_Pry = '+CONVERT(varchar, @nId_Colaborador)+' or t.nId_Director_Pry = '+CONVERT(varchar, @nId_Colaborador)+' or t.nId_Lider_RQ = '+CONVERT(varchar, @nId_Colaborador)  
+                        +' OR v.nId_Colaborador IN('+@CollaboratorsList+'))a';  
+    END  
+  END  
+  
+ ELSE IF @sSlugToGetList = 'SOLICITUD-LISTADO'  
+        BEGIN  
+            SET @viewClause = N'select isnull(SUM(nCantidad),0) from '+@viewToQuery+'';  
+        END  
+  
+  
+--Set @whereClause  
+ DECLARE @conditions_array TABLE(condition nvarchar(max))  
+ DECLARE @condition AS nvarchar(max)  
+  
+ IF @SNombreColaborador IS NOT NULL  
+    BEGIN  
+   EXEC sp_get_like_condition 'SNombre_Colaborador', @SNombreColaborador, @condition OUTPUT  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+  
+ --IF @fechaCreaIni IS NOT NULL AND @fechaCreaIni IS NOT NULL  
+ --   BEGIN  
+ --  EXEC sp_get_dates_condition 'dFecha_Solicitud', @fechaCreaIni ,@fechaCreaIni, @condition OUTPUT  
+ --  INSERT INTO @conditions_array VALUES(@condition)  
+ -- END  
+  
+ IF @fechaCreaIni IS NOT NULL AND @fechaCreaFin IS NOT NULL BEGIN    EXEC sp_get_dates_range_condition 'dFecha_Solicitud', 'dFecha_Solicitud', @fechaCreaIni, @fechaCreaFin, @condition OUTPUT    INSERT INTO @conditions_array VALUES(@condition) END  
+  
+ IF @fechaEfectoInicio IS NOT NULL AND @fechaEfectoFin IS NOT NULL  
+  BEGIN  
+   EXEC sp_get_dates_range_condition 'dFecha_Inicio', 'dFecha_Fin', @fechaEfectoInicio ,@fechaEfectoFin, @condition OUTPUT  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+ IF @sFilterThree IS NOT NULL  
+  BEGIN  
+   set @condition = 'nEstado in('+@sFilterThree+')'  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+ IF @sFilterOne IS NOT NULL  
+  BEGIN  
+   set @condition = 'nId_Categoria in('+@sFilterOne+')'  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+ IF @sFilterFive IS NOT NULL AND @sFilterNotification IS NULL AND @sFilterSix IS NULL   
+  BEGIN  
+   DECLARE @Anuladas NVARCHAR(MAX);  
+   DECLARE @Avance NVARCHAR(MAX);  
+  
+   SET @Anuladas =  CASE  
+        WHEN @sFilterThree IS NOT NULL AND @sFilterThree LIKE '%6%'  
+         THEN 'OR nEstado in(6)'  
+         ELSE ' '  
+        END  
+  
+   SET @Avance = CASE  
+        WHEN @sFilterTwo IS NOT NULL AND @sFilterTwo LIKE '%9%'  
+         THEN 'OR nId_Tipo_Solicitud in(9)'  
+         ELSE ' '  
+        END  
+  
+   set @condition = CONCAT('(nId in(', @sFilterFive, ') ', @Anuladas, ' ', @Avance, ' )')  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+ IF @sFilterTwo IS NOT NULL  
+    BEGIN  
+   set @condition = 'nId_Tipo_Solicitud in('+@sFilterTwo+')'  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+  
+ IF @sFilterNotification IS NOT NULL  
+    BEGIN  
+   set @condition = 'nId in('+@sFilterNotification+')'  
+   INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+    
+  --- sFilterSix si existe y es nulo la sFilterNotification(id por solicitud)  
+  IF @sFilterSix IS NOT NULL AND @sFilterNotification IS  NULL  
+      BEGIN  
+      set @condition = 'nId in('+@sFilterSix+')'  
+      INSERT INTO @conditions_array VALUES(@condition)  
+  END  
+  
+ DECLARE @TipoSolicitudesHora nvarchar(max) = '1,6,7,8,16,26'  
+ DECLARE @TipoSolicitudesDia nvarchar(max) = '2,3,19,22'  
+  
+ DECLARE @EstadoAprobado nvarchar(max)  = '3'  
+ DECLARE @EstadoPendiente nvarchar(max)= '1,4'  
+  
+-- set @condition = 'nId_Tipo_Solicitud in('+ @TipoSolicitudesHora+')'  
+-- INSERT INTO @conditions_array VALUES(@condition)  
+  
+ DECLARE @count INT;  
+  
+ SELECT @count = COUNT(*) FROM @conditions_array;  
+ if @count > 0  
+  begin  
+   set @whereClause = N'where ';  
+  end  
+  
+ WHILE @count > 0  
+  BEGIN  
+   DECLARE @condition_temp VARCHAR(max) = (SELECT TOP(1) condition FROM @conditions_array);  
+   IF @count = 1  
+    BEGIN  
+     SET @whereClause = concat (@whereClause,@condition_temp);  
+    END  
+   ELSE  
+    BEGIN  
+     SET @whereClause = concat (@whereClause,@condition_temp,' and ');  
+    END  
+   DELETE TOP (1) FROM @conditions_array  
+   SELECT @count = COUNT(*) FROM @conditions_array;  
+  END  
+  
+ SET @solicitudHAprobada =  concat (@viewClause,' ',@whereClause, ' and nEstado in('+@EstadoAprobado+') and nId_Tipo_Solicitud in('+ @TipoSolicitudesHora+')');  
+  
+    SET @solicitudHPendiente =  concat (@viewClause,' ',@whereClause, ' and nEstado in('+@EstadoPendiente+') and nId_Tipo_Solicitud in('+ @TipoSolicitudesHora+')');  
+  
+    SET @solicitudDAprobada =  concat (@viewClause,' ',@whereClause, ' and nEstado in('+@EstadoAprobado+') and nId_Tipo_Solicitud in('+ @TipoSolicitudesDia+')');  
+  
+    SET @solicitudDPendiente =  concat (@viewClause,' ',@whereClause, ' and nEstado in('+@EstadoPendiente+') and nId_Tipo_Solicitud in('+ @TipoSolicitudesDia+')');  
+  
+  
+   -- Crear tablas temporales para almacenar los resultados  
+ CREATE TABLE #SolcitudHAprobadaTemp (SolicitudesHorasAprobadas INT)  
+ CREATE TABLE #SolcitudHPendienteTemp (SolicitudesHorasPendientes INT)  
+  
+ CREATE TABLE #SolcitudDAprobadaTemp (SolicitudesDiasAprobadas INT)  
+ CREATE TABLE #SolcitudDPendienteTemp (SolicitudesDiasPendientes INT)  
+  
+ -- Ejecutar el primer script y almacenar los resultados en la tabla temporal  
+ INSERT INTO #SolcitudHAprobadaTemp  
+ EXEC sp_executesql @solicitudHAprobada  
+  
+ -- Ejecutar el segundo script y almacenar los resultados en la tabla temporal  
+ INSERT INTO #SolcitudHPendienteTemp  
+ EXEC sp_executesql @solicitudHPendiente  
+  
+ -- Ejecutar el primer script y almacenar los resultados en la tabla temporal  
+ INSERT INTO #SolcitudDAprobadaTemp  
+ EXEC sp_executesql @solicitudDAprobada  
+  
+ -- Ejecutar el segundo script y almacenar los resultados en la tabla temporal  
+ INSERT INTO #SolcitudDPendienteTemp  
+ EXEC sp_executesql @solicitudDPendiente  
+  
+ -- Seleccionar los resultados de ambas tablas temporales  
+ SELECT * FROM #SolcitudHAprobadaTemp, #SolcitudHPendienteTemp, #SolcitudDAprobadaTemp, #SolcitudDPendienteTemp  
+  
+ -- Eliminar las tablas temporales  
+ DROP TABLE #SolcitudHAprobadaTemp  
+ DROP TABLE #SolcitudHPendienteTemp  
+ DROP TABLE #SolcitudDAprobadaTemp  
+ DROP TABLE #SolcitudDPendienteTemp  
+  
+END  
+```
