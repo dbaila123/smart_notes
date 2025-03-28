@@ -13,7 +13,7 @@ CREATE TABLE tenant0001.dbo.collaborators_certificate (
 
     dFecha_Expiracion date NOT NULL,
 
-    nCantidad_Horas int NULL,
+    nCantidad_Horas int NOT NULL,
 
     sDescripcion nvarchar(500) COLLATE Modern_Spanish_CI_AS NULL,
 
