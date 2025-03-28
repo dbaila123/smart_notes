@@ -11,7 +11,7 @@ CREATE PROCEDURE [dbo].[sp_certificate_insert]
 
     @dFecha_Expiracion DATE,
 
-    @sCantidad_Horas INT = NULL,
+    @sCantidad_Horas INT,
 
     @sDescripcion NVARCHAR(500),
 
