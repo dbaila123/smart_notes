@@ -1,13 +1,13 @@
 ```sql
 IF NOT EXISTS (
-	SELECT * FROM VERSION WHERE sVersion = '3.15.0'
+	SELECT * FROM VERSION WHERE sVersion = '3.18.0'
 )
 BEGIN
 	BEGIN TRY
 		BEGIN TRANSACTION
 			INSERT INTO Version (sVersion, sNombre_Version, nEstado, dFecha_Inicio, dFecha_Fin, dDatetime_Creador, nUsuario_Creador)
 			VALUES 
-		    ('3.15.0', 'FRONTEND_VERSION', 1, '2024-01-17', null, '2025-01-17', 172);
+		    ('3.18.0', 'FRONTEND_VERSION', 1, '2024-01-17', null, '2025-01-17', 172);
 			DECLARE @nId_Version INT;
 		 	SET @nId_Version = SCOPE_IDENTITY();
 			IF @nId_Version IS NOT NULL
