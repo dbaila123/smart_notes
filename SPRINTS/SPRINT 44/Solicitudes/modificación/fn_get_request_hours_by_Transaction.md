@@ -155,6 +155,8 @@ AND con.sTabla = 'TIPO_DOCUMENTO'
 
 WHERE
 
+tsm.nEstado_Entidad != 1 AND
+
 ((@nId_Cierre IS NULL AND tsm.nId_Cierre IS NULL) OR (@nId_Cierre IS NOT NULL AND tsm.nId_Cierre = @nId_Cierre))
 
 AND tsm.nId_Tipo_Entidad
@@ -190,4 +192,3 @@ SUM(CASE WHEN tsm.nId_Sub_Tipo_Entidad = 6 THEN tsm.dCantidad_Minutos ELSE 0 END
 ELSE 1
 
 END)
-```
