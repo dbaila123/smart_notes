@@ -1,5 +1,10 @@
 ```sql
+<<<<<<< HEAD
 CREATE OR ALTER  TRIGGER tr_after_Transacciones_Saldo_Mins    
+=======
+
+CREATE    TRIGGER tr_after_Transacciones_Saldo_Mins    
+>>>>>>> origin/main
 ON Solicitudes    
 AFTER UPDATE, INSERT    
 AS    
@@ -100,4 +105,8 @@ WHERE EXISTS (
                 END    
     );    
 END;   
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> origin/main

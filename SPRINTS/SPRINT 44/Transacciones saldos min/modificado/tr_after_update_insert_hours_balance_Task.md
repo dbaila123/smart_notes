@@ -1,5 +1,5 @@
 ```sql
-ALTER TRIGGER tr_after_update_insert_hours_balance_Task
+CREATE TRIGGER tr_after_update_insert_hours_balance_Task
 ON Tareas
 AFTER UPDATE
 AS
@@ -9,14 +9,14 @@ BEGIN
     DECLARE @nId_Sub_Tipo_Entidad INT = 8
     
     -- Eliminar registros para tareas que cambian a estados no deseados
-    -- (ni PENDIENTE ni APROBADO para RECUPERACIÓN, o ni APROBADO para COMPENSACIÓN)
+    -- (ni PENDIENTE ni APROBADO para RECUPERACIÓN o COMPENSACIÓN)
     DELETE FROM Transacciones_Saldo_Mins
     WHERE nId_Entidad IN (
         SELECT i.nId_Tarea
         FROM inserted i
         INNER JOIN deleted d ON i.nId_Tarea = d.nId_Tarea
         WHERE (i.nEstado_Tarea NOT IN (1, 3) OR 
-              (i.nEstado_Tarea = 1 AND i.sTipo_Hora != 5))
+              (i.nEstado_Tarea = 1 AND i.sTipo_Hora NOT IN (3, 5)))
     ) AND nId_Tipo_Entidad = 9;
 
     -- Actualizar registros existentes cuando cambia el estado
@@ -32,7 +32,7 @@ BEGIN
     INNER JOIN deleted d ON i.nId_Tarea = d.nId_Tarea
     WHERE (i.nEstado_Tarea != d.nEstado_Tarea OR i.nMinutos != d.nMinutos)
     AND ((i.nEstado_Tarea = 3 AND i.sTipo_Hora IN (3, 5)) OR 
-         (i.nEstado_Tarea = 1 AND i.sTipo_Hora = 5));
+         (i.nEstado_Tarea = 1 AND i.sTipo_Hora IN (3, 5)));
 
     -- Insertar nuevos registros para tareas recién actualizadas que no tienen registro
     -- (solo si no existe un registro previo)
@@ -77,7 +77,7 @@ BEGIN
     WHERE t.nId_Transaccion IS NULL -- Solo insertar si no existe
     AND (
         (i.nEstado_Tarea = 3 AND i.sTipo_Hora IN (3, 5)) OR -- APROBADO con COMPENSACIÓN o RECUPERACIÓN
-        (i.nEstado_Tarea = 1 AND i.sTipo_Hora = 5) -- PENDIENTE solo con RECUPERACIÓN
+        (i.nEstado_Tarea = 1 AND i.sTipo_Hora IN (3, 5)) -- PENDIENTE con COMPENSACIÓN o RECUPERACIÓN
     );
 END;
 ```
