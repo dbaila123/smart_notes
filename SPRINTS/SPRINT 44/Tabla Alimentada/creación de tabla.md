@@ -1,5 +1,5 @@
 ```sql
-create table postive_negative_hour (
+create table positive_negative_hour (
 	nId_Colaborador int, 
 	sNombre_Colaborador nvarchar(max), 
 	dTardanza_Con_Tolerancia date, 

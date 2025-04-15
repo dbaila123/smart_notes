@@ -76,8 +76,8 @@ WHERE EXISTS (
         i.dDatetime_Update,    
         i.nUsuario_Update,  
   CASE   
-   WHEN i.nId_Tipo_Solicitud IN(7,8) THEN i.nEstado_Solicitud  
-   ELSE NULL  
+   WHEN i.nId_Tipo_Solicitud IN(1,2,7,8) THEN i.nEstado_Solicitud  
+   ELSE 3  
   END AS nEstado_Entidad  
     FROM inserted i    
     WHERE (    
