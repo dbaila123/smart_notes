@@ -1,4 +1,5 @@
 ```sql
+
 CREATE OR ALTER PROCEDURE sp_detail_get_hours_card
     @nId_Colaborador INT,
     @dFecha DATE
@@ -36,6 +37,8 @@ BEGIN
         AND CONVERT(DATE, tsm.dDatetime_Creacion) <= @dFecha;
 	IF NOT EXISTS
 
+
+
  (SELECT 1 FROM @Resultados WHERE sCategoria = 'BOLSA')
 	 BEGIN
         INSERT INTO @Resultados (sCategoria, sOrigen, nId_Colaborador, nCodigo)
@@ -44,6 +47,8 @@ BEGIN
 
     -- EXTRAS
 	INSERT INTO 
+
+
 @Resultados (sCategoria, sOrigen, nId_Colaborador, nId_Entidad, dCantidad_Minutos, dFecha_Creacion, nCodigo)
 SELECT
 		'SOLICITUDES' AS sCategoria,
@@ -53,6 +58,8 @@ SELECT
         SUM(nMinutos) AS nMinutos,
 
 
+
+
 		t.dFecha_Registro,
 		2
     FROM Tareas t
@@ -60,7 +67,7 @@ SELECT
     WHERE t.sTipo_Hora = 2
         AND t.nEstado_Tarea = 3
         AND t.nEstado_Pago IS NULL
-		AND s.nEstado_Solicitud = 3
+		AND s.nEstado_Solicitud IN (1,3)
         AND t.nId_Colaborador = @nId_Colaborador
         AND t.dFecha_Registro <= @dFecha
     GROUP BY t.nId_Colaborador, s.nId_Solictud, t.dFecha_Registro;
@@ -84,6 +91,8 @@ SELECT
 		3
     FROM Transacciones_Saldo_Mins tsm
 
+
+
  
    JOIN Solicitudes t ON tsm.nId_Entidad = t.nId_Tarea
     WHERE tsm.nId_Tipo_Entidad = 9
@@ -101,7 +110,9 @@ SELECT
 
     -- PERMISOS
 	INSERT INTO @Resultados (sCategoria, sOrigen, nId_Colaborador, nId_Entidad, dCantidad_Minutos, dFecha_Creacion, nCodigo)
-    SELECT
+    
+
+SELECT
 	
 	'SOLICITUDES' AS sCategoria,
 		'Permisos' AS sOrigen,
@@ -114,9 +125,10 @@ SELECT
 		tsm.dDatetime_Creacion,
 		4
     FROM Transacciones_Saldo_Mins tsm
+	JOIN Solicitudes st ON tsm.nId_Entidad = st.nId_Solictud
     WHERE tsm.nEstado_Transaccion = 1
         AND tsm.nId_Tipo_Entidad = 1
-        AND CONVERT(DATE, tsm.dDatetime_Creacion) <= @dFecha
+		AND st.nEstado_Solicitud IN (1,3)
         AND tsm.nId_Colaborador = @nId_Colaborador
     GROUP BY tsm.nId_Colaborador, tsm.nId_Entidad, tsm.dDatetime_Creacion
     HAVING SUM(CASE WHEN tsm.nTipo_Transaccion = 1
@@ -125,6 +137,8 @@ SELECT
                     THEN tsm.dCantidad_Minutos ELSE 0 END) > 0
     ORDER BY tsm.nId_Entidad;
 	IF NOT EXISTS (SELECT 1 FROM @Resultados WHERE sCategoria = 'SOLICITUDES' AND sOrigen = 'Permisos'
+
+
 )
     BEGIN
         INSERT INTO @Resultados (sCategoria, sOrigen, nId_Colaborador, nCodigo)
@@ -141,12 +155,16 @@ SELECT
         SUM(CASE WHEN tsm.nTipo_Transaccion = 1
      
 
+
+
             AND tsm.nId_Sub_Tipo_Entidad = 3
                  AND tsm.nId_Cierre IS NULL
                  THEN tsm.dCantidad_Minutos ELSE 0 END) -
         SUM(CASE WHEN tsm.nTipo_Transaccion = 2
                  AND tsm.nId_Sub_Tipo_Entidad = 3
           
+
+
 
        AND tsm.nId_Cierre IS NULL
                  THEN tsm.dCantidad_Minutos ELSE 0 END) AS dTardanza_Con_Tolerancia,
@@ -156,11 +174,15 @@ SELECT
     LEFT JOIN Asistencias a ON a.nId_Asistencia = tsm.nId_Entidad
   
 
+
+
   WHERE tsm.nEstado_Transaccion = 1
         AND tsm.nId_Tipo_Entidad = 2
         AND CONVERT(DATE, a.dFecha_Asistencia) <= @dFecha
         AND tsm.nId_Colaborador = @nId_Colaborador
     GROUP BY tsm.nId_Colaborador, tsm.nId_Entidad, tsm.dDatetime_Creacion
+
+
 
 
     HAVING SUM(CASE WHEN tsm.nTipo_Transaccion = 1
@@ -186,6 +208,8 @@ SELECT
         tsm.nId_Colaborador,
  
 
+
+
        tsm.nId_Entidad,
         SUM(CASE WHEN tsm.nTipo_Transaccion = 1
                  AND tsm.nId_Sub_Tipo_Entidad = 4
@@ -205,6 +229,8 @@ SELECT
         AND tsm.nId_Colaborador = @nId_Colaborador
 
 
+
+
     GROUP BY tsm.nId_Colaborador, tsm.nId_Entidad, a.dDatetime_Creador
     HAVING SUM(CASE WHEN tsm.nTipo_Transaccion = 1
                     AND tsm.nId_Sub_Tipo_Entidad = 4
@@ -215,6 +241,8 @@ SELECT
                     AND tsm.nId_Cierre IS NULL
                     THEN tsm.dCantidad_Minutos ELSE 0 END) > 0
     ORDER BY
+
+
  tsm.nId_Entidad;
 	IF NOT EXISTS (SELECT 1 FROM @Resultados WHERE sCategoria = 'ASISTENCIAS' AND sOrigen = 'Tardanzas no recuperables')
     BEGIN
