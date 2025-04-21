@@ -1,9 +1,13 @@
 ```sql
-CREATE OR ALTER  TRIGGER tr_after_Transacciones_Saldo_Mins    
+CREATE OR ALTER TRIGGER tr_after_Transacciones_Saldo_Mins    
 ON Solicitudes    
 AFTER UPDATE, INSERT    
 AS    
 BEGIN    
+DECLARE @IdColaborador NVARCHAR(MAX);
+DECLARE @Date DATE = GETDATE();
+SELECT @IdColaborador = nId_Colaborador
+FROM INSERTED;
     SET NOCOUNT ON;    
     -- Eliminación de transacciones cuando nEstado_Solicitud YA NO ES APROBADO    
 DELETE FROM Transacciones_Saldo_Mins    
@@ -13,7 +17,7 @@ WHERE EXISTS (
     WHERE Transacciones_Saldo_Mins.nId_Entidad =     
             CASE     
                 WHEN i.nId_Tipo_Solicitud IN(7,8) THEN i.nId_Tarea    
-                ELSE i.nId_Solictud    
+                ELSE i.nId_Solictud   
             END    
         AND Transacciones_Saldo_Mins.nId_Tipo_Entidad =     
             CASE     
@@ -22,24 +26,23 @@ WHERE EXISTS (
             END    
 );    
     
-    
     INSERT INTO Transacciones_Saldo_Mins    
     (    
         nId_Colaborador,    
         nEstado,    
         nEstado_Transaccion,    
-  nId_Tipo_Entidad,    
+		nId_Tipo_Entidad,    
         nId_Sub_Tipo_Entidad,    
         nId_Entidad,    
         nTipo_Transaccion,    
         sObservacion,    
-        dCantidad_Minutos,    
+		dCantidad_Minutos,    
         nUsuario_Creador,    
         dDatetime_Creacion,    
         nId_Cierre,    
         dDatetime_Update,    
-  nUsuario_Update,  
-  nEstado_Entidad  
+		nUsuario_Update,  
+		nEstado_Entidad  
     )    
      SELECT    
         i.nId_Colaborador,    
@@ -62,12 +65,11 @@ WHERE EXISTS (
    WHEN i.nId_Tipo_Solicitud IN(7,8) THEN i.nId_Tarea    
    ELSE i.nId_Solictud    
   END AS nId_Entidad,    
-        1 AS nTipo_Transaccion,    
+        1 AS nTipo_Transaccion,
         i.sMotivo,    
   CASE    
             WHEN i.nId_Tipo_Solicitud in(1,26,7,8) THEN i.nCantidad  -- Usar el valor de dCantidad_Minutos    
             WHEN i.nId_Tipo_Solicitud = 2 THEN (SELECT  dbo.fn_total_min_days_by_schedule_Collaborator_V2(i.dFecha_Inicio, i.dFecha_Fin, i.nId_Colaborador))    
-    
             ELSE NULL    
         END AS dCantidad_Minutos,    
         i.nUsuario_Creador,    
@@ -76,28 +78,37 @@ WHERE EXISTS (
         i.dDatetime_Update,    
         i.nUsuario_Update,  
   CASE   
-   WHEN i.nId_Tipo_Solicitud IN(1,2,7,8) THEN i.nEstado_Solicitud  
+   WHEN i.nId_Tipo_Solicitud IN(1,2,7,8) THEN
+	CASE 
+      WHEN i.nEstado_Solicitud IN (4,9) THEN 1
+      ELSE i.nEstado_Solicitud 
+    END
    ELSE 3  
   END AS nEstado_Entidad  
     FROM inserted i    
     WHERE (    
- --Acepta solicitudes con tipo = 8 (recuperacion) que sean aprobadas y pendientes    
-            (i.nId_Tipo_Solicitud IN (1, 2, 7, 8) AND i.nEstado_Solicitud IN(1,3))  
+ --Acepta solicitudes con tipo = 8 (recuperacion) que sean aprobadas y pendientes   
+            (i.nId_Tipo_Solicitud IN (1, 2, 7, 8) AND i.nEstado_Solicitud IN(1,3,4))  
    OR  
    (i.nId_Tipo_Solicitud = 26 AND i.nEstado_Solicitud = 3))    
  AND NOT EXISTS (    
         SELECT 1    
         FROM Transacciones_Saldo_Mins ts    
-        WHERE ts.nId_Entidad =     
+		WHERE ts.nId_Entidad =     
                 CASE     
                     WHEN i.nId_Tipo_Solicitud IN(7,8) THEN i.nId_Tarea    
                     ELSE i.nId_Solictud    
                 END    
-            AND ts.nId_Tipo_Entidad =     
-                CASE     
+            AND ts.nId_Tipo_Entidad =             
+			CASE     
                     WHEN i.nId_Tipo_Solicitud IN(7,8) THEN 9    
                     ELSE 1    
                 END    
-    );    
-END;   
+			);  
+			
+			
+	exec sp_get_positive_negative_hours_by_Collaborator @dFecha = @Date, @sIds_Colaborador = @IdColaborador
+
+END; 
 ```
+
