@@ -49,7 +49,7 @@ CASE
 
 WHEN @bPendiente = 0 THEN nTotal_Min_Favor_Extra_Apro + nTotal_Min_Favor_CompRecu_Apro + nTotal_Bolsa_Cierre
 
-ELSE nTotal_Favor
+ELSE nTotal_Min_Favor_Extra_AP + nTotal_Min_Favor_CompRecu_AP + nTotal_Bolsa_Cierre
 
 END AS nAFavor,
 
@@ -57,7 +57,7 @@ CASE
 
 WHEN @bPendiente = 0 THEN nTotal_Min_Contra_Per_Apro + dTardanza_Con_Tolerancia + nTotal_Min_No_Recuperables
 
-ELSE nTotal_Contra
+ELSE nTotal_Min_Contra_Per_AP + dTardanza_Con_Tolerancia + nTotal_Min_No_Recuperables
 
 END AS nEnContra,
 
