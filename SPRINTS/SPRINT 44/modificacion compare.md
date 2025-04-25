@@ -1,0 +1,12 @@
+```sql
+tr_after_Update_Attendance_Update_Tardanzas
+tr_after_Transacciones_Saldo_Mins
+fn_get_request_hours_by_Transaction
+sp_Update_LLenado_Tareo_Asistencia
+sp_close_transaction
+sp_detail_get_hours_card
+sp_get_hours_by_collaborator
+sp_get_positive_negative_hours_by_Collaborator
+sp_smart_get_descuentos_solicitudes
+sp_smart_reportclose_transaction
+```
