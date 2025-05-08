@@ -1,12 +1,13 @@
 ```sql
  CREATE TABLE Evaluations (
     nId_Evaluation INT IDENTITY(1,1) PRIMARY KEY,
-	sName NVARCHAR(500),
+	sName NVARCHAR(500) NOT NULL,
+    nState INT NOT NULL,
     sDescription NVARCHAR(MAX),
-    dInit_Date DATE,
-    dEnd_Date DATE,
-	nUser_Creator INT,
-    dDateTime_Creator DATETIME,
+    dInit_Date DATE NOT NULL,
+    dEnd_Date DATE NOT NULL,
+	nUser_Creator INT NOT NULL,
+    dDateTime_Creator DATETIME NOT NULL,
 	nUser_Update INT,
     dDateTime_Update DATETIME,
 	nUser_Delete INT,
@@ -16,12 +17,11 @@
 
 CREATE TABLE Forms (
     nId_Form INT IDENTITY(1,1) PRIMARY KEY,
-	sName NVARCHAR(500),
-    sDescription NVARCHAR(MAX),
-    nState INT,
-    nId_Evaluation INT,
-	nUser_Creator INT,
-    dDateTime_Creator DATETIME,
+	sName NVARCHAR(500) NOT NULL,
+    sDescription NVARCHAR(MAX) NOT NULL,
+    nId_Evaluation INT NOT NULL,
+	nUser_Creator INT NOT NULL,
+    dDateTime_Creator DATETIME NOT NULL,
 	nUser_Update INT,
     dDateTime_Update DATETIME,
 	nUser_Delete INT,
@@ -31,10 +31,9 @@ CREATE TABLE Forms (
 
 
 CREATE TABLE Evaluators (
-    nId_Evaluator INT,
-	nId_Assessed INT,
-    nState INT,
-    nId_Form INT,
+    nId_Evaluator INT NOT NULL,
+	nId_Assessed INT NOT NULL,
+    nId_Form INT NOT NULL,
 	FOREIGN KEY (nId_Evaluator) REFERENCES Colaboradores(nId_Colaborador),
 	FOREIGN KEY (nId_Assessed) REFERENCES Colaboradores(nId_Colaborador),
 	FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form)
@@ -43,11 +42,11 @@ CREATE TABLE Evaluators (
 
 CREATE TABLE Qualified_Evaluations (
     nId_Qualified_Evaluation INT IDENTITY(1,1) PRIMARY KEY,
-	nId_Form INT,
-	nId_Evaluator INT,
-	nId_Assessed INT,
-	nUser_Creator INT,
-    dDateTime_Creator DATETIME,
+	nId_Form INT NOT NULL,
+	nId_Evaluator INT NOT NULL,
+	nId_Assessed INT NOT NULL,
+	nUser_Creator INT NOT NULL,
+    dDateTime_Creator DATETIME NOT NULL,
 	nUser_Update INT,
     dDateTime_Update DATETIME,
 	nUser_Delete INT,
@@ -56,6 +55,7 @@ CREATE TABLE Qualified_Evaluations (
 	FOREIGN KEY (nId_Assessed) REFERENCES Colaboradores(nId_Colaborador),
 	FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form)
 );
+
 -----------------------------
 
 CREATE TABLE Competence (
