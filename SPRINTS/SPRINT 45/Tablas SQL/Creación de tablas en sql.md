@@ -19,6 +19,7 @@ CREATE TABLE Form_Type (
 	sName NVARCHAR(500) NOT NULL,
 	nId_FormType_Padre INT NOT NULL,
 	nId_Form_SubType INT NOT NULL,
+	sIcon NVARCHAR(100) NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
 	nUser_Update INT,
