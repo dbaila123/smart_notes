@@ -1,9 +1,9 @@
 ```sql
-CREATE OR ALTER PROCEDURE [dbo].[sp_smart_get_form_evaluators_assessed](
+CREATE PROCEDURE [dbo].[sp_smart_evaluation_get_evaluators_assessed_template](
 
 @nId_Collaborator NVARCHAR(MAX) = NULL,
 
-@nTipo_Evaluation INT
+@nTipo_Evaluation NVARCHAR(MAX) --IDs de la tabla Form_Type
 
 )
 
@@ -21,6 +21,16 @@ FROM STRING_SPLIT(@nId_Collaborator, ',');
 
   
 
+DECLARE @aFormType TABLE (nId_FormType INT);
+
+INSERT INTO @aFormType (nId_FormType)
+
+SELECT CAST(value AS INT) AS nId_FormType
+
+FROM STRING_SPLIT(@nTipo_Evaluation, ',');
+
+  
+
 CREATE TABLE #Evaluators (
 
 nId_Evaluator INT,
@@ -29,15 +39,21 @@ sEvaluator_Name NVARCHAR(100),
 
 nId_Assessed INT,
 
-sAssessed_Name NVARCHAR(100)
+sAssessed_Name NVARCHAR(100),
+
+nId_FormType INT
 
 );
 
-IF @nTipo_Evaluation = 1
+  
+
+IF EXISTS(SELECT 1 FROM @aFormType WHERE nId_FormType = 1)
+
+OR NOT EXISTS(SELECT 1 FROM @aFormType)
 
 BEGIN
 
-INSERT INTO #Evaluators (nId_Evaluator, sEvaluator_Name, nId_Assessed, sAssessed_Name)
+INSERT INTO #Evaluators (nId_Evaluator, sEvaluator_Name, nId_Assessed, sAssessed_Name, nId_FormType)
 
 SELECT
 
@@ -47,7 +63,9 @@ p1.sPersona_Nombre AS Evaluator_Name,
 
 cs.nId_Supervisor AS nId_Assessed,
 
-p2.sPersona_Nombre AS Assessed_Name
+p2.sPersona_Nombre AS Assessed_Name,
+
+1
 
 FROM colaboradores_supervisor cs
 
@@ -81,7 +99,9 @@ END
 
   
 
-IF(@nTipo_Evaluation = 2)
+IF EXISTS(SELECT 1 FROM @aFormType WHERE nId_FormType = 2)
+
+OR NOT EXISTS(SELECT 1 FROM @aFormType)
 
 BEGIN
 
@@ -95,7 +115,9 @@ pc.sPersona_Nombre as Evaluator_Name,
 
 cs.nId_Colaborador as nId_Assessed,
 
-pcs.sPersona_Nombre as Assessed_Name
+pcs.sPersona_Nombre as Assessed_Name,
+
+2 as nId_FormType
 
 FROM Colaboradores c
 
@@ -129,7 +151,9 @@ END
 
   
 
-IF @nTipo_Evaluation = 3
+IF EXISTS(SELECT 1 FROM @aFormType WHERE nId_FormType = 4)
+
+OR NOT EXISTS(SELECT 1 FROM @aFormType)
 
 BEGIN
 
@@ -159,7 +183,9 @@ p1.sPersona_Nombre AS sEvaluator_Name,
 
 Evaluado.nId_Colaborador AS nId_Assessed,
 
-p2.sPersona_Nombre AS sAssessed_Name
+p2.sPersona_Nombre AS sAssessed_Name,
+
+4 as nId_FormType
 
 FROM
 
@@ -227,7 +253,9 @@ END
 
   
 
-IF(@nTipo_Evaluation = 4)
+IF EXISTS(SELECT 1 FROM @aFormType WHERE nId_FormType = 5)
+
+OR NOT EXISTS(SELECT 1 FROM @aFormType)
 
 BEGIN
 
@@ -315,7 +343,9 @@ cl.Evaluator_Name,
 
 le.nId_Assessed,
 
-le.Assessed_Name
+le.Assessed_Name,
+
+5 as nId_FormType
 
 FROM #Colaborador_Lideres cl
 
@@ -339,9 +369,7 @@ SELECT *
 
 FROM #Evaluators
 
-ORDER BY
-
-nId_Evaluator
+ORDER BY nId_Evaluator, nId_FormType
 
 END
 ```

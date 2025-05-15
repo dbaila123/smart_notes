@@ -1,9 +1,10 @@
 ```sql
-INSERT INTO Form_Type (sName, nUser_Creator, dDateTime_Creator)
-VALUES ('Colaborador-Lideres', 666, GETDATE()),
-('Lideres-Equipos', 666, GETDATE()),
-('Pares-Lideres', 666, GETDATE()),
-('Pares-Colaborador', 666, GETDATE())
+INSERT INTO Form_Type (sName, nUser_Creator, dDateTime_Creator, nId_FormType_Padre)
+VALUES ('Colaborador-Lideres', 666, GETDATE(), NULL),
+('Lideres-Equipos', 666, GETDATE(), NULL),
+('Pares', 666, GETDATE(), NULL),
+('Pares-Lideres', 666, GETDATE(), NULL),
+('Pares-Colaborador', 666, GETDATE(), NULL)
 
 INSERT INTO Competence (sName, sDescription, sCode, nUser_Creator, dDateTime_Creator)
 VALUES ('Comunicación', 'Competencia Comunicación', 'C', 666, GETDATE()),
