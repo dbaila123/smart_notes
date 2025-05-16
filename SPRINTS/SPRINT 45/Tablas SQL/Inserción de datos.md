@@ -22,6 +22,8 @@ INSERT INTO Configs (sTabla, sCodigo, sDescripcion, sComentario, nOrdenamiento, 
 VALUES ('ESTADO_EVALUATION', 1, 'BORRADOR', 'Evaluación en Borrador', 1, 'B', 1, 666, GETDATE()),
 		('ESTADO_EVALUATION', 2, 'INICIADA', 'Evaluación Iniciada', 2, 'I', 1, 666, GETDATE()),
 		('ESTADO_EVALUATION', 3, 'FINALIZADA', 'Evaluación Finalizada', 3, 'F', 1, 666, GETDATE()),
-		('ESTADO_EVALUATION', 4, 'PENDIENTE', 'Evaluación Pendiente', 4, 'P', 1, 666, GETDATE())
+		('ESTADO_EVALUATION', 4, 'PENDIENTE', 'Evaluación Pendiente', 4, 'P', 1, 666, GETDATE()),
+		('ESTADO_FORMULARIO', 1, 'RESPONDIDO', 'Formulario Respondido', 1, 'R', 1, 666, GETDATE()),
+		('ESTADO_FORMULARIO', 2, 'POR RESPONDER', 'Formulario Por Responder', 2, 'PR', 1, 666, GETDATE())
 
 ```
