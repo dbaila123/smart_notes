@@ -18,5 +18,10 @@ VALUES ('Comunicación', 'Competencia Comunicación', 'C', 666, GETDATE()),
 ('Liderazgo', 'Competencia Liderazgo', 'L', 666, GETDATE()),
 ('Calidad de trabajo', 'Competencia Calidad de trabajo', 'CT', 666, GETDATE())
 
+INSERT INTO Configs (sTabla, sCodigo, sDescripcion, sComentario, nOrdenamiento, sCodigo_Externo, nEstado, nUsuario_Creador, dDatetime_Creador)
+VALUES ('ESTADO_EVALUATION', 1, 'BORRADOR', 'Evaluación en Borrador', 1, 'B', 1, 666, GETDATE()),
+		('ESTADO_EVALUATION', 2, 'INICIADA', 'Evaluación Iniciada', 2, 'I', 1, 666, GETDATE()),
+		('ESTADO_EVALUATION', 3, 'FINALIZADA', 'Evaluación Finalizada', 3, 'F', 1, 666, GETDATE()),
+		('ESTADO_EVALUATION', 4, 'PENDIENTE', 'Evaluación Pendiente', 4, 'P', 1, 666, GETDATE())
 
 ```
