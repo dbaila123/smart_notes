@@ -35,6 +35,7 @@ CREATE TABLE Forms (
     sDescription NVARCHAR(MAX) NOT NULL,
     nId_Evaluation INT NOT NULL,
     nId_Form_Type INT NOT NULL,
+    nId_Form_Template INT NOT NULL,
 	nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
 	nUser_Update INT,
