@@ -194,7 +194,7 @@ CREATE TABLE dataList_Template (
     nId_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Question INT NOT NULL,
     sText VARCHAR(255) NOT NULL,
-    sValue VARCHAR(255) NOT NULL,
+    nValue INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -202,5 +202,26 @@ CREATE TABLE dataList_Template (
     nUser_Delete INT NULL,
     dDatetime_Delete DATETIME NULL,
     FOREIGN KEY (nId_Question) REFERENCES Questions_Template(nId_Question)
+);
+
+CREATE TABLE data_list (
+    nId_Data_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    nId_Question INT NOT NULL,
+    sText VARCHAR(255) NOT NULL,
+    nValue INT NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL,
+    FOREIGN KEY (nId_Question) REFERENCES Questions(nId_Question)
+);
+
+CREATE TABLE Data_List_Answer (
+    nId_Data_List INT NOT NULL,
+    nId_Answer INT NOT NULL,
+    FOREIGN KEY (nId_Data_List) REFERENCES data_list(nId_Data_List),
+    FOREIGN KEY (nId_Answer) REFERENCES Answer(nId_Answer)
 );
 ```
