@@ -111,6 +111,7 @@ CREATE TABLE Questions (
     bRequired BIT NOT NULL,
     sPlaceHolder NVARCHAR(100),
     nId_Competence INT NOT NULL,
+    nId_Question_Template INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
