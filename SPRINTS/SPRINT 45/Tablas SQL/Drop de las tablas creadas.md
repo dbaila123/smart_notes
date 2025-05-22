@@ -1,0 +1,17 @@
+```SQL
+DROP TABLE IF EXISTS Data_List_Answer;
+DROP TABLE IF EXISTS Answer;
+DROP TABLE IF EXISTS data_list;
+DROP TABLE IF EXISTS dataList_Template;
+DROP TABLE IF EXISTS Questions;
+DROP TABLE IF EXISTS Qualified_Evaluations;
+DROP TABLE IF EXISTS Evaluators;
+DROP TABLE IF EXISTS Questions_Template;
+DROP TABLE IF EXISTS Forms;
+DROP TABLE IF EXISTS AssessedFormTypeList;
+DROP TABLE IF EXISTS Type_Question;
+DROP TABLE IF EXISTS Competence;
+DROP TABLE IF EXISTS Form_Template;
+DROP TABLE IF EXISTS Form_Type;
+DROP TABLE IF EXISTS Evaluations;
+```
