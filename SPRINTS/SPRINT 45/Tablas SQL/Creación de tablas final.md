@@ -101,7 +101,7 @@ CREATE TABLE Questions_Template (
     nId_Type_Question INT NOT NULL,
     bRequired BIT NOT NULL,
     sPlaceHolder NVARCHAR(255) NULL,
-    nId_Competence INT NOT NULL,
+    nId_Competence INT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE Questions (
     nId_Type_Question INT NOT NULL,
     bRequired BIT NOT NULL,
     sPlaceHolder NVARCHAR(100) NULL,
-    nId_Competence INT NOT NULL,
+    nId_Competence INT NULL,
     nId_Question_Template INT NULL, -- Hecho nullable y corregido el nombre
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
