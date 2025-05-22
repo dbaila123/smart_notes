@@ -8,25 +8,36 @@
     dEnd_Date DATE NOT NULL,
 	nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL
 );
 
 CREATE TABLE Form_Type (
     nId_Form_Type INT IDENTITY(1,1) PRIMARY KEY,
 	sName NVARCHAR(500) NOT NULL,
-	nId_FormType_Padre INT NOT NULL,
-	nId_Form_SubType INT NOT NULL,
+	nId_FormType_Padre INT NULL,
 	sIcon NVARCHAR(100) NULL,
 	sDescription NVARCHAR(500) NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL
+);
+
+CREATE TABLE Form_Template (
+    nId_Form_Template INT IDENTITY(1,1) PRIMARY KEY,
+    sName NVARCHAR(255) NOT NULL,
+    sDescription NVARCHAR(255) NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL 
 );
 
 CREATE TABLE Forms (
@@ -38,12 +49,14 @@ CREATE TABLE Forms (
     nId_Form_Template INT NOT NULL,
 	nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME,
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL,
 	FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation),
-	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type)
+	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
+	FOREIGN KEY (nId_Form_SubType) REFERENCES Form_Type(nId_Form_Type),
+	FOREIGN KEY (nId_Form_Template) REFERENCES Form_Template(nId_Form_Template)
 );
 
 
@@ -110,7 +123,7 @@ CREATE TABLE Questions (
     sText NVARCHAR(255) NOT NULL,
     nId_Type_Question INT NOT NULL,
     bRequired BIT NOT NULL,
-    sPlaceHolder NVARCHAR(100),
+    sPlaceHolder NVARCHAR(100) NULL,
     nId_Competence INT NOT NULL,
     nId_Question_Template INT NOT NULL,
     nUser_Creator INT NOT NULL,
@@ -140,30 +153,9 @@ CREATE TABLE Answer (
 );
 ------------------------------------
 
-CREATE TABLE Form_Template (
-    nId_Form_Template INT IDENTITY(1,1) PRIMARY KEY,
-    sName VARCHAR(255) NOT NULL,
-    dDatetime_Creator DATETIME NOT NULL,
-    nUser_Update INT NULL,
-    dDatetime_Update DATETIME NULL,
-    nUser_Delete INT NULL,
-    dDatetime_Delete DATETIME NULL 
-);
-
-CREATE TABLE Form_Template (
-    nId_Form_Template INT IDENTITY(1,1) PRIMARY KEY,
-    sName VARCHAR(255) NOT NULL,
-    sDescription VARCHAR(255) NULL,
-    dDatetime_Creator DATETIME NOT NULL,
-    nUser_Update INT NULL,
-    dDatetime_Update DATETIME NULL,
-    nUser_Delete INT NULL,
-    dDatetime_Delete DATETIME NULL 
-);
-
 CREATE TABLE Type_Question (
     nId_Type_Question INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    sName VARCHAR(255) NOT NULL,
+    sName NVARCHAR(255) NOT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -176,10 +168,10 @@ CREATE TABLE Type_Question (
 CREATE TABLE Questions_Template (
     nId_Question INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Form_Template INT NOT NULL,
-    sText VARCHAR(255) NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
     nId_Type_Question INT NOT NULL,
     bRequired BIT NOT NULL,
-    sPlaceHolder VARCHAR(255) NULL,
+    sPlaceHolder NVARCHAR(255) NULL,
     nId_Competence INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
@@ -195,7 +187,7 @@ CREATE TABLE Questions_Template (
 CREATE TABLE dataList_Template (
     nId_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Question INT NOT NULL,
-    sText VARCHAR(255) NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
     nValue INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
@@ -209,7 +201,7 @@ CREATE TABLE dataList_Template (
 CREATE TABLE data_list (
     nId_Data_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Question INT NOT NULL,
-    sText VARCHAR(255) NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
     nValue INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDatetime_Creator DATETIME NOT NULL,
