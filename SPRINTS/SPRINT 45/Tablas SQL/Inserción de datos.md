@@ -39,4 +39,12 @@ VALUES
 	('Liderazgo', 'Competencia Liderazgo', 'L', 666, GETDATE()),
 	('Calidad de trabajo', 'Competencia Calidad de trabajo', 'CT', 666, GETDATE())
 
+INSERT INTO Form_Template (sName, sDescription, nUser_Creator, dDatetime_Creator)
+VALUES 
+	('Evaluación de Desempeño General', 'Bienvenido a la Evaluación de Desempeño General del Periodo 2024.', 172, GETDATE()),
+	('Evaluación de Desempeño - Líderes, Directores y Coordinadores', 'Bienvenido a la Evaluación de Desempeño a Líderes, Directores y Coordinadores del Periodo 2024', 172, GETDATE());
+
+
+
+
 ```
