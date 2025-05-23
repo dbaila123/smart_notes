@@ -8,21 +8,36 @@
     dEnd_Date DATE NOT NULL,
 	nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL
 );
 
 CREATE TABLE Form_Type (
     nId_Form_Type INT IDENTITY(1,1) PRIMARY KEY,
 	sName NVARCHAR(500) NOT NULL,
+	nId_FormType_Padre INT NULL,
+	sIcon NVARCHAR(100) NULL,
+	sDescription NVARCHAR(500) NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL
+);
+
+CREATE TABLE Form_Template (
+    nId_Form_Template INT IDENTITY(1,1) PRIMARY KEY,
+    sName NVARCHAR(255) NOT NULL,
+    sDescription NVARCHAR(255) NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL 
 );
 
 CREATE TABLE Forms (
@@ -31,14 +46,17 @@ CREATE TABLE Forms (
     sDescription NVARCHAR(MAX) NOT NULL,
     nId_Evaluation INT NOT NULL,
     nId_Form_Type INT NOT NULL,
+    nId_Form_Template INT NOT NULL,
 	nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
-	nUser_Update INT,
-    dDateTime_Update DATETIME,
-	nUser_Delete INT,
-    dDateTime_Delete DATETIME,
+	nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+	nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL,
 	FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation),
-	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type)
+	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
+	FOREIGN KEY (nId_Form_SubType) REFERENCES Form_Type(nId_Form_Type),
+	FOREIGN KEY (nId_Form_Template) REFERENCES Form_Template(nId_Form_Template)
 );
 
 
@@ -103,10 +121,11 @@ CREATE TABLE Questions (
     nId_Question INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Form INT NOT NULL,
     sText NVARCHAR(255) NOT NULL,
-    sType NVARCHAR(50) NOT NULL,
+    nId_Type_Question INT NOT NULL,
     bRequired BIT NOT NULL,
-    sPlaceHolder NVARCHAR(100) NOT NULL,
+    sPlaceHolder NVARCHAR(100) NULL,
     nId_Competence INT NOT NULL,
+    nId_Question_Template INT NOT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -131,5 +150,72 @@ CREATE TABLE Answer (
     dDateTime_Delete DATETIME NULL,
     FOREIGN KEY (Qualified_Evaluation) REFERENCES Questions(Qualified_Evaluation),
     FOREIGN KEY (nId_Question) REFERENCES Questions(nId_Question)
+);
+------------------------------------
+
+CREATE TABLE Type_Question (
+    nId_Type_Question INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    sName NVARCHAR(255) NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL
+);
+
+
+CREATE TABLE Questions_Template (
+    nId_Question INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    nId_Form_Template INT NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
+    nId_Type_Question INT NOT NULL,
+    bRequired BIT NOT NULL,
+    sPlaceHolder NVARCHAR(255) NULL,
+    nId_Competence INT NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL,
+    FOREIGN KEY (nId_Form_Template) REFERENCES Form_Template(nId_Form_Template),
+    FOREIGN KEY (nId_Type_Question) REFERENCES Type_Question(nId_Type_Question),
+    FOREIGN KEY (nId_Competence) REFERENCES Competence(nId_Competence)
+);
+
+CREATE TABLE dataList_Template (
+    nId_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    nId_Question INT NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
+    nValue INT NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL,
+    FOREIGN KEY (nId_Question) REFERENCES Questions_Template(nId_Question)
+);
+
+CREATE TABLE data_list (
+    nId_Data_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    nId_Question INT NOT NULL,
+    sText NVARCHAR(255) NOT NULL,
+    nValue INT NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDatetime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDatetime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDatetime_Delete DATETIME NULL,
+    FOREIGN KEY (nId_Question) REFERENCES Questions(nId_Question)
+);
+
+CREATE TABLE Data_List_Answer (
+    nId_Data_List INT NOT NULL,
+    nId_Answer INT NOT NULL,
+    FOREIGN KEY (nId_Data_List) REFERENCES data_list(nId_Data_List),
+    FOREIGN KEY (nId_Answer) REFERENCES Answer(nId_Answer)
 );
 ```
