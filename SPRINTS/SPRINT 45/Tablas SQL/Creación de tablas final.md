@@ -88,7 +88,7 @@ CREATE TABLE Forms (
     dDateTime_Update DATETIME NULL,
     nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
-    FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation),
+    FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation) ON DELETE CASCADE,
     FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
     FOREIGN KEY (nId_Form_SubType) REFERENCES Form_Type(nId_Form_Type),
     FOREIGN KEY (nId_Form_Template) REFERENCES Form_Template(nId_Form_Template)
@@ -120,7 +120,7 @@ CREATE TABLE Evaluators (
     PRIMARY KEY (nId_Evaluator, nId_Assessed, nId_Form), -- Añadida clave primaria compuesta
     FOREIGN KEY (nId_Evaluator) REFERENCES Colaboradores(nId_Colaborador),
     FOREIGN KEY (nId_Assessed) REFERENCES Colaboradores(nId_Colaborador),
-    FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form)
+    FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form) ON DELETE CASCADE
 );
 
 CREATE TABLE Qualified_Evaluations (
@@ -156,7 +156,7 @@ CREATE TABLE Questions (
     dDateTime_Update DATETIME NULL,
     nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
-    FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form),
+    FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form) ON DELETE CASCADE,
     FOREIGN KEY (nId_Competence) REFERENCES Competence(nId_Competence),
     FOREIGN KEY (nId_Type_Question) REFERENCES Type_Question(nId_Type_Question),
     FOREIGN KEY (nId_Question_Template) REFERENCES Questions_Template(nId_Question_Template)
@@ -187,7 +187,7 @@ CREATE TABLE data_list (
     dDatetime_Update DATETIME NULL,
     nUser_Delete INT NULL,
     dDatetime_Delete DATETIME NULL,
-    FOREIGN KEY (nId_Question) REFERENCES Questions(nId_Question)
+    FOREIGN KEY (nId_Question) REFERENCES Questions(nId_Question) ON DELETE CASCADE
 );
 
 -- Tabla de cuerto nivel

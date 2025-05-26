@@ -53,7 +53,7 @@ CREATE TABLE Forms (
     dDateTime_Update DATETIME NULL,
 	nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
-	FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation),
+	FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation) ON DELETE CASCADE,
 	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
 	FOREIGN KEY (nId_Form_SubType) REFERENCES Form_Type(nId_Form_Type),
 	FOREIGN KEY (nId_Form_Template) REFERENCES Form_Template(nId_Form_Template)
