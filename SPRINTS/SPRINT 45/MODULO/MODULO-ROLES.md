@@ -23,7 +23,7 @@ BEGIN
 
 	INSERT INTO Modulos
 	(nPadre, sDescripcion, sComentario, sIcono, sUrl_Link_Modulo, nEstado, nUsuario_Creador, dDatetime_Creador, nUsuario_Update, dDatetime_Update, nUsuario_Delete, dDatetime_Delete, nOrden, nEstado_Config, nId_moduloRol, v_Mostrar)
-	VALUES(NULL,'Evaluaciones', 'Evaluación de Desempeño', 'query_stats', '/evaluacion/lista', 1, 172, getdate(), NULL, NULL, NULL, NULL, null, 1, NULL, 0)
+	VALUES(NULL,'Evaluaciones', 'Evaluación de Desempeño', 'query_stats', '/evaluacion/lista', 1, 172, getdate(), NULL, NULL, NULL, NULL, null, 1, NULL, 1)
 	
 	set @nid_modulo = SCOPE_IDENTITY() 
 
