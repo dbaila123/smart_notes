@@ -2,8 +2,8 @@
 INSERT INTO Form_Type (sName, nUser_Creator, dDateTime_Creator, nId_FormType_Padre, sIcon, sDescription)
 VALUES 
 	('Autoevaluación', 172, GETDATE(), NULL, 'replay', 'Los participantes se evalúan a sí mismo'),
-	('Supervisores', 172, GETDATE(), NULL, 'move_down','Los supervisores reciben feedback de sus subordinados (feedback de abajo hacia arriba)'),
-	('Subordinados', 172, GETDATE(), NULL, 'move_up','Los supervisores evalúan a sus subordinados directos (feedback de arriba hacia abajo)'),
+	('Supervisores', 172, GETDATE(), NULL, 'move_up','Los supervisores reciben feedback de sus subordinados (feedback de abajo hacia arriba)'),
+	('Subordinados', 172, GETDATE(), NULL, 'move_down','Los supervisores evalúan a sus subordinados directos (feedback de arriba hacia abajo)'),
 	('Subordinados - Colaboradores', 172, GETDATE(),3, NULL, NULL),
 	('Subordinados - Lideres', 172, GETDATE(), 3, NULL, NULL),
 	('Pares', 172, GETDATE(),NULL, 'swap_horiz','Los pares se evalúan entre sí'),
