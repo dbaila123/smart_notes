@@ -9,6 +9,7 @@ CREATE TABLE Evaluations (
     dInit_Date DATE NOT NULL,
     dEnd_Date DATE NOT NULL,
     bIsNotified BIT DEFAULT 0,
+    dShare_Results DATETIME,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
