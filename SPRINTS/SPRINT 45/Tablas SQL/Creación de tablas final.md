@@ -9,6 +9,9 @@ CREATE TABLE Evaluations (
     dInit_Date DATE NOT NULL,
     dEnd_Date DATE NOT NULL,
     bIsNotified BIT DEFAULT 0,
+    dShare_Results datetime NULL,
+	bSystem_Notification bit DEFAULT 0 NULL,
+	bEmail_Notification bit DEFAULT 0 NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -96,7 +99,7 @@ CREATE TABLE Forms (
 );
 
 CREATE TABLE Questions_Template (
-    nId_Question_Template INT IDENTITY(1,1) PRIMARY KEY NOT NULL, -- Corregido el nombre
+    nId_Question_Template INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     nId_Form_Template INT NOT NULL,
     sText NVARCHAR(255) NOT NULL,
     nId_Type_Question INT NOT NULL,
@@ -118,7 +121,7 @@ CREATE TABLE Evaluators (
     nId_Evaluator INT NOT NULL,
     nId_Assessed INT NOT NULL,
     nId_Form INT NOT NULL,
-    PRIMARY KEY (nId_Evaluator, nId_Assessed, nId_Form), -- Añadida clave primaria compuesta
+    PRIMARY KEY (nId_Evaluator, nId_Assessed, nId_Form),
     FOREIGN KEY (nId_Evaluator) REFERENCES Colaboradores(nId_Colaborador),
     FOREIGN KEY (nId_Assessed) REFERENCES Colaboradores(nId_Colaborador),
     FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form) ON DELETE CASCADE
@@ -150,7 +153,7 @@ CREATE TABLE Questions (
     bRequired BIT NOT NULL,
     sPlaceHolder NVARCHAR(100) NULL,
     nId_Competence INT NULL,
-    nId_Question_Template INT NULL, -- Hecho nullable y corregido el nombre
+    nId_Question_Template INT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
     nUser_Update INT NULL,
@@ -160,12 +163,12 @@ CREATE TABLE Questions (
     FOREIGN KEY (nId_Form) REFERENCES Forms(nId_Form) ON DELETE CASCADE,
     FOREIGN KEY (nId_Competence) REFERENCES Competence(nId_Competence),
     FOREIGN KEY (nId_Type_Question) REFERENCES Type_Question(nId_Type_Question),
-    FOREIGN KEY (nId_Question_Template) REFERENCES Questions_Template(nId_Question_Template)
+	FOREIGN KEY (nId_Question_Template) REFERENCES Questions_Template(nId_Question_Template)
 );
 
 CREATE TABLE dataList_Template (
     nId_List INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-    nId_Question_Template INT NOT NULL, -- Corregido el nombre
+    nId_Question_Template INT NOT NULL,
     sText NVARCHAR(255) NOT NULL,
     nValue INT NOT NULL,
     nUser_Creator INT NOT NULL,
@@ -214,7 +217,7 @@ CREATE TABLE Answer (
 CREATE TABLE Data_List_Answer (
     nId_Data_List INT NOT NULL,
     nId_Answer INT NOT NULL,
-    PRIMARY KEY (nId_Data_List, nId_Answer), -- Añadida clave primaria compuesta
+    PRIMARY KEY (nId_Data_List, nId_Answer),
     FOREIGN KEY (nId_Data_List) REFERENCES data_list(nId_Data_List),
     FOREIGN KEY (nId_Answer) REFERENCES Answer(nId_Answer)
 );
