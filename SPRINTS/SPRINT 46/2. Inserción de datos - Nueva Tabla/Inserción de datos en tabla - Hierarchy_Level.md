@@ -1,0 +1,8 @@
+```SQL
+INSERT INTO Hierarchy_Level (sName , nUser_Creator , dDateTime_Creator)
+VALUES
+('Líder', 172, GETDATE()),
+('Analista Líder', 172, GETDATE()),
+('Analista', 172, GETDATE()),
+('Asistente', 172, GETDATE()),
+('Auxiliar', 172, GETDATE());
