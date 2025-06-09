@@ -40,7 +40,7 @@ CREATE TABLE Job_TypeForm_Weight (
     dDateTime_Update DATETIME,
     nUser_Delete INT,
     dDateTime_Delete DATETIME,
-    CONSTRAINT chk_nPercentage CHECK (nPercentage BETWEEN 0 AND 1),
+    CONSTRAINT chk_nPercentage_Job_Typeform_weight CHECK (nPercentage BETWEEN 0 AND 1),
 	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
 	FOREIGN KEY (nId_Cargo) REFERENCES Cargos(nId_Cargo)
 );
