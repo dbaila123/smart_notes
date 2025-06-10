@@ -1,5 +1,5 @@
 ```SQL
-INSERT INTO Hierarchy_Level (sName , nUser_Creator , dDateTime_Creator)
+INSERT INTO Job_Category (sName , nUser_Creator , dDateTime_Creator)
 VALUES
 ('Líder', 172, GETDATE()),
 ('Analista Líder', 172, GETDATE()),
