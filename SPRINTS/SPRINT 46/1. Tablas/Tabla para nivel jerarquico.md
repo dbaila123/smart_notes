@@ -41,8 +41,8 @@ CREATE TABLE Job_Competency_Weight (
 	FOREIGN KEY (nId_Job_Category) REFERENCES Job_Category(nId_Job_Category)
 );
 
-CREATE TABLE Job_TypeForm_Weight (
-    nId_Job_TypeForm_Weight INT IDENTITY(1,1) PRIMARY KEY,
+CREATE TABLE Job_Hierarchy_Weight (
+    nId_Job_Hierarchy_Weight INT IDENTITY(1,1) PRIMARY KEY,
     nId_Hierarchy_Level INT NOT NULL,
     nId_Job_Category INT NOT NULL,
     nPercentage DECIMAL(4,3) NOT NULL,
@@ -52,8 +52,8 @@ CREATE TABLE Job_TypeForm_Weight (
     dDateTime_Update DATETIME,
     nUser_Delete INT,
     dDateTime_Delete DATETIME,
-    CONSTRAINT chk_nPercentage_Job_Typeform_weight CHECK (nPercentage BETWEEN 0 AND 1),
-	FOREIGN KEY (nId_Hierarchy_Level) REFERENCES Hierarchy_Level(nId_Hierarchy_Level)
+    CONSTRAINT chk_nPercentage_Job_Hierarchy_weight CHECK (nPercentage BETWEEN 0 AND 1),
+	FOREIGN KEY (nId_Hierarchy_Level) REFERENCES Hierarchy_Level(nId_Hierarchy_Level),
 	FOREIGN KEY (nId_Job_Category) REFERENCES Job_Category(nId_Job_Category)
 );
 
