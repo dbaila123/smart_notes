@@ -1,0 +1,20 @@
+```SQL
+INSERT INTO Job_Hierarchy_Weight (nId_Hierarchy_Level , nId_Job_Category , nPercentage, nUser_Creator, dDateTime_Creator)
+VALUES
+
+(1, 1, 0.52, 172, GETDATE()),
+(2, 1, 0.34, 172, GETDATE()),
+(3, 1, 0.14, 172, GETDATE()),
+
+(1, 2, 0.52, 172, GETDATE()),
+(2, 2, 0.34, 172, GETDATE()),
+(3, 2, 0.14, 172, GETDATE()),
+
+(1, 3, 0.64, 172, GETDATE()),
+(3, 3, 0.36, 172, GETDATE()),
+
+(1, 4, 0.64, 172, GETDATE()),
+(3, 4, 0.36, 172, GETDATE()),
+
+(1, 5, 0.64, 172, GETDATE()),
+(3, 5, 0.36, 172, GETDATE());
