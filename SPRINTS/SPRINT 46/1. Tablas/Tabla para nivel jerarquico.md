@@ -14,7 +14,7 @@ CREATE TABLE Hierarchy_Level (
 CREATE TABLE Job_Competency_Weight (
     nId_Job_Competency_Weight INT IDENTITY(1,1) PRIMARY KEY,
     nId_Competence INT NOT NULL,
-    nId_Cargo INT NOT NULL,
+    nId_Hierarchy_Level INT NOT NULL,
     nPercentage DECIMAL(4,3) NOT NULL,
     nMax_Value INT NOT NULL,
     nExpected_value DECIMAL(4,3) NOT NULL,
@@ -26,13 +26,13 @@ CREATE TABLE Job_Competency_Weight (
     dDateTime_Delete DATETIME,
     CONSTRAINT chk_nPercentage CHECK (nPercentage BETWEEN 0 AND 1),
 	FOREIGN KEY (nId_Competence) REFERENCES Competence(nId_Competence),
-	FOREIGN KEY (nId_Cargo) REFERENCES Cargos(nId_Cargo)
+	FOREIGN KEY (nId_Hierarchy_Level) REFERENCES Hierarchy_Level(nId_Hierarchy_Level)
 );
 
 CREATE TABLE Job_TypeForm_Weight (
     nId_Job_TypeForm_Weight INT IDENTITY(1,1) PRIMARY KEY,
     nId_Form_Type INT NOT NULL,
-    nId_Cargo INT NOT NULL,
+    nId_Hierarchy_Level INT NOT NULL,
     nPercentage DECIMAL(4,3) NOT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE Job_TypeForm_Weight (
     dDateTime_Delete DATETIME,
     CONSTRAINT chk_nPercentage_Job_Typeform_weight CHECK (nPercentage BETWEEN 0 AND 1),
 	FOREIGN KEY (nId_Form_Type) REFERENCES Form_Type(nId_Form_Type),
-	FOREIGN KEY (nId_Cargo) REFERENCES Cargos(nId_Cargo)
+	FOREIGN KEY (nId_Hierarchy_Level) REFERENCES Hierarchy_Level(nId_Hierarchy_Level)
 );
 
 CREATE TABLE Competence_Average_Evaluator (
