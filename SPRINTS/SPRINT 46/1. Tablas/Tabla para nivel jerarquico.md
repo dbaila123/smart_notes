@@ -99,3 +99,19 @@ CREATE TABLE Competence_Average (
 
 ALTER TABLE Qualified_Evaluations
 ADD nTotal_Score DECIMAL(6,4)
+
+CREATE TABLE Evaluation_Quadrant (
+    nId_Evaluation_Quadrant INT IDENTITY(1,1) PRIMARY KEY,
+    sName NVARCHAR(500) NOT NULL,
+    sDescription NVARCHAR(500) NOT NULL,
+	nCompetence_Min_Value DECIMAL(3,2) NOT NULL,
+	nCompetence_Max_Value DECIMAL(3,2) NOT NULL,
+	nObjetive_Min_Value DECIMAL(3,2) NOT NULL,
+	nObjetive_Max_Value DECIMAL(3,2) NOT NULL,
+    nUser_Creator INT NOT NULL,
+    dDateTime_Creator DATETIME NOT NULL,
+    nUser_Update INT NULL,
+    dDateTime_Update DATETIME NULL,
+    nUser_Delete INT NULL,
+    dDateTime_Delete DATETIME NULL,
+);
