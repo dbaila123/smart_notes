@@ -115,3 +115,12 @@ CREATE TABLE Evaluation_Quadrant (
     nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
 );
+
+CREATE TABLE Objective_Score (
+    nId_Objective_Score INT IDENTITY(1,1) PRIMARY KEY,
+    nId_Collaborator INT NOT NULL,
+    nId_Evaluation INT NOT NULL,
+    nPunctuation DECIMAL(10,2) NULL,
+    FOREIGN KEY (nId_Collaborator) REFERENCES Colaboradores(nId_Colaborador),
+    FOREIGN KEY (nId_Evaluation) REFERENCES Evaluations(nId_Evaluation)
+);
