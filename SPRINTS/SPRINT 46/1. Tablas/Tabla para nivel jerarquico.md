@@ -64,7 +64,7 @@ CREATE TABLE Competence_Average_Evaluator (
     nId_Evaluation INT NOT NULL,
 	nId_Hierarchy_Level INT NOT NULL,
     nId_Job_Competency_Weight INT NOT NULL,
-    nValue_Average DECIMAL(4,2) NOT NULL,
+    nValue_Average DECIMAL(6,4) NOT NULL,
     nValue_Average_Weight DECIMAL(4,2) NOT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE Competence_Average (
     nId_Assessed INT NOT NULL,
     nId_Evaluation INT NOT NULL,
     nId_Job_Competency_Weight INT NOT NULL,
-    nValue DECIMAL(4,2) NOT NULL,
+    nValue DECIMAL(6,4) NOT NULL,
     nValue_Percentage DECIMAL(4,3) NOT NULL,
     nUser_Creator INT NOT NULL,
     dDateTime_Creator DATETIME NOT NULL,
@@ -115,3 +115,6 @@ CREATE TABLE Evaluation_Quadrant (
     nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
 );
+
+ALTER TABLE Competence
+ADD sIcon NVARCHAR(100)
