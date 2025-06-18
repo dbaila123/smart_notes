@@ -1,5 +1,5 @@
 ```sql
-CREATE TYPE ObjetiveScoreTable AS TABLE
+CREATE TYPE ObjectiveScoreTable AS TABLE
 (
     nId_Collaborator INT,
     nId_Evaluation INT,
