@@ -97,9 +97,6 @@ CREATE TABLE Competence_Average (
 	FOREIGN KEY (nId_Job_Competency_Weight) REFERENCES Job_Competency_Weight(nId_Job_Competency_Weight)
 );
 
-ALTER TABLE Qualified_Evaluations
-ADD nTotal_Score DECIMAL(6,4)
-
 CREATE TABLE Evaluation_Quadrant (
     nId_Evaluation_Quadrant INT IDENTITY(1,1) PRIMARY KEY,
     sName NVARCHAR(500) NOT NULL,
@@ -115,9 +112,6 @@ CREATE TABLE Evaluation_Quadrant (
     nUser_Delete INT NULL,
     dDateTime_Delete DATETIME NULL,
 );
-
-ALTER TABLE Competence
-ADD sIcon NVARCHAR(100)
 
 CREATE TABLE Objective_Score (
     nId_Objective_Score INT IDENTITY(1,1) PRIMARY KEY,
