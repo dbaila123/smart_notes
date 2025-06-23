@@ -1,11 +1,4 @@
 ```SQL
-ALTER TABLE Cargos 
-ADD nId_Job_Category INT;
-
-ALTER TABLE Cargos 
-ADD CONSTRAINT FK_Cargos_Job_Category
-FOREIGN KEY (nId_Job_Category) REFERENCES Job_Category(nId_Job_Category);
-
 UPDATE Cargos
 SET nId_Job_Category = 1
 WHERE nId_Cargo in (39,41);
