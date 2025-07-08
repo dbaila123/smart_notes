@@ -539,7 +539,7 @@ BEGIN
 
                         INSERT INTO @configuraciones
                         SELECT DISTINCT CAST(tc.nId_Colaborador as nvarchar(max)) as sCodigo,
-       pc.sPersona_Nombre                        as sDescripcion,
+       pc.sPersona_Nombre                       as sDescripcion,
                                         'COLABORADORES'                           as sTipo_Configuracion
                         FROM Team_Colaboradors tc
                                  JOIN Colaboradores c on c.nId_Colaborador = tc.nId_Colaborador
@@ -984,7 +984,7 @@ BEGIN
                                   OR EXISTS (SELECT 1
   FROM Proyecto_Lider pl
             WHERE pl.nId_Proyecto = p.nId_Proyecto
-                            AND pl.nId_Lider = @Id_Colaborador)
+      AND pl.nId_Lider = @Id_Colaborador)
                               )
                        ))
 
@@ -1046,7 +1046,7 @@ BEGIN
     END
 
     -- RQ
-    IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfiguration = 'requerimientos_colaborador') =
+IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfiguration = 'requerimientos_colaborador') =
        1
         BEGIN
             INSERT INTO @configuraciones
@@ -1192,7 +1192,7 @@ BEGIN
             SELECT DISTINCT p.nId_Proyecto                                        as sCodigo,
                             CONCAT(p.sNombre, ' ', '(', p2.sPrimer_Nombre, ')') as sDescripcion,
                             'PROYECTOS_EN_EQUIPO_PROYECTO'            as sTipo_Configuracion
-            FROM Proyectos p
+ FROM Proyectos p
                      JOIN Proyecto_Lider pl ON p.nId_Proyecto = pl.nId_Proyecto AND pl.nEstado = 1 --PRY_LIDER
 
             -- coordinator name
@@ -1661,7 +1661,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
         BEGIN
             INSERT INTO @configuraciones
             SELECT CONVERT(nvarchar(max), c.nId_Categoria) AS sCodigo,
-                   c.sDescripcion                          AS sDescripcion,
+                   c.sDescripcion                   AS sDescripcion,
                    'CATEGORIAS'                            AS sTipo_Configuracion
             FROM Categorias c
             WHERE c.nEstado = 1
@@ -1975,7 +1975,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             INSERT INTO @configuraciones
             select r.nId_Requerimiento         as sCodigo,
                    r.sNombre     AS sDescripcion,
-                   'REQUERIMIENTOS_SUPERVISOR' as sTipo_Configuracion
+      'REQUERIMIENTOS_SUPERVISOR' as sTipo_Configuracion
             from Requerimientos r
                      JOIN Proyectos pry ON pry.nId_Proyecto = r.nId_Proyecto
                      JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = pry.nId_Proyecto
@@ -2145,7 +2145,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
         BEGIN
    INSERT INTO @configuraciones
             select count(s.nId_Solictud)                as sCodigo,
-                   null                                 as sDescripcion,
+                   null             as sDescripcion,
                    'SOLICITUDES_PENDIENTES_COLABORADOR' as sTipo_Configuracion
             -- add a column to get the count of the pending requests
 
@@ -2232,7 +2232,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
     --CIERRE TAREO PENDIENTES
     IF (select count(sConfiguration) from @configurations_request where sConfiguration = 'cierre-tareo-pendientes') = 1
         BEGIN
-            INSERT INTO @configuraciones
+           INSERT INTO @configuraciones
             SELECT
                 nId_Cierre AS sCodigo,
                 CONCAT(MONTH(dFecha_Cierre), '-', YEAR(dFecha_Cierre) ) AS sDescripcion,
@@ -2430,7 +2430,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
         BEGIN
             INSERT INTO @configuraciones
             SELECT
-                ft.nId_Form_Type AS sCodigo,
+             ft.nId_Form_Type AS sCodigo,
                 ft.sName AS sDecripcion,
                 'FORMS' AS sTipo_Configuration
             FROM Form_Type ft
@@ -2475,6 +2475,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
 			    car.dFecha_Cierre_Planificado AS sDescripcion,
 			    'PLANNED_CLOSING' AS sTipo_Configuration
 			FROM cierreAsistenciaReportes car 
+			WHERE car.dFecha_Cierre_Planificado is not null 
 			ORDER BY car.dFecha_Cierre_Planificado DESC;
         END
     --RETURN CONFIGURACIONES
