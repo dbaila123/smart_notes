@@ -539,7 +539,7 @@ BEGIN
 
                         INSERT INTO @configuraciones
                         SELECT DISTINCT CAST(tc.nId_Colaborador as nvarchar(max)) as sCodigo,
-       pc.sPersona_Nombre                       as sDescripcion,
+       pc.sPersona_Nombre                      as sDescripcion,
                                         'COLABORADORES'                           as sTipo_Configuracion
                         FROM Team_Colaboradors tc
                                  JOIN Colaboradores c on c.nId_Colaborador = tc.nId_Colaborador
@@ -1193,7 +1193,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
                             CONCAT(p.sNombre, ' ', '(', p2.sPrimer_Nombre, ')') as sDescripcion,
                             'PROYECTOS_EN_EQUIPO_PROYECTO'            as sTipo_Configuracion
  FROM Proyectos p
-                     JOIN Proyecto_Lider pl ON p.nId_Proyecto = pl.nId_Proyecto AND pl.nEstado = 1 --PRY_LIDER
+  JOIN Proyecto_Lider pl ON p.nId_Proyecto = pl.nId_Proyecto AND pl.nEstado = 1 --PRY_LIDER
 
             -- coordinator name
                      JOIN Coordinadores_Proyectos cp ON p.nId_Proyecto = cp.nId_Proyecto
@@ -1335,7 +1335,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
   JOIN Proyectos p ON p.nId_Proyecto = r.nId_Proyecto
                                      JOIN Colaboradores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
    JOIN Team_Colaboradors tc ON tc.nId_Colaborador = cp.nId_Colaborador
-                                     JOIN Team t ON t.nId_Team = tc.nId_Team
+   JOIN Team t ON t.nId_Team = tc.nId_Team
                                      JOIN personas_colaboradores pc ON pc.nid_colaborador = t.nId_Lider
                                      JOIN Usuarios u ON u.nId_Persona = pc.nid_persona
                             WHERE u.nId_Usuario = @id_usuario
@@ -1662,7 +1662,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             INSERT INTO @configuraciones
             SELECT CONVERT(nvarchar(max), c.nId_Categoria) AS sCodigo,
                    c.sDescripcion                   AS sDescripcion,
-                   'CATEGORIAS'                            AS sTipo_Configuracion
+          'CATEGORIAS'                            AS sTipo_Configuracion
             FROM Categorias c
             WHERE c.nEstado = 1
         END
@@ -2339,7 +2339,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             INSERT INTO @configuraciones
             select
                 distinct
-                mt.nUsuario_Creador as sCodigo,
+       mt.nUsuario_Creador as sCodigo,
                 concat_ws(' ' ,p.sPrimer_Nombre, p.sApe_Paterno)    as sDescripcion,
                 'MAILING_CREATOR'   as sTipo_Configuracion
             from MailingTemplate mt
@@ -2477,6 +2477,17 @@ and sNombre_Version = 'FRONTEND_VERSION'
 			FROM cierreAsistenciaReportes car 
 			WHERE car.dFecha_Cierre_Planificado is not null 
 			ORDER BY car.dFecha_Cierre_Planificado DESC;
+        END
+     IF (SELECT COUNT(sConfiguration) from @configurations_request where sConfiguration = 'state_dashboard') = 1
+        BEGIN
+            INSERT INTO @configuraciones
+        	SELECT 
+				c.sCodigo,
+				c.sDescripcion,
+				'STATE_DASHBOARD' AS sTipo_Configuracion
+			FROM Configs c
+			WHERE sTabla = 'ESTADO_INDICADORES'
+			AND nEstado = 1;
         END
     --RETURN CONFIGURACIONES
     SELECT * FROM @configuraciones --order by sDescripcion
