@@ -539,7 +539,7 @@ BEGIN
 
                         INSERT INTO @configuraciones
                         SELECT DISTINCT CAST(tc.nId_Colaborador as nvarchar(max)) as sCodigo,
-       pc.sPersona_Nombre                    as sDescripcion,
+       pc.sPersona_Nombre                   as sDescripcion,
                                         'COLABORADORES'                           as sTipo_Configuracion
                         FROM Team_Colaboradors tc
                                  JOIN Colaboradores c on c.nId_Colaborador = tc.nId_Colaborador
@@ -1124,7 +1124,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
             INSERT INTO @configuraciones
             SELECT p.nId_Proyecto                                    as sCodigo,
                    CONCAT(p.sNombre, ' ', '(', pc.sPrimer_Nombre, ')') as sDescripcion,
-                   'PROYECTOS_TEAM'                                      as sTipo_Configuracion
+                  'PROYECTOS_TEAM'                                      as sTipo_Configuracion
             FROM Proyectos p
                      JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
                      JOIN Coordinadores coor ON coor.nId_Coordinador = cp.nId_Coordinador
@@ -1336,7 +1336,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
                                      JOIN Colaboradores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
    JOIN Team_Colaboradors tc ON tc.nId_Colaborador = cp.nId_Colaborador
    JOIN Team t ON t.nId_Team = tc.nId_Team
-                JOIN personas_colaboradores pc ON pc.nid_colaborador = t.nId_Lider
+    JOIN personas_colaboradores pc ON pc.nid_colaborador = t.nId_Lider
                                      JOIN Usuarios u ON u.nId_Persona = pc.nid_persona
                             WHERE u.nId_Usuario = @id_usuario
                             GROUP BY r.sNombre, r.sCodigo
@@ -1431,7 +1431,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
     --USUARIOS
     IF (select count(sConfiguration) from @configurations_request where sConfiguration = 'usuarios') = 1
  BEGIN
-            INSERT INTO @configuraciones
+ INSERT INTO @configuraciones
             select u.nId_Usuario     as sCodigo,
                    p.sPersona_Nombre as sDescripcion,
                    'USUARIOS'        as sTipo_Configuracion
@@ -1734,7 +1734,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                            '-', ts.nMostrar_Selector) AS sDescripcion,
                     'CATEGORIA_SOLICITUDES_DETALLE'   AS sTipo_Configuracion
              from Tipos_Solicitudes ts
-                      join saldos_Vacaciones_Colaboradores_Prueba svc
+                      join saldos_Vacaciones_Colaboradores svc
                      on svc.nId_Colaborador = @Id_Colaborador
              where ts.nEstado = 1
                and ts.nId_Categoria IN (2))
@@ -1796,7 +1796,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                            '-', ts.nMostrar_Selector) AS sDescripcion,
                     'CATEGORIA_SOLICITUDES_DETALLE'   AS sTipo_Configuracion
              from Tipos_Solicitudes ts
-                      join saldos_Vacaciones_Colaboradores_Prueba svc
+                      join saldos_Vacaciones_Colaboradores svc
                            on svc.nId_Colaborador = @Id_Colaborador
              where ts.nEstado = 1
                and ts.nId_Categoria IN (2))
@@ -2055,7 +2055,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                    'DIAS_LABORALES'          as sTipo_Configuracion
             FROM Horarios_Colaboradores hc
                      JOIN Horarios_Detalles hd ON hd.nId_Horario = hc.nId_Horario
-                     JOIN personas_colaboradores pc ON pc.nid_colaborador = hc.nId_Colaborador
+JOIN personas_colaboradores pc ON pc.nid_colaborador = hc.nId_Colaborador
                      JOIN Usuarios u ON u.nId_Persona = pc.nid_persona
             WHERE u.nId_Usuario = @id_usuario
         END
@@ -2240,7 +2240,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             FROM
                 Cierre_Horas
             WHERE
-                nEstado_Cierre = 0
+  nEstado_Cierre = 0
               AND nEstado = 1
               AND dFecha_Cierre <= EOMONTH(DATEADD(MONTH, 1, GETDATE()))
             ORDER BY

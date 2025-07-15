@@ -539,7 +539,7 @@ BEGIN
 
                         INSERT INTO @configuraciones
                         SELECT DISTINCT CAST(tc.nId_Colaborador as nvarchar(max)) as sCodigo,
-       pc.sPersona_Nombre                      as sDescripcion,
+       pc.sPersona_Nombre                   as sDescripcion,
                                         'COLABORADORES'                           as sTipo_Configuracion
                         FROM Team_Colaboradors tc
                                  JOIN Colaboradores c on c.nId_Colaborador = tc.nId_Colaborador
@@ -1124,7 +1124,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
             INSERT INTO @configuraciones
             SELECT p.nId_Proyecto                                    as sCodigo,
                    CONCAT(p.sNombre, ' ', '(', pc.sPrimer_Nombre, ')') as sDescripcion,
-                   'PROYECTOS_TEAM'                                      as sTipo_Configuracion
+                  'PROYECTOS_TEAM'                                      as sTipo_Configuracion
             FROM Proyectos p
                      JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
                      JOIN Coordinadores coor ON coor.nId_Coordinador = cp.nId_Coordinador
@@ -1336,7 +1336,7 @@ IF (SELECT COUNT(sConfiguration) FROM @configurations_request WHERE sConfigurati
                                      JOIN Colaboradores_Proyectos cp ON cp.nId_Proyecto = p.nId_Proyecto
    JOIN Team_Colaboradors tc ON tc.nId_Colaborador = cp.nId_Colaborador
    JOIN Team t ON t.nId_Team = tc.nId_Team
-                                     JOIN personas_colaboradores pc ON pc.nid_colaborador = t.nId_Lider
+    JOIN personas_colaboradores pc ON pc.nid_colaborador = t.nId_Lider
                                      JOIN Usuarios u ON u.nId_Persona = pc.nid_persona
                             WHERE u.nId_Usuario = @id_usuario
                             GROUP BY r.sNombre, r.sCodigo
@@ -1430,8 +1430,8 @@ and sNombre_Version = 'FRONTEND_VERSION'
 
     --USUARIOS
     IF (select count(sConfiguration) from @configurations_request where sConfiguration = 'usuarios') = 1
-        BEGIN
-            INSERT INTO @configuraciones
+ BEGIN
+ INSERT INTO @configuraciones
             select u.nId_Usuario     as sCodigo,
                    p.sPersona_Nombre as sDescripcion,
                    'USUARIOS'        as sTipo_Configuracion
@@ -1516,7 +1516,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                      JOIN Personas p_lider ON c.nId_Persona = p_lider.nId_Persona
             WHERE c.nEstado_Colaborador = 1 AND c.nEstado = 1
               AND p_Lider.sPersona_Nombre NOT LIKE '%ADM -%';
-            --AND t.nEstado_Team = 1
+           --AND t.nEstado_Team = 1
         END
 
     --SUPERVISORES_ASIGNADOS
@@ -1583,7 +1583,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
       'FECHAS_CIERRE_ASISTENCIA'                       as sTipo_Configuracion
             FROM cierreAsistenciaReportes car
             UNION
-            (SELECT car.nId_Cierre                                        as sCodigo,
+            (SELECT car.nId_Cierre     as sCodigo,
                     CONCAT(CONVERT(varchar, car.dFecha_Inicio_Tardanza, 23), '/',
                            CONVERT(varchar, car.dFecha_Fin_Tardanza, 23)) as sDescripcion,
                     'FECHAS_CIERRE_TARDANZA'                              as sTipo_Configuracion
@@ -1664,7 +1664,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                    c.sDescripcion                   AS sDescripcion,
           'CATEGORIAS'                            AS sTipo_Configuracion
             FROM Categorias c
-            WHERE c.nEstado = 1
+        WHERE c.nEstado = 1
         END
 
     -- CLIENTES EMPRESA
@@ -1715,15 +1715,15 @@ and sNombre_Version = 'FRONTEND_VERSION'
                            '-', ts.nRangoMin,
                            '-',
                            CASE
-                               WHEN ts.nId_Tipo_Solicitud in (3, 10) THEN ROUND(
-                                       svc.dDias_Vencidos_Laborales + svc.dDias_Ganados_Laborales, 0, 0)
+                               WHEN ts.nId_Tipo_Solicitud in (3,10) THEN ROUND(
+                                       svc.dDias_Vencidos_Laborales, 0, 0)
                                WHEN ts.nId_Tipo_Solicitud in (22) THEN (ROUND(svc.dDias_Generados_Laborales, 0, -1))
                                END,
                            '-', ts.nRangoMinAdm,
                            '-',
                            CASE
-                               WHEN ts.nId_Tipo_Solicitud in (3, 10) THEN ROUND(
-                                       svc.dDias_Vencidos_Laborales + svc.dDias_Ganados_Laborales, 0, 0)
+                               WHEN ts.nId_Tipo_Solicitud in (3,10) THEN ROUND(
+                                       svc.dDias_Vencidos_Laborales, 0, 0)
                                WHEN ts.nId_Tipo_Solicitud in (22) THEN (ROUND(svc.dDias_Generados_Laborales, 0, -1))
                                END,
                            '-', ts.nArchivoObligatorio,
@@ -1777,15 +1777,15 @@ and sNombre_Version = 'FRONTEND_VERSION'
                            '-', ts.nRangoMin,
                            '-',
                            CASE
-                               WHEN ts.nId_Tipo_Solicitud in (3, 10) THEN ROUND(
-                                       svc.dDias_Vencidos_Laborales + svc.dDias_Ganados_Laborales, 0, 0)
+                               WHEN ts.nId_Tipo_Solicitud in (3,10) THEN ROUND(
+                                       svc.dDias_Vencidos_Laborales, 0, 0)
                                WHEN ts.nId_Tipo_Solicitud in (22) THEN (ROUND(svc.dDias_Generados_Laborales, 0, -1))
                                END,
                            '-', ts.nRangoMinAdm,
                            '-',
                            CASE
-                               WHEN ts.nId_Tipo_Solicitud in (3, 10) THEN ROUND(
-                                       svc.dDias_Vencidos_Laborales + svc.dDias_Ganados_Laborales, 0, 0)
+                               WHEN ts.nId_Tipo_Solicitud in (3,10) THEN ROUND(
+                                       svc.dDias_Vencidos_Laborales, 0, 0)
                                WHEN ts.nId_Tipo_Solicitud in (22) THEN (ROUND(svc.dDias_Generados_Laborales, 0, -1))
                                END,
                            '-', ts.nArchivoObligatorio,
@@ -1906,7 +1906,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                    sDescripcion AS sDescripcion,
                    'EFECTOS_BANNER' AS sTipo_Configuracion
             FROM Configs
-            WHERE sTabla = 'EFECTOS_BANNER'
+          WHERE sTabla = 'EFECTOS_BANNER'
               AND nEstado = 1
 
 
@@ -1979,7 +1979,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             from Requerimientos r
                      JOIN Proyectos pry ON pry.nId_Proyecto = r.nId_Proyecto
                      JOIN Coordinadores_Proyectos cp ON cp.nId_Proyecto = pry.nId_Proyecto
-                -- join Coordinadores_Proyectos cp on cp.nId_Coordinador = c.nId_Coordinador
+  -- join Coordinadores_Proyectos cp on cp.nId_Coordinador = c.nId_Coordinador
                 -- JOIN Personas p ON c.nId_Persona = p.nId_Persona
                      join Supervisor_Proyecto sp on sp.nId_Proyecto = cp.nId_Proyecto
                      join Coordinadores supervisor on supervisor.nId_Coordinador = sp.nId_Supervisor
@@ -2055,7 +2055,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                    'DIAS_LABORALES'          as sTipo_Configuracion
             FROM Horarios_Colaboradores hc
                      JOIN Horarios_Detalles hd ON hd.nId_Horario = hc.nId_Horario
-                     JOIN personas_colaboradores pc ON pc.nid_colaborador = hc.nId_Colaborador
+JOIN personas_colaboradores pc ON pc.nid_colaborador = hc.nId_Colaborador
                      JOIN Usuarios u ON u.nId_Persona = pc.nid_persona
             WHERE u.nId_Usuario = @id_usuario
         END
@@ -2240,7 +2240,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             FROM
                 Cierre_Horas
             WHERE
-                nEstado_Cierre = 0
+  nEstado_Cierre = 0
               AND nEstado = 1
               AND dFecha_Cierre <= EOMONTH(DATEADD(MONTH, 1, GETDATE()))
             ORDER BY
@@ -2343,7 +2343,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
                 concat_ws(' ' ,p.sPrimer_Nombre, p.sApe_Paterno)    as sDescripcion,
                 'MAILING_CREATOR'   as sTipo_Configuracion
             from MailingTemplate mt
-                     inner join usuarios s on s.nId_usuario = mt.nUsuario_Creador
+                inner join usuarios s on s.nId_usuario = mt.nUsuario_Creador
                      inner join Personas p on p.nId_persona = s.nId_persona
         END
 
@@ -2437,7 +2437,7 @@ and sNombre_Version = 'FRONTEND_VERSION'
             WHERE ft.nId_Form_Type NOT IN (
                 SELECT distinct nId_FormType_Padre
                 FROM Form_Type ft2
-                WHERE ft2.nId_FormType_Padre IS NOT NULL
+   WHERE ft2.nId_FormType_Padre IS NOT NULL
             ) AND ft.bState = 1
         END
 	IF (SELECT COUNT(sConfiguration) from @configurations_request where sConfiguration = 'my_evaluations_completed') = 1
