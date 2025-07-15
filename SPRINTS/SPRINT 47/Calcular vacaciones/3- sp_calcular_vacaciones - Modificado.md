@@ -1,6 +1,6 @@
 ```SQL
 CREATE PROCEDURE [dbo].[sp_calcular_vacaciones]
-	@dFecha DATETIME,
+@dFecha DATETIME,
     @nUsuario_Update int
 AS
 BEGIN
@@ -275,10 +275,10 @@ BEGIN
     WHEN MATCHED THEN
         UPDATE SET
             dDias_Vencidos_Laborales = source.dDias_Vencidos_Laborales,
-            dDias_Ganados_Laborales = source.dDias_Generados_Laborales,
+            dDias_Ganados_Laborales = source.dDias_Ganados_Laborales,
             dDias_Generados_Laborales = source.dDias_Generados_Laborales,
             dDias_Vencidos_Calendario = source.dDias_Vencidos_Calendario,
-            dDias_Ganados_Calendario = source.dDias_Generados_Calendario,
+            dDias_Ganados_Calendario = source.dDias_Ganados_Calendario,
             dDias_Generados_Calendario = source.dDias_Generados_Calendario,
             nDias_Tomados_Vencidos_Laborales = source.dDias_Tomados_Vencidos_Laborales,
             nDias_Tomados_Vigente_Laborales = source.dDias_Tomados_Vigente_Laborales,
@@ -296,8 +296,8 @@ BEGIN
             dUltimo_Periodo_Ganado, nUsuario_Creador, dDateTime_Creador
         )
         VALUES (
-            source.nId_Colaborador, source.dDias_Vencidos_Laborales, source.dDias_Generados_Laborales,
-            source.dDias_Generados_Laborales, source.dDias_Vencidos_Calendario, source.dDias_Generados_Calendario,
+            source.nId_Colaborador, source.dDias_Vencidos_Laborales, source.dDias_Ganados_Laborales,
+            source.dDias_Generados_Laborales, source.dDias_Vencidos_Calendario, source.dDias_Ganados_Calendario,
             source.dDias_Generados_Calendario, source.dDias_Tomados_Vencidos_Laborales, source.dDias_Tomados_Vigente_Laborales,
             source.dDias_Tomados_Vencidos_Calendario, source.dDias_Tomados_Vigente_Calendario,
             source.dUltimo_Periodo_Ganado, @nUsuario_Update, GETDATE()
@@ -311,7 +311,10 @@ BEGIN
         dValor_Nuevo decimal(18,6)
     );
 
-    -- Comparar y registrar cambios
+    -- Definir un margen de error para comparación de decimales
+    DECLARE @epsilon decimal(18,6) = 0.000001;
+
+    -- Comparar y registrar cambios con tolerancia para decimales
     INSERT INTO @cambios
     SELECT 
         cv.nId_Colaborador,
@@ -320,7 +323,7 @@ BEGIN
         cv.dDias_Vencidos_Laborales
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Vencidos_Laborales_old != cv.dDias_Vencidos_Laborales
+    WHERE ABS(sa.dDias_Vencidos_Laborales_old - cv.dDias_Vencidos_Laborales) > @epsilon
     
     UNION ALL
     
@@ -328,21 +331,21 @@ BEGIN
         cv.nId_Colaborador,
         'Dias_Ganados_Laborales',
         sa.dDias_Ganados_Laborales_old,
-        cv.dDias_Generados_Laborales
+        cv.dDias_Ganados_Laborales
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Ganados_Laborales_old != cv.dDias_Generados_Laborales
+    WHERE ABS(sa.dDias_Ganados_Laborales_old - cv.dDias_Ganados_Laborales) > @epsilon
     
     UNION ALL
     
     SELECT 
         cv.nId_Colaborador,
         'Dias_Generados_Laborales',
-        sa.dDias_Generados_Laborales_old,
-        cv.dDias_Generados_Laborales
+        CAST(sa.dDias_Generados_Laborales_old AS decimal(18,6)),  -- Convertir para comparación
+        CAST(cv.dDias_Generados_Laborales AS decimal(18,6))
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Generados_Laborales_old != cv.dDias_Generados_Laborales
+    WHERE ABS(CAST(sa.dDias_Generados_Laborales_old AS decimal(18,6)) - CAST(cv.dDias_Generados_Laborales AS decimal(18,6))) > @epsilon
     
     UNION ALL
     
@@ -353,7 +356,7 @@ BEGIN
         cv.dDias_Vencidos_Calendario
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Vencidos_Calendario_old != cv.dDias_Vencidos_Calendario
+    WHERE ABS(sa.dDias_Vencidos_Calendario_old - cv.dDias_Vencidos_Calendario) > @epsilon
     
     UNION ALL
     
@@ -361,10 +364,10 @@ BEGIN
         cv.nId_Colaborador,
         'Dias_Ganados_Calendario',
         sa.dDias_Ganados_Calendario_old,
-        cv.dDias_Generados_Calendario
+        cv.dDias_Ganados_Calendario
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Ganados_Calendario_old != cv.dDias_Generados_Calendario
+    WHERE ABS(sa.dDias_Ganados_Calendario_old - cv.dDias_Ganados_Calendario) > @epsilon
     
     UNION ALL
     
@@ -375,37 +378,42 @@ BEGIN
         cv.dDias_Generados_Calendario
     FROM #calculo_vacaciones cv
     INNER JOIN @saldos_anteriores sa ON cv.nId_Colaborador = sa.nId_Colaborador
-    WHERE sa.dDias_Generados_Calendario_old != cv.dDias_Generados_Calendario;
+    WHERE ABS(sa.dDias_Generados_Calendario_old - cv.dDias_Generados_Calendario) > @epsilon;
 
-    -- Insertar en el log
-    INSERT INTO Tb_log_procedure_changes_test (
-        sNombre_Procedure, sDetalle_Accion, sNombre_Parametros, sValor_Parametros,
-        nUsuario_Create, dDatetime_Create, nUsuario_Update, dDatetime_Update,
-        nUsuario_Delete, dDatetime_Delete, sValor_Previo
-    )
-    SELECT 
-        'sp_calcular_vacaciones_v2',
-        CONCAT('Los ', c.sColumna, ' del colaborador con id ', c.nId_Colaborador, ' cambió de ', c.dValor_Anterior, ' a ', c.dValor_Nuevo),
-        '@dFecha,@nUsuario_Update',
-        CONCAT(CONVERT(varchar, @dFecha, 120), ',', @nUsuario_Update),
-        @nUsuario_Update,
-        GETDATE(),
-        NULL, NULL, NULL, NULL,
-        (
-            SELECT 
-                sa.dDias_Vencidos_Laborales_old,
-                sa.dDias_Ganados_Laborales_old,
-                sa.dDias_Generados_Laborales_old,
-                sa.dDias_Vencidos_Calendario_old,
-                sa.dDias_Ganados_Calendario_old,
-                sa.dDias_Generados_Calendario_old
-            FROM @saldos_anteriores sa
-            WHERE sa.nId_Colaborador = c.nId_Colaborador
-            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+    -- Solo insertar en el log si realmente hay cambios
+    IF EXISTS (SELECT 1 FROM @cambios)
+    BEGIN
+        INSERT INTO Tb_log_procedure_changes (
+            sNombre_Procedure, sDetalle_Accion, sNombre_Parametros, sValor_Parametros,
+            nUsuario_Create, dDatetime_Create, nUsuario_Update, dDatetime_Update,
+            nUsuario_Delete, dDatetime_Delete, sValor_Previo
         )
-    FROM @cambios c;
+        SELECT 
+            'sp_calcular_vacaciones',
+            CONCAT('Los ', c.sColumna, ' del colaborador con id ', c.nId_Colaborador, 
+                   ' cambió de ', CONVERT(varchar(20), c.dValor_Anterior), 
+                   ' a ', CONVERT(varchar(20), c.dValor_Nuevo)),
+            '@dFecha,@nUsuario_Update',
+            CONCAT(CONVERT(varchar, @dFecha, 120), ',', @nUsuario_Update),
+            @nUsuario_Update,
+            GETDATE(),
+            NULL, NULL, NULL, NULL,
+            (
+                SELECT 
+                    sa.dDias_Vencidos_Laborales_old,
+                    sa.dDias_Ganados_Laborales_old,
+                    sa.dDias_Generados_Laborales_old,
+                    sa.dDias_Vencidos_Calendario_old,
+                    sa.dDias_Ganados_Calendario_old,
+                    sa.dDias_Generados_Calendario_old
+                FROM @saldos_anteriores sa
+                WHERE sa.nId_Colaborador = c.nId_Colaborador
+                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+            )
+        FROM @cambios c;
+    END
 
-    -- Retornar resumen de cambios (antes de limpiar la tabla temporal)
+    -- Retornar resumen de cambios
     SELECT 
         COUNT(DISTINCT c.nId_Colaborador) as Colaboradores_Actualizados,
         COUNT(*) as Total_Cambios_Registrados,
