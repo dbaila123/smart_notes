@@ -1,0 +1,15 @@
+```SQL
+ALTER TABLE Colaboradores
+DROP COLUMN dfec_ingreso_real;
+
+ALTER TABLE saldos_Vacaciones_Colaboradores
+DROP COLUMN nDias_Tomados_Vencidos_Laborales;
+
+ALTER TABLE saldos_Vacaciones_Colaboradores
+DROP COLUMN nDias_Tomados_Vigente_Laborales;
+
+ALTER TABLE saldos_Vacaciones_Colaboradores
+DROP COLUMN nDias_Tomados_Vencidos_Calendario;
+
+ALTER TABLE saldos_Vacaciones_Colaboradores
+DROP COLUMN nDias_Tomados_Vigente_Calendario;
