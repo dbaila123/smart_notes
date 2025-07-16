@@ -41,11 +41,13 @@ JOIN Usuarios u ON u.nId_Persona = p.nId_Persona
 
 WHERE u.nId_Usuario = @nId_User)
 
+  
+
 SELECT TOP 1 @dFecha_cierre = dFecha_cierre from closure_request order by nid_cierre desc
 
   
 
---añadir slug equipos
+--a�adir slug equipos
 
 IF @sTipo_listado = 'INDICADORES-MODULO-COLABORADORES-EQUIPOS'
 
@@ -59,6 +61,8 @@ INSERT INTO @conditions VALUES(N't.nId_Colaborador in('+@ListTeam+')')
 
 END
 
+  
+
 IF @sFilterOne IS NOT NULL
 
 BEGIN
@@ -69,9 +73,9 @@ SET @CollaboratorsListTeam = dbo.fn_get_collaborators_by_supervisor(CONVERT(NVAR
 
 INSERT INTO @conditions VALUES(N't.nId_Colaborador in('+@CollaboratorsListTeam+')')
 
-INSERT INTO @conditions VALUES(N'c.bPersonal_Confianza <> 1')
-
 END
+
+  
 
 IF @sFilterTwo IS NOT NULL
 
@@ -80,6 +84,8 @@ BEGIN
 INSERT INTO @conditions VALUES ('c.nEstado_Colaborador IN (' + @sFilterTwo + ')');
 
 END
+
+  
 
 IF @sTextFilter IS NOT NULL
 
@@ -91,6 +97,8 @@ INSERT INTO @conditions VALUES (@conditionOUT);
 
 END
 
+  
+
 IF @sIds_Colaborador IS NOT NULL
 
 BEGIN
@@ -98,6 +106,8 @@ BEGIN
 INSERT INTO @conditions VALUES(N't.nId_Colaborador in('+ @sIds_Colaborador +')')
 
 END
+
+  
 
 --Agregar condicionales
 
@@ -139,7 +149,11 @@ SET @whereClause = concat (@whereClause,@condition_temp,' and ')
 
 END
 
+  
+
 DELETE TOP (1) FROM @conditions
+
+  
 
 SELECT @count = COUNT(*) FROM @conditions
 
@@ -147,21 +161,15 @@ END
 
   
 
---select CAST(@dFecha_cierre AS VARCHAR)
-
 --Principal Query
 
 SET @script = N'
 
 SELECT
 
-*
-
-FROM (SELECT
-
 t.nId_Colaborador,
 
-p.sApe_Paterno +'' ''+ p.sPrimer_Nombre as sNombre_Colaborador,
+p.sPersona_Nombre as sNombre_Colaborador,
 
 t.dTardanza_Con_Tolerancia,
 
@@ -169,9 +177,9 @@ t.nTotal_Min_No_Recuperables AS dTardanza_Sin_Tolerancia,
 
 CASE
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''1'' THEN t.nTotal_Min_Contra_Per_Apro
+WHEN ' + @sFilterThree + ' = ''1'' THEN t.nTotal_Min_Contra_Per_Apro
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''3'' THEN t.nPrePlanilla_Tiempo_Permisos
+WHEN ' + @sFilterThree + ' = ''3'' THEN t.nPrePlanilla_Tiempo_Permisos
 
 ELSE t.nTotal_Min_Contra_Per_AP
 
@@ -179,7 +187,7 @@ END AS nPermisos,
 
 CASE
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''1'' OR ' + ISNULL(@sFilterThree, '1') + ' = ''3'' THEN t.nTotal_Min_Favor_CompRecu_Apro + t.nTotal_Bolsa_Cierre
+WHEN ' + @sFilterThree + ' = ''1'' OR ' + @sFilterThree + ' = ''3'' THEN t.nTotal_Min_Favor_CompRecu_Apro + t.nTotal_Bolsa_Cierre
 
 ELSE t.nTotal_Min_Favor_CompRecu_AP + t.nTotal_Bolsa_Cierre
 
@@ -187,9 +195,9 @@ END AS nAFavor,
 
 CASE
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''1'' THEN t.nTotal_Min_Contra_Per_Apro + t.dTardanza_Con_Tolerancia + t.nTotal_Min_No_Recuperables
+WHEN ' + @sFilterThree + ' = ''1'' THEN t.nTotal_Min_Contra_Per_Apro + t.dTardanza_Con_Tolerancia + t.nTotal_Min_No_Recuperables
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''3'' THEN t.nPrePlanilla_Tiempo_Permisos + t.dTardanza_Con_Tolerancia + t.nTotal_Min_No_Recuperables
+WHEN ' + @sFilterThree + ' = ''3'' THEN t.nPrePlanilla_Tiempo_Permisos + t.dTardanza_Con_Tolerancia + t.nTotal_Min_No_Recuperables
 
 ELSE t.nTotal_Min_Contra_Per_AP + t.dTardanza_Con_Tolerancia + t.nTotal_Min_No_Recuperables
 
@@ -197,17 +205,17 @@ END AS nEnContra,
 
 CASE
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''1'' OR ' + ISNULL(@sFilterThree, '1') + ' = ''3'' THEN t.nTotal_Min_Favor_Extra_Apro
+WHEN ' + @sFilterThree + ' = ''1'' OR ' + @sFilterThree + ' = ''3'' THEN t.nTotal_Min_Favor_Extra_Apro
 
 ELSE t.nTotal_Min_Favor_Extra_AP
 
 END AS nExtra,
 
-''' + @dFecha_cierre + ''' AS dFecha_cierre,
+' + CAST(@dFecha_cierre AS VARCHAR) + ' AS dFecha_cierre,
 
 CASE
 
-WHEN ' + ISNULL(@sFilterThree, '1') + ' = ''1'' OR ' + ISNULL(@sFilterThree, '1') + ' = ''3'' THEN t.nTotal_Min_Favor_CompRecu_Apro
+WHEN ' + @sFilterThree + ' = ''1'' OR ' + @sFilterThree + ' = ''3'' THEN t.nTotal_Min_Favor_CompRecu_Apro
 
 ELSE t.nTotal_Min_Favor_CompRecu_AP
 
@@ -223,33 +231,15 @@ JOIN Personas p on c.nId_Persona = p.nId_Persona
 
 '+ @whereClause +'
 
-) t
-
-WHERE
-
-dTardanza_Con_Tolerancia > 0 OR
-
-dTardanza_Sin_Tolerancia > 0 OR
-
-nPermisos > 0 OR
-
-nAFavor > 0 OR
-
-nEnContra > 0 OR
-
-nExtra > 0 OR
-
-dCompensacion_Minutos > 0 OR
-
-dBolsa_Cierre > 0
-
 ORDER BY nId_Colaborador
 
 '
 
-print(@script)
+  
+
+  
 
 EXECUTE sp_executesql @script
 
-END;
+END
 ```
