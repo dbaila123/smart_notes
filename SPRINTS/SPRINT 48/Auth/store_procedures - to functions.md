@@ -83,14 +83,13 @@ END;
 $$;
 
 --corregir
-create function sp_smart_get_email_login_super(par_semail text) returns user_login
+create function sp_smart_get_email_login_super(par_semail text) returns setof user_login
     language plpgsql
 as
 $$
-DECLARE
-    result user_login;
 BEGIN
         /* Recuperar los datos del usuario master */
+    RETURN QUERY
     SELECT
         u.nid_usuario,
         NULL AS nid_colaborador,
@@ -119,8 +118,6 @@ BEGIN
              LEFT OUTER JOIN tenant0001_dbo.sesiones AS s
                              ON s.nid_usuario = u.nid_usuario
     WHERE LOWER(u.semail) = LOWER(par_semail);
-
-    RETURN result;
 END;
 $$;
 
