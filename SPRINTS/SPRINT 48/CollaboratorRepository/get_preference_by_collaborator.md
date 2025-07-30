@@ -1,6 +1,5 @@
 ```sql
-create function get_preference_by_collaborator(nid_collaborator integer)  
-returns setof preferenciascolaborador  
+create or replace function fn_get_preference_by_collaborator(nid_collaborator integer) returns SETOF preferenciascolaborador  
     language plpgsql  
 as  
 $$  
@@ -20,4 +19,3 @@ BEGIN
     WHERE nid_colaborador = nid_collaborator;  
 END;  
 $$;
-```

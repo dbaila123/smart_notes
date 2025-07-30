@@ -1,5 +1,5 @@
 ```sql
-create or replace function get_configurations(p_configurations_string text, p_user_id integer, p_project_id integer, p_requirement_id integer, p_slug_listado text, p_collaborator_id integer DEFAULT 0)
+create or replace funcion fn_get_configurations(p_configurations_string text, p_user_id integer, p_project_id integer, p_requirement_id integer, p_slug_listado text, p_collaborator_id integer DEFAULT 0)
     returns TABLE(scodigo text, sdescription text, stipo_configuration text)
     language plpgsql
 as
@@ -65,11 +65,11 @@ begin
     if 'especialidades' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            nid_especialidad::text,
-            sdescripcion,
+            e.nid_especialidad::text,
+            e.sdescripcion,
             'ESPECIALIDADES'
-        FROM especialidades
-        WHERE nestado = 1;
+        FROM especialidades e
+        WHERE e.nestado = 1;
     end if;
 
     if 'ocupaciones' = any(var_configuration_request) then
@@ -96,32 +96,32 @@ begin
     if 'estados_civil' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+               c.scodigo,
+                c.sdescripcion,
                 'ESTADOS_CIVIL'
-            FROM configs
-            WHERE nestado = 1
-              AND stabla = 'ESTADO_CIVIL';
+            FROM configs c
+            WHERE c.nestado = 1
+              AND c.stabla = 'ESTADO_CIVIL';
     end if;
 
     if 'fecha_min_reactivar_colaborador' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'FECHA_REACTIVAR_COLABORADOR'
-        FROM configs
-        WHERE stabla = 'FECHA_MIN_REACTIVAR_COLAB'
-        AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'FECHA_MIN_REACTIVAR_COLAB'
+        AND c.nestado = 1;
     end if;
 
     if 'generos' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'GENEROS'
-        FROM configs
+        FROM configs c
         WHERE stabla = 'GENERO'
         AND nestado = 1;
     end if;
@@ -129,10 +129,10 @@ begin
     if 'tipos_persona' =  any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'TIPOS_PERSONA'
-        FROM configs
+        FROM configs c
         WHERE stabla = 'TIPO_PERSONA'
         AND nestado = 1;
     end if;
@@ -140,10 +140,10 @@ begin
     if 'areas' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            nid_area::text,
-            sdescripcion,
+            a.nid_area::text,
+            a.sdescripcion,
             'AREAS'
-        FROM areas
+        FROM areas a
         WHERE nestado = 1;
     end if;
 
@@ -160,55 +160,55 @@ begin
     if 'tipos_colaborador' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'TIPOS_COLABORADOR'
-        FROM configs
-        WHERE stabla = 'TIPO_COLABORADOR'
-        AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'TIPO_COLABORADOR'
+        AND c.nestado = 1;
     end if;
 
     if 'tipos_contratacion' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'TIPOS_CONTRATACION'
-        FROM configs
-        WHERE stabla = 'TIPO_CONTRATACION'
-        AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'TIPO_CONTRATACION'
+        AND c.nestado = 1;
     end if;
 
     if 'tipos_modalidad' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'TIPOS_MODALIDAD'
-        FROM configs
-        WHERE stabla = 'TIPO_MODALIDAD'
-        AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'TIPO_MODALIDAD'
+        AND c.nestado = 1;
     end if;
 
     if 'estados_colaborador' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'ESTADOS_COLABORADOR'
-        FROM configs
-        WHERE stabla = 'ESTADO_COLABORADOR'
-        AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'ESTADO_COLABORADOR'
+        AND c.nestado = 1;
     end if;
 
     if 'cargos' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            nid_cargo::text,
-            sdescripcion,
+            c.nid_cargo::text,
+            c.sdescripcion,
             'CARGOS'
-        FROM cargos
-        WHERE nestado_cargos = 1;
+        FROM cargos c
+        WHERE c.nestado_cargos = 1;
     end if;
 
     if 'lideres_directores' = any(var_configuration_request) then
@@ -250,99 +250,99 @@ begin
     if 'tipos_autenticacion' = any(var_configuration_request) then
         RETURN QUERY
         SELECT
-            scodigo,
-            sdescripcion,
+            c.scodigo,
+            c.sdescripcion,
             'TIPOS_AUTENTICACION'
-        FROM configs
-        WHERE stabla = 'TIPO_AUTENTICACION'
-          AND nestado = 1;
+        FROM configs c
+        WHERE c.stabla = 'TIPO_AUTENTICACION'
+          AND c.nestado = 1;
     end if;
 
     if 'tipos_documento' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPOS_DOCUMENTO'
-            FROM configs
-            WHERE stabla = 'TIPO_DOCUMENTO'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'TIPO_DOCUMENTO'
+              AND c.nestado = 1;
     end if;
 
     if 'tipos_telefono' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPOS_TELEFONO'
-            FROM configs
-            WHERE stabla = 'TIPO_TELEFONO'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'TIPO_TELEFONO'
+              AND c.nestado = 1;
     end if;
 
     if 'codigos_telefono_pais' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                nid_pais::text,
-                CONCAT(sdescripcion, ' (+', scodigo_llamada_inter, ')'),
+                p.nid_pais::text,
+                CONCAT(p.sdescripcion, ' (+', p.scodigo_llamada_inter, ')'),
                 'CODIGOS_TELEFONO_PAIS'
-            FROM paises
-            WHERE scodigo_llamada_inter is not null
-              AND nestado = 1;
+            FROM paises p
+            WHERE p.scodigo_llamada_inter is not null
+              AND p.nestado = 1;
     end if;
 
     if 'tipos_email' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPOS_EMAIL'
-            FROM configs
-            WHERE stabla = 'TIPO_EMAIL'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'TIPO_EMAIL'
+              AND c.nestado = 1;
     end if;
 
     if 'ubigeos' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                nid_ubigeo::text,
-                CONCAT(subigeo_departamento, '-', subigeo_provincia, '-', subigeo_distrito),
+                u.nid_ubigeo::text,
+                CONCAT(u.subigeo_departamento, '-', u.subigeo_provincia, '-', u.subigeo_distrito),
                 'UBIGEOS'
-            FROM ubigeos
-            WHERE nestado = 1;
+            FROM ubigeos u
+            WHERE u.nestado = 1;
     end if;
 
     if 'parentescos' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'PARENTESCOS'
-            FROM configs
-            WHERE stabla = 'PARENTESCO'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'PARENTESCO'
+              AND c.nestado = 1;
     end if;
 
     if 'entidades_bancaria' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'ENTIDADES_BANCARIA'
-            FROM configs
-            WHERE stabla = 'BANCO'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'BANCO'
+              AND c.nestado = 1;
     end if;
 
     if 'tipos_cuenta_bancaria' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPOS_CUENTA_BANCARIA'
-            FROM configs
-            WHERE stabla = 'TIPO_CUENTA'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'TIPO_CUENTA'
+              AND c.nestado = 1;
     end if;
 
     if 'sedes' = any(var_configuration_request) then
@@ -586,8 +586,8 @@ begin
             r.nid_rol::text,
             r.sdescripcion,
             CASE
-                WHEN r.stipo_rol = 1 THEN concat('ROL_', c.sdescripcion)
-                WHEN r.stipo_rol = 2 THEN concat('ROL_', c.sDescripcion)
+                WHEN r.stipo_rol = '1' THEN concat('ROL_', c.sdescripcion)
+                WHEN r.stipo_rol = '2' THEN concat('ROL_', c.sDescripcion)
             END
         FROM roles r
         JOIN configs c on r.stipo_rol = c.scodigo AND c.stabla = 'TIPO_ROL'
@@ -693,22 +693,23 @@ begin
 
             RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPO_ACTIVIDAD'
-            FROM configs
-            WHERE stabla = 'TIPO_ACTIVIDAD'
-                AND nestado = 1
-                AND sdescripcion like '%CALIDAD%';
+            FROM configs c
+            WHERE c.stabla = 'TIPO_ACTIVIDAD'
+                AND c.nestado = 1
+                AND c.sdescripcion like '%CALIDAD%';
         else
+            RETURN QUERY
             SELECT
-                scodigo,
-                sdescripcion,
+                c.scodigo,
+                c.sdescripcion,
                 'TIPO_ACTIVIDAD'
-            FROM configs
-            WHERE stabla = 'TIPO_ACTIVIDAD'
-              AND nestado = 1
-              AND sdescripcion not like '%CALIDAD%';
+            FROM configs c
+            WHERE c.stabla = 'TIPO_ACTIVIDAD'
+              AND c.nestado = 1
+              AND c.sdescripcion not like '%CALIDAD%';
         end if;
 
     end if;
@@ -831,7 +832,7 @@ begin
                             join usuarios u on u.nid_persona = p_coor.nid_persona
                    where u.nid_usuario = p_user_id
                      and p.nestado = 1)) as proyectos
-            where sdescripcion not like '%SIN PROYECTO%';
+            where sdescripcion not like '%SIN PROYECTO%'::text;
     end if;
 
 
@@ -1200,20 +1201,20 @@ begin
 
     if 'tipo_hora' = any(var_configuration_request) then
         RETURN QUERY
-            SELECT scodigo,
-                   sdescripcion,
+            SELECT c.scodigo,
+                   c.sdescripcion,
                    'TIPO_HORA'
-            FROM configs
-            WHERE stabla = 'TIPO_HORA'
-              AND nestado = 1;
+            FROM configs c
+            WHERE c.stabla = 'TIPO_HORA'
+              AND c.nestado = 1;
     end if;
 
     if 'tipo_servicio' = any(var_configuration_request) then
         RETURN QUERY
-            SELECT scodigo,
-                   sdescripcion,
+            SELECT c.scodigo,
+                   c.sdescripcion,
                    'TIPO_SERVICIO'
-            FROM configs
+            FROM configs c
             WHERE stabla = 'TIPO_SERVICIO';
     end if;
 
@@ -2089,7 +2090,7 @@ begin
     if 'evaluation_template' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                nid_form_template,
+                nid_form_template::text,
                 sname,
                 'EVALUATION_TEMPLATE'
             FROM form_template;
@@ -2098,7 +2099,7 @@ begin
     if 'evaluation' = any(var_configuration_request) then
         RETURN QUERY
             SELECT
-                nid_evaluation,
+                nid_evaluation::text,
                 sname,
                 'EVALUATION'
             FROM evaluations;
@@ -2207,5 +2208,4 @@ begin
 end;
 $$;
 
-alter function get_configurations(text, integer, integer, integer, text, integer) owner to postgres;
-
+alter function fn_get_configurations(text, integer, integer, integer, text, integer) owner to postgres;

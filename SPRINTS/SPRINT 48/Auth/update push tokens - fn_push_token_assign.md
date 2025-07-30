@@ -1,5 +1,5 @@
 ```sql
-create function sp_push_token_assign(p_sauth text, p_nid_usuario integer) returns integer  
+create oe replace function fn_push_token_assign(p_sauth text, p_nid_usuario integer) returns integer  
     language plpgsql  
 as  
 $$  

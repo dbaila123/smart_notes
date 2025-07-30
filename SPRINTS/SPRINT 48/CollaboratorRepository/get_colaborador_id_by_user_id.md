@@ -1,6 +1,6 @@
 ```sql
   
-create function get_colaborador_id_by_user_id(nid_user integer) returns integer  
+create function fn_get_colaborador_id_by_user_id(nid_user integer) returns integer  
     language plpgsql  
 as  
 $$  

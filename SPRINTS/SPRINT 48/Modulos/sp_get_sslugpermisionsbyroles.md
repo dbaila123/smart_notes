@@ -1,5 +1,5 @@
 ```POSTGRESQL
-create function sp_get_sslugpermisionsbyroles(p_idmodulo integer, p_nestadooption integer, p_idrol integer, p_nestadop integer, p_nid_colaborador integer DEFAULT NULL::integer)  
+create or replace function fn_get_sslugpermisionsbyroles(p_idmodulo integer, p_nestadooption integer, p_idrol integer, p_nestadop integer, p_nid_colaborador integer DEFAULT NULL::integer)  
     returns TABLE(sslug text, sdecripcion text)  
     language plpgsql  
 as  
