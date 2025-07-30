@@ -1,9 +1,10 @@
 ```sql
-create or replace funcion fn_get_configurations(p_configurations_string text, p_user_id integer, p_project_id integer, p_requirement_id integer, p_slug_listado text, p_collaborator_id integer DEFAULT 0)
-    returns TABLE(scodigo text, sdescription text, stipo_configuration text)
-    language plpgsql
-as
-$$
+-- DROP FUNCTION tenant0001_dbo.fn_get_configurations(text, int4, int4, int4, text, int4);
+
+CREATE OR REPLACE FUNCTION tenant0001_dbo.fn_get_configurations(p_configurations_string text, p_user_id integer, p_project_id integer, p_requirement_id integer, p_slug_listado text, p_collaborator_id integer DEFAULT 0)
+ RETURNS TABLE(scodigo text, sdescription text, stipo_configuration text)
+ LANGUAGE plpgsql
+AS $function$
 declare
     var_configuration_request text[];
     var_modalidad integer;
@@ -840,43 +841,43 @@ begin
     if 'proyectos' = any(var_configuration_request) then
         RETURN QUERY
             select
-                scodigo::text,
-                sdescripcion,
-                stipo_configuracion
-            from ((select p.nid_proyecto                                        as scodigo,
-                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre, ')') as sdescripcion,
-                          'PROYECTOS'                   as stipo_configuracion
+                proyecto_codigo::text,
+                proyecto_descripcion,
+                proyecto_tipo_configuracion
+            from ((select p.nid_proyecto                                        as proyecto_codigo,
+                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre, ')') as proyecto_descripcion,
+                          'PROYECTOS'                   as proyecto_tipo_configuracion
                    from proyectos p
                             join coordinadores_proyectos cp on p.nid_proyecto = cp.nid_proyecto
                             join coordinadores c on cp.nid_coordinador = c.nid_coordinador
                             join personas p2 on c.nid_persona = p2.nid_persona
 
-                   where p.nestado = 1)
+                   where p.nestado::integer = 1)
                   union
-                  (SELECT p.nid_proyecto         AS scodigo,
+                  (SELECT p.nid_proyecto         AS proyecto_codigo,
 
                           CONCAT(
                                   p.snombre, ' ',
                                   '(',
                                   p2.sprimer_nombre,
                                   ')'
-                          )                      AS sdescripcion,
-                          'PROYECTOS_CON_ACCESO' AS stipo_configuracion
+                          )                      AS proyecto_descripcion,
+                          'PROYECTOS_CON_ACCESO' AS proyecto_tipo_configuracion
                    FROM proyectos p
                             JOIN coordinadores_proyectos cp ON p.nid_proyecto = cp.nid_proyecto
                             JOIN Coordinadores c ON cp.nid_coordinador = c.nid_coordinador
                             JOIN personas p2 ON c.nid_persona = p2.nid_persona
                             LEFT JOIN configs c1 ON c1.stabla = 'PREFIJO_PROYECTO'
                        AND c1.scodigo = CASE
-                                            WHEN p.sprefijo = 1 THEN '1'
-                                            WHEN p.sprefijo = 2 THEN '2'
+                                            WHEN p.sprefijo::integer = 1 THEN '1'
+                                            WHEN p.sprefijo::integer = 2 THEN '2'
                                             ELSE NULL
                            END
 
-                   WHERE p.nestado = 1
-                     AND (p.ntipo_acceso = 0
+                   WHERE p.nestado::integer = 1
+                     AND (p.ntipo_acceso::integer = 0
                        OR (
-                              p.ntipo_acceso = 1
+                              p.ntipo_acceso::integer = 1
                                   AND EXISTS (SELECT 1
                                               FROM colaboradores_proyectos cop
                                               WHERE cop.nid_proyecto = p.nid_proyecto
@@ -890,9 +891,9 @@ begin
 
                   UNION
 
-                  (select p.nid_proyecto                                        as scodigo,
-                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre, ')') as sdescripcion,
-                          'PROYECTOS_COLABORADOR'                               as stipo_configuracion
+                  (select p.nid_proyecto                                        as proyecto_codigo,
+                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre, ')') as proyecto_descripcion,
+                          'PROYECTOS_COLABORADOR'                               as proyecto_tipo_configuracion
                    from proyectos p
                             join coordinadores_proyectos cp on p.nid_proyecto = cp.nid_proyecto
                             join coordinadores c on cp.nid_coordinador = c.nid_coordinador
@@ -902,31 +903,31 @@ begin
                             join personas p3 on c2.nid_persona = p3.nid_persona
                             join usuarios u on p3.nid_persona = u.nid_persona
                    where u.nid_usuario = p_user_id
-                     and p.nestado = 1)
+                     and p.nestado::integer = 1)
                   union
-                  (select p.nid_proyecto           as scodigo,
-                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre , ')') as sdescripcion,
-                          'PROYECTOS_LIDER_DIRECTOR'                  as stipo_configuracion
+                  (select p.nid_proyecto           as proyecto_codigo,
+                          CONCAT(p.snombre, ' ', '(', p2.sprimer_nombre , ')') as proyecto_descripcion,
+                          'PROYECTOS_LIDER_DIRECTOR'                  as proyecto_tipo_configuracion
                    from proyectos p
-                            join proyecto_lider pl on p.nid_proyecto = pl.nid_proyecto and pl.nestado = 1--PRY_LIDER
+                            join proyecto_lider pl on p.nid_proyecto = pl.nid_proyecto and pl.nestado::integer = 1--PRY_LIDER
                             join coordinadores_proyectos cp on p.nid_proyecto = cp.nid_proyecto
                             join coordinadores c on cp.nid_coordinador = c.nid_coordinador
                             join personas p2 on c.nid_persona = p2.nid_persona
                    where (p.nid_lider = p_collaborator_id
                        or pl.nid_lider = p_collaborator_id)
-                     and p.nestado = 1)
+                     and p.nestado::integer = 1)
                   union
-                  (select p.nid_proyecto                                        as scodigo,
-                          CONCAT(p.snombre, ' ', '(', p_coor.sprimer_nombre, ')') as sdescripcion,
-                          'PROYECTOS_COORDINADOR' as stipo_configuracion
+                  (select p.nid_proyecto                                        as proyecto_codigo,
+                          CONCAT(p.snombre, ' ', '(', p_coor.sprimer_nombre, ')') as proyecto_descripcion,
+                          'PROYECTOS_COORDINADOR' as proyecto_tipo_configuracion
                    from proyectos p
                             join coordinadores_proyectos cp on cp.nid_proyecto = p.nid_proyecto
                             join coordinadores coo on coo.nid_coordinador = cp.nid_coordinador
                             join personas p_coor on p_coor.nid_persona = coo.nid_persona
                             join usuarios u on u.nid_persona = p_coor.nid_persona
                    where u.nid_usuario = p_user_id
-                     and p.nestado = 1)) as proyectos
-            where sdescripcion not like '%SIN PROYECTO%';
+                     and p.nestado::integer = 1)) as proyectos
+            where proyecto_descripcion not like '%SIN PROYECTO%';
     end if;
 
     if 'proyectos_colaborador_v2' = any(var_configuration_request) then
@@ -2206,6 +2207,5 @@ begin
     end if;
 
 end;
-$$;
-
-alter function fn_get_configurations(text, integer, integer, integer, text, integer) owner to postgres;
+$function$
+;
