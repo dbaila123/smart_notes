@@ -16,3 +16,29 @@ CREATE TYPE user_login AS(
     nestado_usuario integer,
     nestado_colaborador integer,
     ntipo_autenticacion integer)
+
+CREATE TYPE collaborator_list_response AS(  
+    nid integer,  
+    snombre_colaborador text,  
+    ntipo_documento integer,  
+    sdocumento_identidad text,  
+    stipo_documento text,  
+    snumero_documento text,  
+    dfecha_registro timestamp,  
+    dfec_ingreso timestamp,  
+    dfecha_nacimiento timestamp,  
+    ntelefono text,  
+    ntipo_modalidad integer,  
+    snombre_sede text,  
+    nid_sede integer,  
+    snombre_cargo text,  
+    nid_cargo integer,  
+    snombre_empresa text,  
+    nid_empresa integer,  
+    nestado integer,  
+    snombre_estado text,  
+    snombre_modalidad text,  
+    dfecha_cese timestamp,  
+    surl_foto text,  
+    supervisoresjson json  
+    ); q
