@@ -1,6 +1,5 @@
 ```sql
-create function fn_smart_get_collaborators(p_campo text, p_order text, p_default text)  
-    returns text  
+create function fn_get_order_clause(p_campo text, p_order text, p_default text) returns text  
     language plpgsql  
 as  
 $$  

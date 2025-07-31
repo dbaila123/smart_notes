@@ -1,5 +1,5 @@
 ```sql
-create function fn_smart_get_collaborators(  
+create or replace function fn_smart_get_collaborators(  
     p_nid integer,  
     p_collaborator_name text,  
     p_slug_to_get_list text,  
@@ -32,14 +32,14 @@ declare
     var_condition text;  
 begin  
     if p_slug_to_get_list = 'COLABORADOR-LISTA-INDIVIDUAL' then  
-        var_view_clause := 'select * from (select * from v_collaborator_list where nid ='+p_nid::text+')a';  
+        var_view_clause := 'select * from (select * from v_collaborator_list where nid =' || p_nid || ')a';  
     end if;  
   
     if p_slug_to_get_list = 'TEAM-HAVE-SUBORDINATE' then  
         var_collaborator_list :=  
             fn_get_collaborators_by_supervisor(p_nid::text, 0, 0);  
   
-        var_view_clause := 'select * from (select * from v_collaborator_list where nid IN ( '+ var_collaborator_list +' )) a';  
+        var_view_clause := 'select * from (select * from v_collaborator_list where nid IN ( '|| var_collaborator_list || ' )) a';  
     end if;  
   
     if p_slug_to_get_list = 'COLABORADOR-LISTADO' then  
@@ -92,6 +92,25 @@ begin
   
     var_order_clause := fn_get_order_clause(p_column_to_order, p_order, 'dfec_ingreso');  
   
+    var_pagination_clause := fn_get_pagination_clause(p_pnum, p_size);  
+  
+    execute format(  
+            'SELECT COUNT(*) FROM (%s %s) a',  
+            var_view_clause,  
+            var_where_clause  
+            ) into var_count;  
+  
+    raise notice 'Consulta: %', var_view_clause;  
+    raise notice 'where: %', var_where_clause;  
+  
+    RETURN QUERY  
+    execute format(  
+            'SELECT *, %s as ntotal FROM (%s %s) a %s %s',  
+            var_count,  
+            var_view_clause,  
+            var_where_clause,  
+            var_order_clause,  
+            var_pagination_clause  
+            );  
 end;  
 $$;
-```

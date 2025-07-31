@@ -41,4 +41,4 @@ CREATE TYPE collaborator_list_response AS(
     dfecha_cese timestamp,  
     surl_foto text,  
     supervisoresjson json  
-    ); q
+    ); 
